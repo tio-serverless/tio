@@ -1,0 +1,18 @@
+language: go
+
+go:
+  - 1.13.1
+
+env:
+  global:
+    - TIO_VERSION=v0.1.0
+    - TIO_BUILD_NAME=vikings/tio-build
+
+services:
+  - docker
+
+before_install:
+  - echo "$DOCKER_PASSWD" | docker login -u "$DOCKER_USER" --password-stdin
+
+install:
+  - go build -mod=vendor -o bin/tio-build build/*.go
