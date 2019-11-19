@@ -1,3 +1,7 @@
+# github.com/BurntSushi/toml v0.3.1
+github.com/BurntSushi/toml
+# github.com/gorilla/mux v1.7.3
+github.com/gorilla/mux
 # github.com/konsorten/go-windows-terminal-sequences v1.0.1
 github.com/konsorten/go-windows-terminal-sequences
 # github.com/sirupsen/logrus v1.4.2

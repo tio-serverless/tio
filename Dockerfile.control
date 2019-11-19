@@ -1,0 +1,3 @@
+FROM golang:stretch
+COPY bin/tio-control /tio-control
+ENTRYPOINT ["/tio-control"]

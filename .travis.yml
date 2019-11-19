@@ -7,6 +7,7 @@ env:
   global:
     - TIO_VERSION=v0.1.0
     - TIO_BUILD_NAME=vikings/tio-build
+    - TIO_CONTROL_NAME=vikings/tio-control
 
 services:
   - docker
@@ -16,3 +17,8 @@ before_install:
 
 install:
   - go build -mod=vendor -o bin/tio-build build/*.go
+  - go build -mod=vendor -o bin/tio-control control/*.go
+
+after_script:
+  - docker build -t ${TIO_BUILD_NAME}:${TIO_VERSION}-${TRAVIS_BRANCH} -f Dockerfile.build .
+  - docker build -t ${TIO_CONTROL_NAME}:${TIO_VERSION}-${TRAVIS_BRANCH} -f Dockerfile.control .
