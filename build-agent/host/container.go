@@ -1,6 +1,9 @@
 package main
 
-import docker "github.com/fsouza/go-dockerclient"
+import (
+	docker "github.com/fsouza/go-dockerclient"
+	"github.com/sirupsen/logrus"
+)
 
 func runContainer(name, image string, cmd []string) error {
 	c, err := b.DClient.CreateContainer(docker.CreateContainerOptions{
@@ -10,6 +13,8 @@ func runContainer(name, image string, cmd []string) error {
 			Cmd:   cmd,
 		},
 	})
+
+	logrus.Debugf("Container ID: %s", c.ID)
 
 	if err != nil {
 		return err

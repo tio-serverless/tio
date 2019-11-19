@@ -53,6 +53,8 @@ func restWeb() {
 
 		url := makePrivateUrl(cui.Key)
 
+		logrus.Debugf("New Request [%s]", cui.Key)
+
 		err = callBuildAgent(url)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
