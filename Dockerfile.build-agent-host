@@ -1,0 +1,5 @@
+FROM golang:stretch
+COPY build-agent/build.toml /build.toml
+ENV TIO_BUILD_CONFIG=/build.toml
+COPY bin/tio-build-agent-host /tio-build-agent-host
+ENTRYPOINT ["/tio-build-agent-host"]

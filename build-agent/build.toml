@@ -1,0 +1,5 @@
+log="debug"
+port=80
+
+[build]
+    base_image="vikings/tio-go-runtime"

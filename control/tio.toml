@@ -1,2 +1,3 @@
 log="debug"
 rest_port=80
+build_agent_address="build.agent.tio:80"
