@@ -21,4 +21,6 @@ install:
 
 after_script:
   - docker build -t ${TIO_BUILD_NAME}:${TIO_VERSION}-${TRAVIS_BRANCH} -f Dockerfile.build .
+  - docker push ${TIO_BUILD_NAME}:${TIO_VERSION}-${TRAVIS_BRANCH}
   - docker build -t ${TIO_CONTROL_NAME}:${TIO_VERSION}-${TRAVIS_BRANCH} -f Dockerfile.control .
+  - docker push ${TIO_CONTROL_NAME}:${TIO_VERSION}-${TRAVIS_BRANCH}
