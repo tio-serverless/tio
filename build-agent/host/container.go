@@ -14,11 +14,12 @@ func runContainer(name, image string, cmd []string) error {
 		},
 	})
 
-	logrus.Debugf("Container ID: %s", c.ID)
-
 	if err != nil {
+		logrus.Error(err.Error())
 		return err
 	}
+
+	logrus.Debugf("Container ID: %s", c.ID)
 
 	return b.DClient.StartContainer(c.ID, nil)
 }
