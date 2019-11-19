@@ -4,34 +4,34 @@ import (
 	"archive/zip"
 	"errors"
 	"fmt"
-	"go/parser"
-	"go/token"
 	"io"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/BurntSushi/toml"
 )
 
 func zipAndparser(file string) error {
-	sources, err := unzip(file+".zip", b.Root+"/"+file)
+	sources, err := unzip(file, b.Root+"/tio")
 	if err != nil {
 		return err
 	}
 
-	var gofile string
+	var config string
 
 	for _, s := range sources {
-		if strings.HasSuffix(s, ".go") {
-			gofile = s
+		if strings.HasSuffix(s, ".tio.toml") {
+			config = s
 			break
 		}
 	}
 
-	if gofile == "" {
-		return errors.New("Not found go source code in this zip. ")
+	if config == "" {
+		return errors.New("Not found .tio.toml in this zip. ")
 	}
 
-	err = parserSource(gofile)
+	err = parserSource()
 	if err != nil {
 		return err
 	}
@@ -39,40 +39,10 @@ func zipAndparser(file string) error {
 	return nil
 }
 
-func parserSource(file string) error {
-	fset := token.NewFileSet() // positions are relative to fset
-
-	f, err := parser.ParseFile(fset, file, nil, parser.ParseComments)
-
+func parserSource() error {
+	_, err := toml.DecodeFile(b.Root+"/tio/.tio.toml", b)
 	if err != nil {
 		return err
-	}
-
-	for _, c := range f.Comments {
-		cc := strings.TrimSpace(c.Text())
-		if strings.HasPrefix(cc, "tio-name:") {
-			n := strings.Split(cc, ":")
-			if len(n) < 2 {
-				continue
-			}
-
-			b.Name = strings.TrimSpace(n[1])
-			continue
-		}
-
-		if strings.HasPrefix(cc, "tio-api:") {
-			n := strings.Split(cc, ":")
-			if len(n) < 2 {
-				continue
-			}
-
-			b.API = strings.TrimSpace(n[1])
-			continue
-		}
-	}
-
-	if b.Name == "" {
-		b.Name = zipName
 	}
 
 	return nil

@@ -1,7 +1,10 @@
 package main
 
 type B struct {
-	Name string
-	API  string
-	Root string
+	Root      string
+	BuildInfo buildInfo `toml:"build"`
+}
+
+type buildInfo struct {
+	Name string `toml:"name"`
 }
