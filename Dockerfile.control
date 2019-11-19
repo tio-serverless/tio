@@ -1,3 +1,5 @@
 FROM golang:stretch
+COPY control/tio.toml /tio.toml
+ENV TIO_CONTROL_CONFIG=/tio.toml
 COPY bin/tio-control /tio-control
 ENTRYPOINT ["/tio-control"]
