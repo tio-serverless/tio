@@ -4,19 +4,22 @@ import (
 	"os"
 
 	"github.com/BurntSushi/toml"
+	docker "github.com/fsouza/go-dockerclient"
 	"github.com/sirupsen/logrus"
 )
 
 var b *bus
 
 type bus struct {
-	Log   string `toml:"log"`
-	Port  int    `toml:"port"`
-	Build build  `toml:"build"`
+	Log     string `toml:"log"`
+	Port    int    `toml:"port"`
+	Build   build  `toml:"build"`
+	DClient *docker.Client
 }
 
 type build struct {
-	Base string `toml:"base_image"`
+	Image string `toml:"build_image"`
+	Base  string `toml:"base_image"`
 }
 
 func init() {
@@ -26,11 +29,27 @@ func init() {
 		logrus.Fatalln(err.Error())
 	}
 
+	err = dclientInit()
+	if err != nil {
+		logrus.Fatalln(err.Error())
+	}
+
 	enableLog()
 
 	output()
 
 	return
+}
+
+func dclientInit() error {
+	client, err := docker.NewClientFromEnv()
+	if err != nil {
+		return err
+	}
+
+	b.DClient = client
+
+	return nil
 }
 
 func enableLog() {
@@ -46,10 +65,13 @@ func enableLog() {
 }
 
 func output() {
+	i, _ := b.DClient.Info()
 	logrus.Println("----------------------")
 	logrus.Printf("Control Log: %s", b.Log)
 	logrus.Printf("GRPC Port: %d", b.Port)
+	logrus.Printf("Docker Client Version: %s", i.KernelVersion)
 	logrus.Print("Build")
+	logrus.Printf("  Build Image: %s", b.Build.Image)
 	logrus.Printf("  Base Image: %s", b.Build.Base)
 	logrus.Println("----------------------")
 }
