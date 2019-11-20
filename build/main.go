@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"io"
 	"net/http"
 	"os"
@@ -22,6 +23,12 @@ func init() {
 	b = new(B)
 	b.Root = os.Getenv("GOPATH") + "/src"
 
+	err := dclientInit()
+	if err != nil {
+		logrus.Fatalln(err.Error())
+	}
+
+	fmt.Println(b.DClient.Info())
 	flag.StringVar(&zipName, "zip", "", "The Zip File URL")
 	flag.StringVar(&control, "control", "", "The Control GRPC Address")
 }

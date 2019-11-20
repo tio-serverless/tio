@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+
 	docker "github.com/fsouza/go-dockerclient"
 	"github.com/sirupsen/logrus"
 )
@@ -11,6 +13,11 @@ func runContainer(name, image string, cmd []string) error {
 		Config: &docker.Config{
 			Image: image,
 			Cmd:   cmd,
+		},
+		HostConfig: &docker.HostConfig{
+			Binds: []string{
+				fmt.Sprintf("%s:/run/docker.sock", b.Build.Mount),
+			},
 		},
 	})
 

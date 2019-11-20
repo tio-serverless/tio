@@ -20,6 +20,7 @@ type bus struct {
 type build struct {
 	Image string `toml:"build_image"`
 	Base  string `toml:"base_image"`
+	Mount string `toml:"mount"`
 }
 
 func init() {
