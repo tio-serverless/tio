@@ -3,6 +3,8 @@ package main
 import (
 	"bytes"
 	"fmt"
+	"log"
+	"os"
 
 	docker "github.com/fsouza/go-dockerclient"
 )
@@ -10,12 +12,17 @@ import (
 func buildImage(name string) error {
 	var buf bytes.Buffer
 
+	f, err := os.Open(b.Root + "/tio.tar")
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	return b.DClient.BuildImage(docker.BuildImageOptions{
 		Name:                fmt.Sprintf("%s:%s", "vikings/tio-go-runtime", name),
-		Dockerfile:          b.Root + "/tio/Dockerfile",
+		Dockerfile:          "Dockerfile",
 		RmTmpContainer:      true,
 		ForceRmTmpContainer: true,
-		ContextDir:          b.Root + "/tio/",
 		OutputStream:        &buf,
+		InputStream:         f,
 	})
 }
