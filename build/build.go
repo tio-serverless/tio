@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"fmt"
+	"io/ioutil"
 	"os/exec"
 
 	"github.com/sirupsen/logrus"
@@ -10,7 +11,7 @@ import (
 
 func build(name string) error {
 
-	cmd := exec.Command("go", "build", "-o", fmt.Sprintf("bin/%s", name))
+	cmd := exec.Command("go", "build", "-x", "-o", fmt.Sprintf("bin/%s", name))
 	cmd.Dir = fmt.Sprintf("%s/tio", b.Root)
 
 	var stdout, stderr bytes.Buffer
@@ -31,5 +32,20 @@ func build(name string) error {
 	logrus.Info(outStr)
 	logrus.Infof(errStr)
 
-	return nil
+	err = createDockfile(name)
+	if err != nil {
+		return err
+	}
+
+	return buildImage(name)
+}
+
+func createDockfile(name string) error {
+	d := `FROM %s
+COPY bin/%s /%s
+ENTRYPOINT ["/%s"]`
+
+	content := fmt.Sprintf(d, baseImg, name, name, name)
+
+	return ioutil.WriteFile(b.Root+"/tio/Dockerfile", []byte(content), 0777)
 }

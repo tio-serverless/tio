@@ -35,7 +35,13 @@ func (s *server) Build(ctx context.Context, in *tio_build_v1.Request) (*tio_buil
 
 	fmt.Println(in.Address)
 
-	err := runContainer("tio", b.Build.Image, []string{"-zip", in.Address})
+	err := runContainer(
+		"tio",
+		b.Build.Image,
+		[]string{
+			"-zip", in.Address,
+			"-base", b.Build.Base,
+		})
 	if err != nil {
 		return &tio_build_v1.Reply{
 			Code: -1,

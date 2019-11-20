@@ -17,6 +17,7 @@ var b *B
 var (
 	zipName string
 	control string
+	baseImg string
 )
 
 func init() {
@@ -28,9 +29,15 @@ func init() {
 		logrus.Fatalln(err.Error())
 	}
 
-	fmt.Println(b.DClient.Info())
+	info, err := b.DClient.Info()
+	if err != nil {
+		logrus.Fatalln(err)
+	}
+	fmt.Println(info.ServerVersion)
+
 	flag.StringVar(&zipName, "zip", "", "The Zip File URL")
 	flag.StringVar(&control, "control", "", "The Control GRPC Address")
+	flag.StringVar(&baseImg, "base", "", "Docker Build Base Image")
 }
 
 func main() {

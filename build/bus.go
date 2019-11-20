@@ -5,7 +5,7 @@ import docker "github.com/fsouza/go-dockerclient"
 type B struct {
 	Root      string
 	BuildInfo buildInfo `toml:"build"`
-	DClient *docker.Client
+	DClient   *docker.Client
 }
 
 type buildInfo struct {
@@ -22,4 +22,3 @@ func dclientInit() error {
 
 	return nil
 }
-

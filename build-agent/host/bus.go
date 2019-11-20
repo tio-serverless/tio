@@ -72,6 +72,7 @@ func output() {
 	logrus.Printf("GRPC Port: %d", b.Port)
 	logrus.Printf("Docker Client Version: %s", i.KernelVersion)
 	logrus.Print("Build")
+	logrus.Printf("  Docker Socks: %s", b.Build.Mount)
 	logrus.Printf("  Build Image: %s", b.Build.Image)
 	logrus.Printf("  Base Image: %s", b.Build.Base)
 	logrus.Println("----------------------")
