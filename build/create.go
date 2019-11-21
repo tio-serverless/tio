@@ -18,7 +18,7 @@ func buildImage(name string) error {
 	}
 
 	return b.DClient.BuildImage(docker.BuildImageOptions{
-		Name:                fmt.Sprintf("%s:%s", "vikings/tio-go-runtime", name),
+		Name:                fmt.Sprintf("%s:%s", b.Registry, name),
 		Dockerfile:          "Dockerfile",
 		RmTmpContainer:      true,
 		ForceRmTmpContainer: true,

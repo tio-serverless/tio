@@ -14,6 +14,8 @@ type bus struct {
 	Log     string `toml:"log"`
 	Port    int    `toml:"port"`
 	Build   build  `toml:"build"`
+	User    string
+	Passwd  string
 	DClient *docker.Client
 }
 
@@ -33,6 +35,18 @@ func init() {
 	err = dclientInit()
 	if err != nil {
 		logrus.Fatalln(err.Error())
+	}
+
+	if os.Getenv("TIO_DOCKER_USER") != "" {
+		b.User = os.Getenv("TIO_DOCKER_USER")
+	} else {
+		logrus.Fatalln("TIO_DOCKER_USER Empty! ")
+	}
+
+	if os.Getenv("TIO_DOCKER_PASSWD") != "" {
+		b.Passwd = os.Getenv("TIO_DOCKER_PASSWD")
+	} else {
+		logrus.Fatalln("TIO_DOCKER_PASSWD Empty! ")
 	}
 
 	enableLog()
@@ -71,6 +85,10 @@ func output() {
 	logrus.Printf("Control Log: %s", b.Log)
 	logrus.Printf("GRPC Port: %d", b.Port)
 	logrus.Printf("Docker Client Version: %s", i.KernelVersion)
+	logrus.Print("Docker")
+	logrus.Printf("  User: %s*****", b.User[:2])
+	logrus.Printf("  Passwd: %s*****", b.Passwd[:2])
+
 	logrus.Print("Build")
 	logrus.Printf("  Docker Socks: %s", b.Build.Mount)
 	logrus.Printf("  Build Image: %s", b.Build.Image)

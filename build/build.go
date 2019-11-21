@@ -53,7 +53,12 @@ func build(name string) error {
 		version = b.BuildInfo.Version
 	}
 
-	return buildImage(fmt.Sprintf("%s-%s", name, version))
+	err = buildImage(fmt.Sprintf("%s-%s", name, version))
+	if err != nil {
+		return err
+	}
+
+	return push(fmt.Sprintf("%s-%s", name, version))
 }
 
 func createDockfile(name string) error {

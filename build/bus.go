@@ -4,6 +4,9 @@ import docker "github.com/fsouza/go-dockerclient"
 
 type B struct {
 	Root      string
+	Registry  string
+	User      string
+	Passwd    string
 	BuildInfo buildInfo `toml:"build"`
 	DClient   *docker.Client
 }
@@ -20,6 +23,7 @@ func dclientInit() error {
 	}
 
 	b.DClient = client
+	b.Registry = "vikings/tio-go-runtime"
 
 	return nil
 }

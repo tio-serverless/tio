@@ -24,6 +24,18 @@ func init() {
 	b = new(B)
 	b.Root = os.Getenv("GOPATH") + "/src"
 
+	if os.Getenv("TIO_DOCKER_USER") != "" {
+		b.User = os.Getenv("TIO_DOCKER_USER")
+	} else {
+		logrus.Fatalln("TIO_DOCKER_USER Empty! ")
+	}
+
+	if os.Getenv("TIO_DOCKER_PASSWD") != "" {
+		b.Passwd = os.Getenv("TIO_DOCKER_PASSWD")
+	} else {
+		logrus.Fatalln("TIO_DOCKER_PASSWD Empty! ")
+	}
+
 	err := dclientInit()
 	if err != nil {
 		logrus.Fatalln(err.Error())

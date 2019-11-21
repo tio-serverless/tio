@@ -13,6 +13,10 @@ func runContainer(name, image string, cmd []string) error {
 		Config: &docker.Config{
 			Image: image,
 			Cmd:   cmd,
+			Env: []string{
+				fmt.Sprintf("TIO_DOCKER_USER=%s", b.User),
+				fmt.Sprintf("TIO_DOCKER_PASSWD=%s", b.Passwd),
+			},
 		},
 		HostConfig: &docker.HostConfig{
 			Binds: []string{
