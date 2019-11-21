@@ -9,7 +9,8 @@ type B struct {
 }
 
 type buildInfo struct {
-	Name string `toml:"name"`
+	Name    string `toml:"name"`
+	Version string `toml:"version"`
 }
 
 func dclientInit() error {

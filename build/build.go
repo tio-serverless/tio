@@ -48,7 +48,12 @@ func build(name string) error {
 		return err
 	}
 
-	return buildImage(name)
+	version := "latest"
+	if b.BuildInfo.Version != "" {
+		version = b.BuildInfo.Version
+	}
+
+	return buildImage(fmt.Sprintf("%s-%s", name, version))
 }
 
 func createDockfile(name string) error {

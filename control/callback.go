@@ -84,7 +84,7 @@ func makePrivateUrl(key string) string {
 
 	mac := qbox.NewMac(b.Storage.AcessKey, b.Storage.SecretKey)
 
-	deadline := time.Now().Add(time.Second * 3600).Unix() //1小时有效期
+	deadline := time.Now().Add(time.Second * 3600).Unix()
 	return storage.MakePrivateURL(mac, b.Storage.Domain, key, deadline)
 }
 

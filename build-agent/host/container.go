@@ -18,6 +18,7 @@ func runContainer(name, image string, cmd []string) error {
 			Binds: []string{
 				fmt.Sprintf("%s:/run/docker.sock", b.Build.Mount),
 			},
+			AutoRemove: true,
 		},
 	})
 
