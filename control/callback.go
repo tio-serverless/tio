@@ -30,15 +30,17 @@ func restWeb() {
 
 		content, err := ioutil.ReadAll(r.Body)
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			w.Write([]byte(err.Error()))
+			//w.WriteHeader(http.StatusInternalServerError)
+			//w.Write([]byte(err.Error()))
+			logrus.Error(err.Error())
 			return
 		}
 
 		err = json.Unmarshal(content, &cu)
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			w.Write([]byte(err.Error()))
+			//w.WriteHeader(http.StatusInternalServerError)
+			//w.Write([]byte(err.Error()))
+			logrus.Error(err.Error())
 			return
 		}
 
@@ -46,8 +48,9 @@ func restWeb() {
 
 		err = json.Unmarshal([]byte(cu.Message), &cui)
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			w.Write([]byte(err.Error()))
+			//w.WriteHeader(http.StatusInternalServerError)
+			//w.Write([]byte(err.Error()))
+			logrus.Error(err.Error())
 			return
 		}
 
@@ -57,8 +60,9 @@ func restWeb() {
 
 		err = callBuildAgent(url)
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			w.Write([]byte(err.Error()))
+			//w.WriteHeader(http.StatusInternalServerError)
+			//w.Write([]byte(err.Error()))
+			logrus.Error(err.Error())
 			return
 		}
 
