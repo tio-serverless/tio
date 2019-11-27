@@ -2,6 +2,7 @@ package main
 
 import (
 	"os"
+	"strconv"
 
 	"github.com/BurntSushi/toml"
 	docker "github.com/fsouza/go-dockerclient"
@@ -20,10 +21,11 @@ type bus struct {
 }
 
 type build struct {
-	Image   string `toml:"build_image"`
-	Base    string `toml:"base_image"`
-	Mount   string `toml:"mount"`
-	Control string `toml:"control"`
+	Image       string `toml:"build_image"`
+	Base        string `toml:"base_image"`
+	Mount       string `toml:"mount"`
+	Control     string `toml:"control"`
+	RmContainer bool   `toml:"rmContainer"`
 }
 
 func initBus() {
@@ -54,6 +56,9 @@ func initBus() {
 		b.Build.Control = os.Getenv("TIO_CONTROL")
 	}
 
+	if os.Getenv("TIO_RM_CONTAINER") != "" {
+		b.Build.RmContainer, _ = strconv.ParseBool(os.Getenv("TIO_RM_CONTAINER"))
+	}
 	enableLog()
 
 	output()
@@ -99,5 +104,6 @@ func output() {
 	logrus.Printf("  Build Image: %s", b.Build.Image)
 	logrus.Printf("  Base Image: %s", b.Build.Base)
 	logrus.Printf("  Controle Endpoint: %s", b.Build.Control)
+	logrus.Printf("  Remove Container: %v", b.Build.RmContainer)
 	logrus.Println("----------------------")
 }

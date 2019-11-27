@@ -6,3 +6,4 @@ port=80
     base_image="ubuntu"
     mount="/run/docker.sock"
     control="control.agent.tio:80"
+    rmContainer=true
