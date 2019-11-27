@@ -100,10 +100,15 @@ func main() {
 }
 
 func createJob() {
+	version := "latest"
+	if b.BuildInfo.Version != "" {
+		version = b.BuildInfo.Version
+	}
+
 	b.J = &job{
 		User:  b.UserName,
 		Name:  b.BuildInfo.Name,
-		Image: fmt.Sprintf("%s:%s-%s", b.Registry, b.BuildInfo.Name, b.BuildInfo.Version),
+		Image: fmt.Sprintf("%s:%s-%s", b.Registry, b.BuildInfo.Name, version),
 		API:   b.BuildInfo.API,
 		Rate:  b.BuildInfo.Rate,
 	}
