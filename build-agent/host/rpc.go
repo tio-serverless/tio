@@ -11,7 +11,7 @@ import (
 	tio_build_v1 "tio/tgrpc"
 )
 
-func rpc() {
+func rpc(b *bus) {
 
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", b.Port))
 	if err != nil {
@@ -19,7 +19,9 @@ func rpc() {
 	}
 	s := grpc.NewServer()
 
-	tio_build_v1.RegisterBuildServiceServer(s, &server{})
+	tio_build_v1.RegisterBuildServiceServer(s, &server{
+		B: b,
+	})
 
 	reflection.Register(s)
 

@@ -2,5 +2,5 @@ package main
 
 func main() {
 	initBus()
-	rpc()
+	rpc(b)
 }
