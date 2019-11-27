@@ -11,6 +11,7 @@ type B struct {
 	Log        string  `toml:"log"`
 	RestPort   int     `toml:"rest_port"`
 	BuildAgent string  `toml:"build_agent_address"`
+	RpcProt    int     `toml:"rpc_port"`
 	Storage    storage `toml:"storage"`
 }
 
@@ -59,6 +60,7 @@ func output(b *B) {
 	logrus.Println("----------------------")
 	logrus.Printf("Control Log: %s", b.Log)
 	logrus.Printf("Rest Port: %d", b.RestPort)
+	logrus.Printf("RPC Port: %d", b.RpcProt)
 	logrus.Printf("Build Agent Address: %s", b.BuildAgent)
 	logrus.Println("Storage:")
 	logrus.Printf("  Acess Key: %s", b.Storage.AcessKey)

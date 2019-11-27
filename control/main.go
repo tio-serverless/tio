@@ -19,5 +19,6 @@ func init() {
 }
 
 func main() {
-	restWeb()
+	go restWeb()
+	startRpc()
 }
