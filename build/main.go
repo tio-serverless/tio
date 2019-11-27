@@ -62,14 +62,14 @@ func main() {
 
 	defer func() {
 		if err != nil {
-			err = faild(control, b.UserName, b.BuildInfo.Name)
+			err = faild(control, b.J)
 			if err != nil {
 				logrus.Errorf("Update status error. %s", err.Error())
 			}
 			return
 		}
 
-		err = succ(control, b.UserName, b.BuildInfo.Name)
+		err = succ(control, b.J)
 		if err != nil {
 			logrus.Errorf("Update status error. %s", err.Error())
 		}
@@ -89,9 +89,23 @@ func main() {
 		logrus.Fatalln(err)
 	}
 
+	createJob()
+
 	err = build(b.BuildInfo.Name)
 	if err != nil {
 		logrus.Fatalln(err)
+	}
+
+
+}
+
+func createJob() {
+	b.J = &job{
+		User:  b.UserName,
+		Name:  b.BuildInfo.Name,
+		Image: fmt.Sprintf("%s:%s-%s", b.Registry, b.BuildInfo.Name, b.BuildInfo.Version),
+		API:   b.BuildInfo.API,
+		Rate:  b.BuildInfo.Rate,
 	}
 }
 

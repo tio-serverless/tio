@@ -10,7 +10,7 @@ import (
 	tio_control_v1 "tio/tgrpc"
 )
 
-func updateStatus(address, user, name string, status tio_control_v1.JobStatus) error {
+func updateStatus(address string, j *job) error {
 	conn, err := grpc.Dial(address, grpc.WithInsecure())
 	if err != nil {
 		log.Fatal(fmt.Sprintf("Connect Control Service Error: %s", err.Error()))
@@ -21,9 +21,12 @@ func updateStatus(address, user, name string, status tio_control_v1.JobStatus) e
 	c := tio_control_v1.NewControlServiceClient(conn)
 
 	reply, err := c.UpdateBuildStatus(context.Background(), &tio_control_v1.BuildStatus{
-		User:   user,
-		Name:   name,
-		Status: status,
+		User:   j.User,
+		Name:   j.Name,
+		Status: tio_control_v1.JobStatus(j.Status),
+		Api:    j.API,
+		Rate:   j.Rate,
+		Image:  j.Image,
 	})
 
 	if err != nil {
@@ -37,17 +40,30 @@ func updateStatus(address, user, name string, status tio_control_v1.JobStatus) e
 	return nil
 }
 
-func succ(adress, user, name string) error {
-	if user == "" || name == "" {
-		return errors.New("User / Name Empty! ")
+func building(address string, j *job) error {
+	if j.User == "" || j.Name == "" || j.Image == "" {
+		return errors.New("User / Name / Image Empty! ")
 	}
-	return updateStatus(adress, user, name, tio_control_v1.JobStatus_BuildSucc)
+
+	j.Status = int(tio_control_v1.JobStatus_BuildIng)
+	return updateStatus(address, j)
 }
 
-func faild(adress, user, name string) error {
-	if user == "" || name == "" {
+func succ(address string, j *job) error {
+	if j.User == "" || j.Name == "" || j.Image == "" {
+		return errors.New("User / Name / Image Empty! ")
+	}
+
+	j.Status = int(tio_control_v1.JobStatus_BuildSucc)
+	return updateStatus(address, j)
+}
+
+func faild(address string, j *job) error {
+	if j.User == "" || j.Name == "" {
 		return errors.New("User / Name Empty! ")
 	}
 
-	return updateStatus(adress, user, name, tio_control_v1.JobStatus_BuildFailed)
+	j.Status = int(tio_control_v1.JobStatus_BuildFailed)
+
+	return updateStatus(address, j)
 }

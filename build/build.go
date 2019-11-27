@@ -53,6 +53,8 @@ func build(name string) error {
 		version = b.BuildInfo.Version
 	}
 
+	building(control, b.J)
+
 	err = buildImage(fmt.Sprintf("%s-%s", name, version))
 	if err != nil {
 		return err

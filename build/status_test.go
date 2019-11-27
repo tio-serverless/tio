@@ -9,26 +9,46 @@ import (
 
 func TestFaild(t *testing.T) {
 	tests := []struct {
-		address string
-		user    string
-		name    string
-		expect  error
+		j      job
+		expect error
 	}{
 		{
-			address: "127.0.0.1:80",
-			user:    "",
-			name:    "xxx",
-			expect:  errors.New("User / Name Empty! "),
+			j: job{
+				User:   "",
+				Name:   "",
+				Image:  "",
+				API:    "",
+				Rate:   0,
+				Status: 0,
+			},
+
+			expect: errors.New("User / Name / Image Empty! "),
 		},
 		{
-			address: "127.0.0.1:80",
-			user:    "xxx",
-			name:    "",
-			expect:  errors.New("User / Name Empty! "),
+			j: job{
+				User:   "xxxx",
+				Name:   "",
+				Image:  "",
+				API:    "",
+				Rate:   0,
+				Status: 0,
+			},
+			expect: errors.New("User / Name / Image Empty! "),
+		},
+		{
+			j: job{
+				User:   "xxxx",
+				Name:   "xxxx",
+				Image:  "",
+				API:    "",
+				Rate:   0,
+				Status: 0,
+			},
+			expect: errors.New("User / Name / Image Empty! "),
 		},
 	}
 	for _, test := range tests {
-		err := faild(test.address, test.user, test.name)
+		err := building("xx", &test.j)
 		assert.EqualValues(t, err.Error(), test.expect.Error())
 	}
 }
