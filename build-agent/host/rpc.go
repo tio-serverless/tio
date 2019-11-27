@@ -29,6 +29,7 @@ func rpc() {
 }
 
 type server struct {
+	B *bus
 }
 
 func (s *server) Build(ctx context.Context, in *tio_build_v1.Request) (*tio_build_v1.Reply, error) {
@@ -37,10 +38,11 @@ func (s *server) Build(ctx context.Context, in *tio_build_v1.Request) (*tio_buil
 
 	err := runContainer(
 		"tio",
-		b.Build.Image,
+		s.B.Build.Image,
 		[]string{
 			"-zip", in.Address,
-			"-base", b.Build.Base,
+			"-base", s.B.Build.Base,
+			"-control", s.B.Build.Control,
 		})
 	if err != nil {
 		return &tio_build_v1.Reply{

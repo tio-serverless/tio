@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+option go_package = "tio.control.v1";
+
+enum JobStatus {
+    BuildSucc = 0;
+    BuildFailed = 1;
+}
+
+message BuildStatus {
+    string user = 1;
+    string name = 2;
+    JobStatus status = 3;
+}
+
+message BuildReply {
+    int32 code = 1;
+    string msg = 2;
+}
+
+service ControlService {
+    rpc UpdateBuildStatus (BuildStatus) returns (BuildReply) {
+    }
+
+    rpc GetBuildStatus (BuildStatus) returns (BuildReply) {
+    }
+}

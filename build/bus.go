@@ -7,12 +7,13 @@ type B struct {
 	Registry  string
 	User      string
 	Passwd    string
+	UserName  string    `toml:"user"`
 	BuildInfo buildInfo `toml:"build"`
 	DClient   *docker.Client
 }
 
 type buildInfo struct {
-	Name    string `toml:"name"`
+	Name string `toml:"name"`
 	Version string `toml:"version"`
 }
 

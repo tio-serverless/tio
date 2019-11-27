@@ -21,6 +21,12 @@ var (
 )
 
 func init() {
+	flag.StringVar(&zipName, "zip", "", "The Zip File URL")
+	flag.StringVar(&control, "control", "", "The Control GRPC Address")
+	flag.StringVar(&baseImg, "base", "", "Docker Build Base Image")
+}
+
+func initBus() {
 	b = new(B)
 	b.Root = os.Getenv("GOPATH") + "/src"
 
@@ -46,19 +52,34 @@ func init() {
 		logrus.Fatalln(err)
 	}
 	fmt.Println(info.ServerVersion)
-
-	flag.StringVar(&zipName, "zip", "", "The Zip File URL")
-	flag.StringVar(&control, "control", "", "The Control GRPC Address")
-	flag.StringVar(&baseImg, "base", "", "Docker Build Base Image")
 }
 
 func main() {
 	flag.Parse()
+	initBus()
+
+	var err error
+
+	defer func() {
+		if err != nil {
+			err = faild(control, b.UserName, b.BuildInfo.Name)
+			if err != nil {
+				logrus.Errorf("Update status error. %s", err.Error())
+			}
+			return
+		}
+
+		err = succ(control, b.UserName, b.BuildInfo.Name)
+		if err != nil {
+			logrus.Errorf("Update status error. %s", err.Error())
+		}
+		return
+	}()
 
 	file := b.Root + "/t.zip"
 	logrus.Infof("TIO Build. Zip Path [%s] LocalPath [%s]", zipName, file)
 
-	err := fetch(file)
+	err = fetch(file)
 	if err != nil {
 		logrus.Fatalln(err)
 	}

@@ -20,12 +20,13 @@ type bus struct {
 }
 
 type build struct {
-	Image string `toml:"build_image"`
-	Base  string `toml:"base_image"`
-	Mount string `toml:"mount"`
+	Image   string `toml:"build_image"`
+	Base    string `toml:"base_image"`
+	Mount   string `toml:"mount"`
+	Control string `toml:"control"`
 }
 
-func init() {
+func initBus() {
 	b = new(bus)
 	_, err := toml.DecodeFile(os.Getenv("TIO_BUILD_CONFIG"), b)
 	if err != nil {
@@ -47,6 +48,10 @@ func init() {
 		b.Passwd = os.Getenv("TIO_DOCKER_PASSWD")
 	} else {
 		logrus.Fatalln("TIO_DOCKER_PASSWD Empty! ")
+	}
+
+	if os.Getenv("TIO_CONTROL") != "" {
+		b.Build.Control = os.Getenv("TIO_CONTROL")
 	}
 
 	enableLog()
@@ -93,5 +98,6 @@ func output() {
 	logrus.Printf("  Docker Socks: %s", b.Build.Mount)
 	logrus.Printf("  Build Image: %s", b.Build.Image)
 	logrus.Printf("  Base Image: %s", b.Build.Base)
+	logrus.Printf("  Controle Endpoint: %s", b.Build.Control)
 	logrus.Println("----------------------")
 }
