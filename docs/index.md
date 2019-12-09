@@ -6,7 +6,7 @@
 
 Tio 简要设计图如下:
 
-![](https://tva1.sinaimg.cn/large/006tNbRwly1g9q84ef31rj31cx0u0n1r.jpg)
+![](pics/tio.svg)
 
 Tio分为部署态和运行态:
 
