@@ -88,11 +88,11 @@ func (p *TDB_Postgres) DeleteTioUser(name string) error {
 	return err
 }
 
-func (p *TDB_Postgres) SaveTioServer(s *model.Server, raw string) error {
+func (p *TDB_Postgres) SaveTioServer(s *model.Server) error {
 	sql := "INSERT INTO server (name, version, uid, stype, domian, path, tversion, timestamp, status, raw) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)"
 	logrus.Debugf("Save New Server:[%s]", sql)
 
-	_, err := p.db.Exec(sql, s.Name, s.Version, s.Uid, s.Stype, s.Domain, s.Path, s.TVersion, s.Timestamp, s.Status, raw)
+	_, err := p.db.Exec(sql, s.Name, s.Version, s.Uid, s.Stype, s.Domain, s.Path, s.TVersion, s.Timestamp, s.Status, s.Raw)
 	return err
 }
 
