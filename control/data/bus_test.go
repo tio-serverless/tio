@@ -15,7 +15,10 @@ func TestInitBus(t *testing.T) {
 	_, err = f.WriteString(`log="debug"
 rest_port=80
 rpc_port=8000
-build_agent_address="build.agent.tio:80"`)
+build_agent_address="build.agent.tio:80"
+[db]
+engine="xxx"
+connect="123"`)
 
 	assert.Nil(t, err)
 

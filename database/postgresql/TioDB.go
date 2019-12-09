@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"os"
 	"time"
 
 	"github.com/sirupsen/logrus"
@@ -15,8 +14,8 @@ type TDB_Postgres struct {
 	db *sql.DB
 }
 
-func (p *TDB_Postgres) Init() error {
-	addr := os.Getenv("TIO_DB_POSTGRES_CONN")
+func (p *TDB_Postgres) Init(addr string) error {
+	//addr := os.Getenv("TIO_DB_POSTGRES_CONN")
 	logrus.Debugf("Postgres Connstr: %s", addr)
 
 	db, err := sql.Open("postgres", addr)

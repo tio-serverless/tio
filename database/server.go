@@ -2,17 +2,15 @@ package database
 
 import (
 	"errors"
-	"os"
-	"strings"
 
 	"tio/database/postgresql"
 )
 
-func GetDBClient() (TioDb, error) {
-	switch strings.ToLower(os.Getenv("TIO_DB")) {
+func GetDBClient(engine, connect string) (TioDb, error) {
+	switch engine {
 	case "postgres":
 		p := &postgresql.TDB_Postgres{}
-		if err := p.Init(); err != nil {
+		if err := p.Init(connect); err != nil {
 			return nil, err
 		}
 

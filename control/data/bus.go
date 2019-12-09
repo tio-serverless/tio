@@ -14,9 +14,14 @@ type B struct {
 	BuildAgent string  `toml:"build_agent_address"`
 	RpcProt    int     `toml:"rpc_port"`
 	Storage    storage `toml:"storage"`
+	DBInfo     dbInfo  `toml:"db"`
 	DBCli      database.TioDb
 }
 
+type dbInfo struct {
+	Engine  string `toml:"engine"`
+	Connect string `toml:"connect"`
+}
 type storage struct {
 	AcessKey  string `toml:"accessKey"`
 	SecretKey string `toml:"secretKey"`
@@ -40,7 +45,7 @@ func InitBus(file string) (*B, error) {
 		b.Storage.Domain = os.Getenv("TIO_CONTROL_S_DOMAIN")
 	}
 
-	dc, err := database.GetDBClient()
+	dc, err := database.GetDBClient(b.DBInfo.Engine, b.DBInfo.Connect)
 	if err != nil {
 		return nil, err
 	}
