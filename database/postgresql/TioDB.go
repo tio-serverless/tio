@@ -88,10 +88,10 @@ func (p *TDB_Postgres) DeleteTioUser(name string) error {
 }
 
 func (p *TDB_Postgres) SaveTioServer(s *model.Server) error {
-	sql := "INSERT INTO server (name, version, uid, stype, domian, path, tversion, timestamp, status, raw) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)"
+	sql := "INSERT INTO server (name, version, uid, stype, domian, path, tversion, timestamp, status, image, raw) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)"
 	logrus.Debugf("Save New Server:[%s]", sql)
 
-	_, err := p.db.Exec(sql, s.Name, s.Version, s.Uid, s.Stype, s.Domain, s.Path, s.TVersion, s.Timestamp, s.Status, s.Raw)
+	_, err := p.db.Exec(sql, s.Name, s.Version, s.Uid, s.Stype, s.Domain, s.Path, s.TVersion, s.Timestamp, s.Status, s.Image, s.Raw)
 	return err
 }
 
@@ -113,7 +113,7 @@ func (p *TDB_Postgres) QueryTioServerByUser(uid, limit int) ([]model.Server, err
 
 	for rows.Next() {
 		s := model.Server{}
-		err = rows.Scan(&s.Id, &s.Name, &s.Version, &s.Uid, &s.Stype, &s.Domain, &s.Path, &s.TVersion, &s.Timestamp, &s.Status, &s.Raw)
+		err = rows.Scan(&s.Id, &s.Name, &s.Version, &s.Uid, &s.Stype, &s.Domain, &s.Path, &s.TVersion, &s.Timestamp, &s.Status, &s.Image, &s.Raw)
 		if err != nil {
 			logrus.Errorf("Scan Server Error. %s", err)
 			continue
@@ -135,7 +135,7 @@ func (p *TDB_Postgres) QueryTioServerById(sid int) (*model.Server, error) {
 	}
 
 	if rows.Next() {
-		err = rows.Scan(&s.Id, &s.Name, &s.Version, &s.Uid, &s.Stype, &s.Domain, &s.Path, &s.TVersion, &s.Timestamp, &s.Status, &s.Raw)
+		err = rows.Scan(&s.Id, &s.Name, &s.Version, &s.Uid, &s.Stype, &s.Domain, &s.Path, &s.TVersion, &s.Timestamp, &s.Status, &s.Image, &s.Raw)
 	} else {
 		return &s, errors.New("No Match Server")
 	}
@@ -154,7 +154,7 @@ func (p *TDB_Postgres) QueryTioServerByName(name string) (*model.Server, error) 
 	}
 
 	if rows.Next() {
-		err = rows.Scan(&s.Id, &s.Name, &s.Version, &s.Uid, &s.Stype, &s.Domain, &s.Path, &s.TVersion, &s.Timestamp, &s.Status, &s.Raw)
+		err = rows.Scan(&s.Id, &s.Name, &s.Version, &s.Uid, &s.Stype, &s.Domain, &s.Path, &s.TVersion, &s.Timestamp, &s.Status, &s.Image, &s.Raw)
 	} else {
 		return &s, errors.New("No Match Server")
 	}
@@ -163,10 +163,10 @@ func (p *TDB_Postgres) QueryTioServerByName(name string) (*model.Server, error) 
 }
 
 func (p *TDB_Postgres) UpdateTioServer(s *model.Server) error {
-	sql := "UPDATE server SET version=$2, stype=$3, domain=$4, path=$5, tversion=$6, timestamp=$6, status=$7, raw=$8 WHERE name=$1"
+	sql := "UPDATE server SET version=$2, stype=$3, domain=$4, path=$5, tversion=$6, timestamp=$6, status=$7,image=$8 raw=$9 WHERE name=$1"
 	logrus.Debugf("Update User: [%s]", sql)
 
-	_, err := p.db.Exec(sql, s.Name, s.Version, s.Stype, s.Domain, s.Path, s.TVersion, s.Timestamp, s.Status, s.Raw)
+	_, err := p.db.Exec(sql, s.Name, s.Version, s.Stype, s.Domain, s.Path, s.TVersion, s.Timestamp, s.Status, s.Image, s.Raw)
 
 	return err
 }

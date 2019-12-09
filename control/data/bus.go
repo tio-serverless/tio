@@ -9,13 +9,14 @@ import (
 )
 
 type B struct {
-	Log        string  `toml:"log"`
-	RestPort   int     `toml:"rest_port"`
-	BuildAgent string  `toml:"build_agent_address"`
-	RpcProt    int     `toml:"rpc_port"`
-	Storage    storage `toml:"storage"`
-	DBInfo     dbInfo  `toml:"db"`
-	DBCli      database.TioDb
+	Log         string  `toml:"log"`
+	RestPort    int     `toml:"rest_port"`
+	BuildAgent  string  `toml:"build_agent_address"`
+	DeployAgent string  `toml:"deploy_agent_address"`
+	RpcProt     int     `toml:"rpc_port"`
+	Storage     storage `toml:"storage"`
+	DBInfo      dbInfo  `toml:"db"`
+	DBCli       database.TioDb
 }
 
 type dbInfo struct {
@@ -78,6 +79,7 @@ func output(b *B) {
 	logrus.Printf("Rest Port: %d", b.RestPort)
 	logrus.Printf("RPC Port: %d", b.RpcProt)
 	logrus.Printf("Build Agent Address: %s", b.BuildAgent)
+	logrus.Printf("Deploy Agent Address: %s", b.DeployAgent)
 	if b.DBCli != nil {
 		logrus.Printf("DB Engine: %s", b.DBCli.Version())
 	}

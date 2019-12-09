@@ -7,7 +7,7 @@ import (
 	"log"
 
 	"google.golang.org/grpc"
-	tio_control_v1 "tio/tgrpc"
+	"tio/tgrpc"
 )
 
 func updateStatus(address string, j *job) error {

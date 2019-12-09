@@ -5,9 +5,11 @@ import (
 
 	"github.com/sirupsen/logrus"
 	"tio/control/data"
+	"tio/database/model"
 )
 
 var b *data.B
+var msg chan *model.Server
 
 func main() {
 	var err error
@@ -16,6 +18,10 @@ func main() {
 		logrus.Fatalf(err.Error())
 	}
 
+	msg = make(chan *model.Server, 100)
 	go restWeb()
+
+	go deploy()
+	
 	startRpc()
 }

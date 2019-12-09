@@ -22,6 +22,7 @@ type Server struct {
 	TVersion  string
 	Timestamp time.Time
 	Status    int
+	Image     string
 	Raw       string
 }
 

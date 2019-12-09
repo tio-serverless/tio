@@ -36,6 +36,17 @@ func UpdateSrvStatus(b *data.B, sid, stauts int) error {
 	return b.DBCli.UpdateTioServer(ns)
 }
 
+func UpdateSrvImage(b *data.B, sid int, image string) error {
+	ns, err := b.DBCli.QueryTioServerById(sid)
+	if err != nil {
+		return err
+	}
+
+	ns.Image = image
+
+	return b.DBCli.UpdateTioServer(ns)
+}
+
 func QueryUserAllSrv(b *data.B, uid, limit int) ([]model.Server, error) {
 	return b.DBCli.QueryTioServerByUser(uid, limit)
 }
