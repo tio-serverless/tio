@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestInitBus(t *testing.T) {
+func TestInitBusWithDB(t *testing.T) {
 	f, err := ioutil.TempFile("", "tio.toml")
 	assert.Nil(t, err)
 
@@ -22,6 +22,20 @@ connect="123"`)
 
 	assert.Nil(t, err)
 
+	f.Close()
+
+	b, err := InitBus(f.Name())
+	assert.Nil(t, b)
+}
+
+func TestInitBusWithoutDB(t *testing.T) {
+	f, err := ioutil.TempFile("", "tio.toml")
+	assert.Nil(t, err)
+
+	_, err = f.WriteString(`log="debug"
+rest_port=80
+rpc_port=8000
+build_agent_address="build.agent.tio:80"`)
 	f.Close()
 
 	b, err := InitBus(f.Name())

@@ -45,12 +45,14 @@ func InitBus(file string) (*B, error) {
 		b.Storage.Domain = os.Getenv("TIO_CONTROL_S_DOMAIN")
 	}
 
-	dc, err := database.GetDBClient(b.DBInfo.Engine, b.DBInfo.Connect)
-	if err != nil {
-		return nil, err
-	}
+	if b.DBInfo.Engine != "" {
+		dc, err := database.GetDBClient(b.DBInfo.Engine, b.DBInfo.Connect)
+		if err != nil {
+			return nil, err
+		}
 
-	b.DBCli = dc
+		b.DBCli = dc
+	}
 
 	output(b)
 	enableLog(b)
@@ -76,7 +78,9 @@ func output(b *B) {
 	logrus.Printf("Rest Port: %d", b.RestPort)
 	logrus.Printf("RPC Port: %d", b.RpcProt)
 	logrus.Printf("Build Agent Address: %s", b.BuildAgent)
-	logrus.Printf("DB Engine: %s", b.DBCli.Version())
+	if b.DBCli != nil {
+		logrus.Printf("DB Engine: %s", b.DBCli.Version())
+	}
 	logrus.Println("Storage:")
 	logrus.Printf("  Acess Key: %s", b.Storage.AcessKey)
 	logrus.Printf("  Sceret Key: %s", b.Storage.SecretKey)
