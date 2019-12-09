@@ -1,0 +1,20 @@
+version: "3"
+services:
+  build-agent:
+    ports:
+      - "80:80"
+    volumes:
+      - /run/docker.sock:/run/docker.sock
+    container_name: "tio-build-agent-host"
+    image: "vikings/tio-build-agent-host:v0.1.0-develop"
+  control:
+    ports:
+      - "8000:80"
+    environment:
+      - TIO_CONTROL_S_AKEY=<QiNiu Access Key>
+      - TIO_CONTROL_S_SKEY=<QiNiu Secret Key>
+      - TIO_CONTROL_S_DOMAIN=<QiNiu CDN Domain>
+    links:
+      - "build-agent:build.agent.tio"
+    image: "vikings/tio-control:v0.1.0-develop"
+    container_name: "tio-control"

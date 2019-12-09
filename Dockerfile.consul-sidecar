@@ -1,0 +1,3 @@
+FROM vikings/alpine
+COPY bin/consul-agent /consul-agent
+ENTRYPOINT ["/consul-agent"]

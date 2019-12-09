@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+option go_package = "tio.build.v1";
+
+message Request {
+    string address = 1;
+}
+
+message Reply {
+    int32 code = 1;
+    string msg = 2;
+}
+
+service BuildService {
+    rpc Build (Request) returns (Reply) {
+    }
+}
