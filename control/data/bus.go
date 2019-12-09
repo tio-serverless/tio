@@ -5,6 +5,7 @@ import (
 
 	"github.com/BurntSushi/toml"
 	"github.com/sirupsen/logrus"
+	"tio/database"
 )
 
 type B struct {
@@ -13,6 +14,7 @@ type B struct {
 	BuildAgent string  `toml:"build_agent_address"`
 	RpcProt    int     `toml:"rpc_port"`
 	Storage    storage `toml:"storage"`
+	DBCli      database.TioDb
 }
 
 type storage struct {
@@ -38,6 +40,13 @@ func InitBus(file string) (*B, error) {
 		b.Storage.Domain = os.Getenv("TIO_CONTROL_S_DOMAIN")
 	}
 
+	dc, err := database.GetDBClient()
+	if err != nil {
+		return nil, err
+	}
+
+	b.DBCli = dc
+
 	output(b)
 	enableLog(b)
 
@@ -62,6 +71,7 @@ func output(b *B) {
 	logrus.Printf("Rest Port: %d", b.RestPort)
 	logrus.Printf("RPC Port: %d", b.RpcProt)
 	logrus.Printf("Build Agent Address: %s", b.BuildAgent)
+	logrus.Printf("DB Engine: %s", b.DBCli.Version())
 	logrus.Println("Storage:")
 	logrus.Printf("  Acess Key: %s", b.Storage.AcessKey)
 	logrus.Printf("  Sceret Key: %s", b.Storage.SecretKey)
