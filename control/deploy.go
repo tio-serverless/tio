@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	"runtime"
+	"runtime/debug"
 	"time"
 
 	"github.com/sirupsen/logrus"
@@ -19,7 +19,7 @@ func deploy() {
 	defer func() {
 		if r := recover(); r != nil {
 			logrus.Errorf("Recover From Error. [%s]", r)
-			logrus.Error("Stack Trace: [%s]", runtime.StartTrace())
+			debug.PrintStack()
 		}
 	}()
 	for {
