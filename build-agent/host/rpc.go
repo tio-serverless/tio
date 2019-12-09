@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net"
+	"strconv"
 
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
@@ -45,7 +46,9 @@ func (s *server) Build(ctx context.Context, in *tio_build_v1.Request) (*tio_buil
 			"-zip", in.Address,
 			"-base", s.B.Build.Base,
 			"-control", s.B.Build.Control,
+			"-sid", strconv.Itoa(int(in.Sid)),
 		})
+
 	if err != nil {
 		return &tio_build_v1.Reply{
 			Code: -1,

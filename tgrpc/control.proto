@@ -14,7 +14,9 @@ message BuildStatus {
     string image = 3;
     string api = 4;
     int32 rate = 5;
-    JobStatus status = 6;
+    string raw = 6;
+    JobStatus status = 7;
+    int32 sid = 8;
 }
 
 message BuildReply {

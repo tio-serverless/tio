@@ -27,6 +27,8 @@ func updateStatus(address string, j *job) error {
 		Api:    j.API,
 		Rate:   j.Rate,
 		Image:  j.Image,
+		Sid:    int32(sid),
+		Raw:    raw,
 	})
 
 	if err != nil {

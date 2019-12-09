@@ -18,12 +18,15 @@ var (
 	zipName string
 	control string
 	baseImg string
+	sid     int
+	raw     string
 )
 
 func init() {
 	flag.StringVar(&zipName, "zip", "", "The Zip File URL")
 	flag.StringVar(&control, "control", "", "The Control GRPC Address")
 	flag.StringVar(&baseImg, "base", "", "Docker Build Base Image")
+	flag.IntVar(&sid, "sid", -1, "The Srv ID")
 }
 
 func initBus() {
@@ -95,7 +98,6 @@ func main() {
 	if err != nil {
 		logrus.Fatalln(err)
 	}
-
 
 }
 

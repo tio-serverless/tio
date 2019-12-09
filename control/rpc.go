@@ -9,6 +9,8 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 	"tio/control/data"
+	"tio/control/db"
+	"tio/database/model"
 	tio_control_v1 "tio/tgrpc"
 )
 
@@ -33,6 +35,22 @@ type server struct {
 
 func (s server) UpdateBuildStatus(ctx context.Context, in *tio_control_v1.BuildStatus) (*tio_control_v1.BuildReply, error) {
 	logrus.Infof("user: %s name: %s image: %s rate: %d api: %s status: %d", in.User, in.Name, in.Image, in.Rate, in.Api, in.Status)
+	var err error
+
+	switch in.Status {
+	case tio_control_v1.JobStatus_BuildSucc:
+		err = db.UpdateSrvStatus(b, int(in.Sid), model.SrvBuildSuc)
+	case tio_control_v1.JobStatus_BuildFailed:
+		err = db.UpdateSrvStatus(b, int(in.Sid), model.SrvBuildFailed)
+	}
+
+	if err != nil {
+		logrus.Errorf("Update Srv Status Error [%s]", err)
+		return &tio_control_v1.BuildReply{
+			Code: -1,
+			Msg:  err.Error(),
+		}, nil
+	}
 
 	return &tio_control_v1.BuildReply{
 		Code: 0,
