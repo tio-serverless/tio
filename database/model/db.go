@@ -2,6 +2,15 @@ package model
 
 import "time"
 
+const (
+	SrvBuilding = iota
+	SrvBuildSuc
+	SrvBuildFailed
+	SrvDeploying
+	SrvDeploySuc
+	SrvDeployFailed
+)
+
 type Server struct {
 	Id        int
 	Name      string

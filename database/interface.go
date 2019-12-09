@@ -3,7 +3,7 @@ package database
 import "tio/database/model"
 
 type TioDb interface {
-	Init() error
+	Init(string) error
 	Version() string
 
 	SaveTioUser(user *model.User) error
@@ -14,6 +14,7 @@ type TioDb interface {
 	SaveTioServer(server *model.Server) error
 	QueryTioServerByUser(int, int) ([]model.Server, error)
 	QueryTioServerByName(string) (*model.Server, error)
+	QueryTioServerById(int) (*model.Server, error)
 	UpdateTioServer(server *model.Server) error
 	DeleteTioServer(string) error
 }

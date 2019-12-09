@@ -124,6 +124,25 @@ func (p *TDB_Postgres) QueryTioServerByUser(uid, limit int) ([]model.Server, err
 	return ss, nil
 }
 
+func (p *TDB_Postgres) QueryTioServerById(sid int) (*model.Server, error) {
+	sql := fmt.Sprintf("SELECT * FROM server WHERE id=$1")
+	logrus.Debugf("Query Server:[%s]", sql)
+	s := model.Server{}
+
+	rows, err := p.db.Query(sql, sid)
+	if err != nil {
+		return &s, err
+	}
+
+	if rows.Next() {
+		err = rows.Scan(&s.Id, &s.Name, &s.Version, &s.Uid, &s.Stype, &s.Domain, &s.Path, &s.TVersion, &s.Timestamp, &s.Status, &s.Raw)
+	} else {
+		return &s, errors.New("No Match Server")
+	}
+
+	return &s, nil
+}
+
 func (p *TDB_Postgres) QueryTioServerByName(name string) (*model.Server, error) {
 	sql := fmt.Sprintf("SELECT * FROM server WHERE name=$1")
 	logrus.Debugf("Query Server:[%s]", sql)

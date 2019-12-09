@@ -13,9 +13,8 @@ func GetDBClient(engine, connect string) (TioDb, error) {
 		if err := p.Init(connect); err != nil {
 			return nil, err
 		}
-
 		return p, nil
 	}
 
-	return nil, errors.New("TIO_DB is emtpy!")
+	return nil, errors.New("No Match DB Engine! ")
 }
