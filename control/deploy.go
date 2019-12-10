@@ -29,6 +29,7 @@ func deploy() {
 			var err error
 			err = invokeDeploy(s)
 			if err != nil {
+				logrus.Errorf("Deploy Agent Return Error. [%s]", err.Error())
 				err = db.UpdateSrvStatus(b, s.Id, model.SrvDeployFailed)
 			} else {
 				err = db.UpdateSrvStatus(b, s.Id, model.SrvDeploySuc)

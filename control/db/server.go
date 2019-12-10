@@ -30,7 +30,7 @@ func SaveNewSrv(b *data.B, uid int, name string) (int, error) {
 	return ns.Id, nil
 }
 
-func UpdateSrvBuildResult(b *data.B, sid, status int, path, image string) error {
+func UpdateSrvBuildResult(b *data.B, sid, status int, name, path, image, raw string) error {
 	ns, err := b.DBCli.QueryTioServerById(sid)
 	if err != nil {
 		return err
@@ -43,6 +43,8 @@ func UpdateSrvBuildResult(b *data.B, sid, status int, path, image string) error 
 	ns.Status = status
 	ns.Path = path
 	ns.Image = image
+	ns.Name = name
+	ns.Raw = raw
 	ns.Timestamp = time.Now().Format("2006-01-02 15:04:05")
 	return b.DBCli.UpdateTioServer(ns)
 }
