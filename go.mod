@@ -13,6 +13,7 @@ require (
 	github.com/hashicorp/consul/api v1.3.0
 	github.com/imdario/mergo v0.3.8 // indirect
 	github.com/json-iterator/go v1.1.8 // indirect
+	github.com/lib/pq v1.2.0
 	github.com/modern-go/reflect2 v1.0.1 // indirect
 	github.com/peterbourgon/diskv v2.0.1+incompatible // indirect
 	github.com/qiniu/api.v7/v7 v7.4.0
