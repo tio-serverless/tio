@@ -146,7 +146,7 @@ func (p *TDB_Postgres) QueryTioServerById(sid int) (*model.Server, error) {
 }
 
 func (p *TDB_Postgres) QueryTioServerByName(name string) (*model.Server, error) {
-	sql := fmt.Sprintf("SELECT * FROM server WHERE name=$1")
+	sql := fmt.Sprintf("SELECT * FROM server WHERE name=$1 order by id desc")
 	logrus.Debugf("Query Server:[%s]", sql)
 	s := model.Server{}
 
