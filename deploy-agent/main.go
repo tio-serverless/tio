@@ -71,6 +71,7 @@ func (g grcpSrv) ScalaDeploy(ctx context.Context, in *tio_control_v1.DeployReque
 }
 
 func (g grcpSrv) NewDeploy(ctx context.Context, in *tio_control_v1.DeployRequest) (*tio_control_v1.TioReply, error) {
+	logrus.Debugf("New Deploy Request. Name: %s Image: %s Raw:%s", in.Name, in.Image, in.Config)
 	id, err := k8s.CreateNewDeploy(b, g.cli, model.Server{
 		Id:    int(in.Sid),
 		Name:  in.Name,
