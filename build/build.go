@@ -15,7 +15,7 @@ import (
 
 func build(name string) error {
 
-	cmd := exec.Command("go", "build", "-x", "-o", fmt.Sprintf("bin/%s", name))
+	cmd := exec.Command("go", "build", "-x", "-mod=vendor", "-o", fmt.Sprintf("bin/%s", name))
 	cmd.Dir = fmt.Sprintf("%s/tio", b.Root)
 
 	var stdout, stderr bytes.Buffer
