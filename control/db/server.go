@@ -9,10 +9,11 @@ import (
 
 func SaveNewSrv(b *data.B, uid int, name string) (int, error) {
 	s := model.Server{
-		Name:   name,
-		Uid:    uid,
-		Status: model.SrvBuilding,
-		Domain: "api.tio.io",
+		Name:      name,
+		Uid:       uid,
+		Status:    model.SrvBuilding,
+		Domain:    "api.tio.io",
+		Timestamp: time.Now().Format("2006-01-02 15:04:05"),
 	}
 
 	err := b.DBCli.SaveTioServer(&s)
