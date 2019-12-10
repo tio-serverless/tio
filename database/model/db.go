@@ -1,7 +1,5 @@
 package model
 
-import "time"
-
 const (
 	SrvBuilding = iota
 	SrvBuildSuc
@@ -20,7 +18,7 @@ type Server struct {
 	Domain    string
 	Path      string
 	TVersion  string
-	Timestamp time.Time
+	Timestamp string
 	Status    int
 	Image     string
 	Raw       string

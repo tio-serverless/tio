@@ -1,6 +1,8 @@
 package db
 
 import (
+	"time"
+
 	"tio/control/data"
 	"tio/database/model"
 )
@@ -33,7 +35,7 @@ func UpdateSrvStatus(b *data.B, sid, stauts int) error {
 	}
 
 	ns.Status = stauts
-
+	ns.Timestamp = time.Now().Format("2006-01-02 15:04:05")
 	return b.DBCli.UpdateTioServer(ns)
 }
 

@@ -164,7 +164,7 @@ func (p *TDB_Postgres) QueryTioServerByName(name string) (*model.Server, error) 
 }
 
 func (p *TDB_Postgres) UpdateTioServer(s *model.Server) error {
-	sql := "UPDATE server SET version=$2, stype=$3, domain=$4, path=$5, tversion=$6, timestamp=$6, status=$7,image=$8, raw=$9 WHERE name=$1"
+	sql := "UPDATE server SET version=$2, stype=$3, domain=$4, path=$5, tversion=$6, timestamp=$7, status=$8,image=$9, raw=$10 WHERE name=$1"
 	logrus.Debugf("Update User: [%s]", sql)
 
 	_, err := p.db.Exec(sql, s.Name, s.Version, s.Stype, s.Domain, s.Path, s.TVersion, s.Timestamp, s.Status, s.Image, s.Raw)

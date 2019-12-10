@@ -22,8 +22,8 @@ CREATE TABLE "tio"."server" (
   "status" int4 NOT NULL,
   "image" varchar(255) COLLATE "pg_catalog"."default" NOT NULL,
   "raw" varchar(255) COLLATE "pg_catalog"."default" NOT NULL
-)
-;
+);
+
 ALTER TABLE "tio"."server" OWNER TO "tio";
 
 -- ----------------------------
