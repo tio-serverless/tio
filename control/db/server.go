@@ -30,6 +30,23 @@ func SaveNewSrv(b *data.B, uid int, name string) (int, error) {
 	return ns.Id, nil
 }
 
+func UpdateSrvBuildResult(b *data.B, sid, status int, path, image string) error {
+	ns, err := b.DBCli.QueryTioServerById(sid)
+	if err != nil {
+		return err
+	}
+
+	if ns.Name == "" {
+		return errors.New("Can not find this serivce record ")
+	}
+
+	ns.Status = status
+	ns.Path = path
+	ns.Image = image
+	ns.Timestamp = time.Now().Format("2006-01-02 15:04:05")
+	return b.DBCli.UpdateTioServer(ns)
+}
+
 func UpdateSrvStatus(b *data.B, sid, stauts int) error {
 	ns, err := b.DBCli.QueryTioServerById(sid)
 	if err != nil {

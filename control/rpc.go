@@ -39,7 +39,8 @@ func (s server) UpdateBuildStatus(ctx context.Context, in *tio_control_v1.BuildS
 
 	switch in.Status {
 	case tio_control_v1.JobStatus_BuildSucc:
-		err = db.UpdateSrvStatus(b, int(in.Sid), model.SrvBuildSuc)
+		err = db.UpdateSrvBuildResult(b, int(in.Sid), model.SrvBuildSuc, in.Api, in.Image)
+		//err = db.UpdateSrvStatus(b, int(in.Sid), model.SrvBuildSuc)
 		if err != nil {
 			logrus.Errorf("Update Srv Status Error [%s]", err)
 			return &tio_control_v1.BuildReply{
@@ -48,14 +49,14 @@ func (s server) UpdateBuildStatus(ctx context.Context, in *tio_control_v1.BuildS
 			}, nil
 		}
 
-		err = db.UpdateSrvImage(b, int(in.Status), in.Image)
-		if err != nil {
-			logrus.Errorf("Update Srv Status Error [%s]", err)
-			return &tio_control_v1.BuildReply{
-				Code: -1,
-				Msg:  err.Error(),
-			}, nil
-		}
+		//err = db.UpdateSrvImage(b, int(in.Sid), in.Image)
+		//if err != nil {
+		//	logrus.Errorf("Update Srv Image Error [%s]", err)
+		//	return &tio_control_v1.BuildReply{
+		//		Code: -1,
+		//		Msg:  err.Error(),
+		//	}, nil
+		//}
 
 		ns, _ := db.QuerySrvById(b, int(in.Sid))
 
