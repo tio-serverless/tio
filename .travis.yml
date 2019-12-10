@@ -25,8 +25,8 @@ install:
   - go build -mod=vendor -o bin/tio-control control/*.go
   - go build -mod=vendor -o bin/tio-build-agent-host build-agent/host/*.go
   - go build -mod=vendor -o bin/consul-agent consul/sidecar/*.go
-  - go build -mod=vendor-ldflags "-X main._VERSION_=$TIO_VERSION -X main._BRANCH_=$TRAVIS_BRANCH"  -o bin/tio-deploy deploy-agent/*.go
-  - go build -mod=vendor-ldflags "-X main._VERSION_=$TIO_VERSION -X main._BRANCH_=$TRAVIS_BRANCH"  -o bin/tio-consul-watch consul/watch/*.go
+  - go build -mod=vendor -ldflags "-X main._VERSION_=$TIO_VERSION -X main._BRANCH_=$TRAVIS_BRANCH"  -o bin/tio-deploy deploy-agent/*.go
+  - go build -mod=vendor -ldflags "-X main._VERSION_=$TIO_VERSION -X main._BRANCH_=$TRAVIS_BRANCH"  -o bin/tio-consul-watch consul/watch/*.go
 
 after_script:
   - docker build -t ${TIO_BUILD_NAME}:${TIO_VERSION}-${TRAVIS_BRANCH} -f Dockerfile.build .
