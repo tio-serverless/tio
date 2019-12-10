@@ -127,7 +127,7 @@ func (p *TDB_Postgres) QueryTioServerByUser(uid, limit int) ([]model.Server, err
 
 func (p *TDB_Postgres) QueryTioServerById(sid int) (*model.Server, error) {
 	sql := fmt.Sprintf("SELECT * FROM server WHERE id=$1")
-	logrus.Debugf("Query Server:[%s]", sql)
+	logrus.Debugf("Query Server:[%s] id: [%d]", sql, sid)
 	s := model.Server{}
 
 	rows, err := p.db.Query(sql, sid)
@@ -135,10 +135,11 @@ func (p *TDB_Postgres) QueryTioServerById(sid int) (*model.Server, error) {
 		return &s, err
 	}
 
-	if rows.Next() {
+	for rows.Next() {
 		err = rows.Scan(&s.Id, &s.Name, &s.Version, &s.Uid, &s.Stype, &s.Domain, &s.Path, &s.TVersion, &s.Timestamp, &s.Status, &s.Image, &s.Raw)
-	} else {
-		return &s, errors.New("No Match Server")
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	return &s, nil
@@ -165,7 +166,7 @@ func (p *TDB_Postgres) QueryTioServerByName(name string) (*model.Server, error) 
 
 func (p *TDB_Postgres) UpdateTioServer(s *model.Server) error {
 	sql := "UPDATE server SET version=$2, stype=$3, domain=$4, path=$5, tversion=$6, timestamp=$7, status=$8,image=$9, raw=$10 WHERE name=$1"
-	logrus.Debugf("Update User: [%s]", sql)
+	logrus.Debugf("Update Server: [%s]", sql)
 
 	_, err := p.db.Exec(sql, s.Name, s.Version, s.Stype, s.Domain, s.Path, s.TVersion, s.Timestamp, s.Status, s.Image, s.Raw)
 

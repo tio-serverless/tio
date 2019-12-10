@@ -34,7 +34,7 @@ type server struct {
 }
 
 func (s server) UpdateBuildStatus(ctx context.Context, in *tio_control_v1.BuildStatus) (*tio_control_v1.BuildReply, error) {
-	logrus.Infof("user: %s name: %s image: %s rate: %d api: %s status: %d", in.User, in.Name, in.Image, in.Rate, in.Api, in.Status)
+	logrus.Infof("user: %s name: %s image: %s rate: %d api: %s status: %d srvid: %d", in.User, in.Name, in.Image, in.Rate, in.Api, in.Status, in.Sid)
 	var err error
 
 	switch in.Status {
