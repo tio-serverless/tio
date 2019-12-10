@@ -10,6 +10,7 @@ func SaveNewSrv(b *data.B, uid int, name string) (int, error) {
 		Name:   name,
 		Uid:    uid,
 		Status: model.SrvBuilding,
+		Domain: "api.tio.io",
 	}
 
 	err := b.DBCli.SaveTioServer(&s)
