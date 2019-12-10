@@ -54,8 +54,9 @@ func invokeDeploy(s *model.Server) error {
 	defer cancel()
 
 	reply, err := c.NewDeploy(ctx, &tio_build_v1.DeployRequest{
-		Image: s.Image,
-		Sid:   int32(s.Id),
+		Image:  s.Image,
+		Config: s.Raw,
+		Sid:    int32(s.Id),
 	})
 
 	if err != nil {

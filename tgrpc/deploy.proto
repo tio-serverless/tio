@@ -5,7 +5,11 @@ import "const.proto";
 
 message DeployRequest {
     string image = 1;
-    int32 sid = 2;
+    string config = 2;
+    int32 sid = 3;
+    string name = 4;
+    int32 stype = 5;
+    int32 instanceNum = 6;
 }
 
 message SrvMeta {
@@ -18,4 +22,8 @@ service TioDeployService {
 
     rpc UpdateSrvMeta (SrvMeta) returns (TioReply) {
     }
+
+    rpc ScalaDeploy (DeployRequest) returns (TioReply) {
+    }
+
 }
