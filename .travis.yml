@@ -10,7 +10,9 @@ env:
     - TIO_CONTROL_NAME=vikings/tio-control
     - TIO_BUILD_AGENT_HOST_NAME=vikings/tio-build-agent-host
     - TIO_CONSUL_AGENT=vikings/tio-consul-agent
+    - TIO_CONSUL_WATCH=vikings/tio-consul-watch
     - TIO_DEPLOY_AGENT=vikings/tio-deploy-agent
+
 
 services:
   - docker
@@ -23,7 +25,8 @@ install:
   - go build -mod=vendor -o bin/tio-control control/*.go
   - go build -mod=vendor -o bin/tio-build-agent-host build-agent/host/*.go
   - go build -mod=vendor -o bin/consul-agent consul/sidecar/*.go
-  - go build -mod=vendor -o bin/tio-deploy deploy-agent/*.go
+  - go build -mod=vendor-ldflags "-X main._VERSION_=$TIO_VERSION -X main._BRANCH_=$TRAVIS_BRANCH"  -o bin/tio-deploy deploy-agent/*.go
+  - go build -mod=vendor-ldflags "-X main._VERSION_=$TIO_VERSION -X main._BRANCH_=$TRAVIS_BRANCH"  -o bin/tio-consul-watch consul/watch/*.go
 
 after_script:
   - docker build -t ${TIO_BUILD_NAME}:${TIO_VERSION}-${TRAVIS_BRANCH} -f Dockerfile.build .
@@ -35,3 +38,5 @@ after_script:
   - docker build -t ${TIO_CONSUL_AGENT}:${TIO_VERSION}-${TRAVIS_BRANCH} -f Dockerfile.consul-sidecar .
   - docker push ${TIO_CONSUL_AGENT}:${TIO_VERSION}-${TRAVIS_BRANCH}
   - docker build -t ${TIO_DEPLOY_AGENT}:${TIO_VERSION}-${TRAVIS_BRANCH} -f Dockerfile.deploy-agent .
+  - docker push ${TIO_DEPLOY_AGENT}:${TIO_VERSION}-${TRAVIS_BRANCH}
+  - docker build -t ${TIO_DEPLOY_AGENT}:${TIO_VERSION}-${TRAVIS_BRANCH} -f Dockerfile.consul-watch .
