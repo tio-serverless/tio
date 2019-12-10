@@ -29,6 +29,7 @@ func updateStatus(address string, j *job) error {
 		Image:  j.Image,
 		Sid:    int32(sid),
 		Raw:    raw,
+		Stype:  j.SType,
 	})
 
 	if err != nil {

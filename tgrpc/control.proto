@@ -13,6 +13,7 @@ message BuildStatus {
     string raw = 6;
     JobStatus status = 7;
     int32 sid = 8;
+    string stype = 9; //http/grpc/tcp
 }
 
 message BuildReply {

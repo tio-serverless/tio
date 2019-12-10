@@ -113,6 +113,7 @@ func createJob() {
 		Image: fmt.Sprintf("%s:%s-%s", b.Registry, b.BuildInfo.Name, version),
 		API:   b.BuildInfo.API,
 		Rate:  b.BuildInfo.Rate,
+		SType: b.BuildInfo.Stype,
 	}
 }
 

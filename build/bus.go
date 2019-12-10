@@ -18,6 +18,7 @@ type buildInfo struct {
 	Version string `toml:"version"`
 	API     string `toml:"api"`
 	Rate    int32  `toml:"rate"`
+	Stype   string `toml:"type"`
 }
 
 type job struct {
@@ -27,6 +28,7 @@ type job struct {
 	API    string
 	Rate   int32
 	Status int
+	SType  string
 }
 
 func dclientInit() error {

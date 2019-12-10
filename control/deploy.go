@@ -60,6 +60,7 @@ func invokeDeploy(s *model.Server) error {
 		Image:  s.Image,
 		Config: s.Raw,
 		Sid:    int32(s.Id),
+		Stype:  int32(s.Stype),
 	})
 
 	if err != nil {

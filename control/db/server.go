@@ -2,6 +2,7 @@ package db
 
 import (
 	"errors"
+	"strings"
 	"time"
 
 	"tio/control/data"
@@ -30,7 +31,7 @@ func SaveNewSrv(b *data.B, uid int, name string) (int, error) {
 	return ns.Id, nil
 }
 
-func UpdateSrvBuildResult(b *data.B, sid, status int, name, path, image, raw string) error {
+func UpdateSrvBuildResult(b *data.B, sid, status int, name, path, image, raw, stype string) error {
 	ns, err := b.DBCli.QueryTioServerById(sid)
 	if err != nil {
 		return err
@@ -46,6 +47,14 @@ func UpdateSrvBuildResult(b *data.B, sid, status int, name, path, image, raw str
 	ns.Name = name
 	ns.Raw = raw
 	ns.Timestamp = time.Now().Format("2006-01-02 15:04:05")
+	switch strings.ToLower(stype) {
+	case "http":
+		ns.Stype = 1
+	case "grpc":
+		ns.Stype = 0
+	default:
+		ns.Stype = 2
+	}
 	return b.DBCli.UpdateTioServer(ns)
 }
 
