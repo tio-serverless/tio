@@ -39,7 +39,7 @@ func (s server) UpdateBuildStatus(ctx context.Context, in *tio_control_v1.BuildS
 
 	switch in.Status {
 	case tio_control_v1.JobStatus_BuildSucc:
-		err = db.UpdateSrvBuildResult(b, int(in.Sid), model.SrvBuildSuc, in.Api, in.Image)
+		err = db.UpdateSrvBuildResult(b, int(in.Sid), model.SrvBuildSuc, in.Name, in.Api, in.Image, in.Raw)
 		//err = db.UpdateSrvStatus(b, int(in.Sid), model.SrvBuildSuc)
 		if err != nil {
 			logrus.Errorf("Update Srv Status Error [%s]", err)
