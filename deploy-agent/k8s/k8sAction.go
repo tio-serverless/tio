@@ -11,6 +11,7 @@ import (
 func CreateNewDeploy(config *data.B, k MyK8s, s model.Server) (string, error) {
 	d := deploy{
 		Image: s.Image,
+		Name:  s.Name,
 	}
 
 	var meta data.MyDeploy

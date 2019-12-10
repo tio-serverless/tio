@@ -16,7 +16,8 @@ func TestInitBus(t *testing.T) {
 port=80
 [k8s]
 	config="/config"
-	consul="xxxx"`)
+	consul="xxxx"
+	sidecar="vikings/sidecar"`)
 
 	assert.Nil(t, err)
 
@@ -31,7 +32,7 @@ port=80
 	assert.EqualValues(t, "xxxx", b.K.Consul)
 	assert.EqualValues(t, "default", b.K.Namespace)
 	assert.EqualValues(t, 2, b.K.Instance)
-
+	assert.EqualValues(t, "vikings/sidecar", b.K.Sidecar)
 }
 
 func TestDeployMeta(t *testing.T) {

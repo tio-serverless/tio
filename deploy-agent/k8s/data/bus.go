@@ -18,6 +18,7 @@ type k8s struct {
 	Namespace string `toml:"namespace"`
 	Instance  int    `toml:"instance"`
 	Consul    string `toml:"consul"`
+	Sidecar   string `toml:"sidecar"`
 }
 
 type MyDeploy struct {

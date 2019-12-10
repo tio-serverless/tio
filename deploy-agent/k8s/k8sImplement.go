@@ -3,7 +3,9 @@ package k8s
 import (
 	"github.com/sirupsen/logrus"
 	v1 "k8s.io/api/apps/v1"
+	apiv1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/util/intstr"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
 	"tio/deploy-agent/k8s/data"
@@ -15,13 +17,89 @@ type SimpleK8s struct {
 }
 
 func (k *SimpleK8s) NewDeploy(d deploy) (string, error) {
-	k.client.AppsV1().Deployments(k.B.K.Namespace).Create(&v1.Deployment{
-		TypeMeta: metav1.TypeMeta{
-			Kind: "Deployment",
+	var ev []apiv1.EnvVar
+
+	ev = append(ev, apiv1.EnvVar{
+		Name: "POD_IP",
+		ValueFrom: &apiv1.EnvVarSource{
+			FieldRef: &apiv1.ObjectFieldSelector{
+				APIVersion: "v1",
+				FieldPath:  "status.podIP",
+			},
 		},
-		ObjectMeta: metav1.ObjectMeta{},
+	})
+	ev = append(ev, apiv1.EnvVar{
+		Name: "MY_POD_NAME",
+		ValueFrom: &apiv1.EnvVarSource{
+			FieldRef: &apiv1.ObjectFieldSelector{
+				APIVersion: "v1",
+				FieldPath:  "metadata.name",
+			},
+		},
+	})
+
+	for key, val := range d.Env {
+		ev = append(ev, apiv1.EnvVar{
+			Name:  key,
+			Value: val,
+		})
+	}
+
+	k.client.AppsV1().Deployments(k.B.K.Namespace).Create(&v1.Deployment{
+		ObjectMeta: metav1.ObjectMeta{
+			Name: d.Name,
+			Labels: map[string]string{
+				"tio-app": d.Name,
+			},
+		},
 		Spec: v1.DeploymentSpec{
-			Replicas: int32Ptr(k.B.K.Instance),
+			Replicas: int32Ptr(1),
+			Selector: &metav1.LabelSelector{
+				MatchLabels: map[string]string{
+					"tio-app": d.Name,
+				},
+			},
+			Template: apiv1.PodTemplateSpec{
+				ObjectMeta: metav1.ObjectMeta{
+					Name: d.Name,
+					Labels: map[string]string{
+						"tio-app": d.Name,
+					},
+				},
+				Spec: apiv1.PodSpec{
+					Volumes:        nil,
+					InitContainers: nil,
+					Containers: []apiv1.Container{
+						{
+							Name:            d.Name,
+							Image:           d.Image,
+							Env:             ev,
+							ImagePullPolicy: apiv1.PullIfNotPresent,
+							LivenessProbe: &apiv1.Probe{
+								Handler: apiv1.Handler{
+									Exec:    nil,
+									HTTPGet: nil,
+									TCPSocket: &apiv1.TCPSocketAction{
+										Port: intstr.IntOrString{
+											Type:   intstr.Int,
+											IntVal: 80,
+										},
+										Host: "0.0.0.0",
+									},
+								},
+								InitialDelaySeconds: 10,
+								TimeoutSeconds:      5,
+								PeriodSeconds:       5,
+								SuccessThreshold:    1,
+								FailureThreshold:    5,
+							},
+						},
+					},
+					RestartPolicy:                 apiv1.RestartPolicyAlways,
+					TerminationGracePeriodSeconds: int64Ptr(15),
+					SecurityContext:               nil,
+				},
+			},
 		},
 	})
 	return "", nil
@@ -70,4 +148,9 @@ func (k *SimpleK8s) InitClient() error {
 func int32Ptr(i int) *int32 {
 	i32 := int32(i)
 	return &i32
+}
+
+func int64Ptr(i int) *int64 {
+	_i := int64(i)
+	return &_i
 }
