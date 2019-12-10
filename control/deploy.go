@@ -25,6 +25,7 @@ func deploy() {
 	for {
 		select {
 		case s := <-msg:
+			logrus.Debugf("Deploy [%s]", s.Name)
 			var err error
 			err = invokeDeploy(s)
 			if err != nil {

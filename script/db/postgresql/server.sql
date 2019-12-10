@@ -16,10 +16,11 @@ CREATE TABLE "tio"."server" (
   "uid" int8 NOT NULL,
   "stype" int4 NOT NULL,
   "domain" varchar(255) COLLATE "pg_catalog"."default" NOT NULL,
-  "Path" varchar(255) COLLATE "pg_catalog"."default",
+  "path" varchar(255) COLLATE "pg_catalog"."default",
   "tversion" varchar(255) COLLATE "pg_catalog"."default" NOT NULL,
   "timestamp" timestamp(0),
   "status" int4 NOT NULL,
+  "image" varchar(255) COLLATE "pg_catalog"."default" NOT NULL,
   "raw" varchar(255) COLLATE "pg_catalog"."default" NOT NULL
 )
 ;
