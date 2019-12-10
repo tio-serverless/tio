@@ -45,7 +45,7 @@ func (k *SimpleK8s) NewDeploy(d deploy) (string, error) {
 		})
 	}
 
-	k.client.AppsV1().Deployments(k.B.K.Namespace).Create(&v1.Deployment{
+	deployment, err := k.client.AppsV1().Deployments(k.B.K.Namespace).Create(&v1.Deployment{
 		ObjectMeta: metav1.ObjectMeta{
 			Name: d.Name,
 			Labels: map[string]string{
@@ -102,7 +102,10 @@ func (k *SimpleK8s) NewDeploy(d deploy) (string, error) {
 			},
 		},
 	})
-	return "", nil
+	if err != nil {
+		return "", err
+	}
+	return deployment.Name, nil
 }
 
 func (k *SimpleK8s) Scala(id string, instances int) error {
