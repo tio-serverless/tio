@@ -53,7 +53,7 @@ func (k *SimpleK8s) NewDeploy(d deploy) (string, error) {
 			},
 		},
 		Spec: v1.DeploymentSpec{
-			Replicas: int32Ptr(1),
+			Replicas: int32Ptr(k.B.K.Instance),
 			Selector: &metav1.LabelSelector{
 				MatchLabels: map[string]string{
 					"tio-app": d.Name,
@@ -93,6 +93,12 @@ func (k *SimpleK8s) NewDeploy(d deploy) (string, error) {
 								SuccessThreshold:    1,
 								FailureThreshold:    5,
 							},
+						},
+						{
+							Name:            "consul-sidecar",
+							Image:           k.B.K.Sidecar,
+							Env:             ev,
+							ImagePullPolicy: apiv1.PullIfNotPresent,
 						},
 					},
 					RestartPolicy:                 apiv1.RestartPolicyAlways,
