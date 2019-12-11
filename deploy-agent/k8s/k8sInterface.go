@@ -10,4 +10,5 @@ type MyK8s interface {
 	NewDeploy(d deploy) (string, error)
 	Scala(id string, instances int) error
 	Delete(id string) error
+	IsHasDeploy(id string) (bool, error)
 }

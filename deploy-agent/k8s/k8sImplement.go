@@ -84,7 +84,6 @@ func (k *SimpleK8s) NewDeploy(d deploy) (string, error) {
 											Type:   intstr.Int,
 											IntVal: 80,
 										},
-										Host: "0.0.0.0",
 									},
 								},
 								InitialDelaySeconds: 10,
@@ -152,6 +151,21 @@ func (k *SimpleK8s) InitClient() error {
 
 	logrus.Infof("Kubernetes Version: %s", info.String())
 	return nil
+}
+
+func (k *SimpleK8s) IsHasDeploy(id string) (bool, error) {
+	d, err := k.client.AppsV1().Deployments(k.B.K.Namespace).Get(id, metav1.GetOptions{
+	})
+
+	if err != nil {
+		return false, err
+	}
+
+	if d.UID == "" {
+		return false, nil
+	}
+
+	return true, nil
 }
 
 func int32Ptr(i int) *int32 {

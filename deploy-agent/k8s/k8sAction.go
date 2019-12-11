@@ -4,6 +4,7 @@ import (
 	"strconv"
 
 	"github.com/BurntSushi/toml"
+	"github.com/sirupsen/logrus"
 	"tio/database/model"
 	"tio/deploy-agent/k8s/data"
 )
@@ -14,9 +15,24 @@ func CreateNewDeploy(config *data.B, k MyK8s, s model.Server) (string, error) {
 		Name:  s.Name,
 	}
 
+	isExist, err := k.IsHasDeploy(d.Name)
+	if err != nil {
+		logrus.Errorf("Check Exist Deployment Error. %s", err)
+		isExist = false
+	}
+
+	if isExist {
+		err = k.Delete(d.Name)
+		if err != nil {
+			logrus.Errorf("Remove Exist Deployment Error. %s", err)
+		} else {
+			logrus.Debugf("Remove Exist Deployment[%s] OK. %s", d.Name)
+		}
+	}
+
 	var meta data.MyDeploy
 
-	_, err := toml.Decode(s.Raw, &meta)
+	_, err = toml.Decode(s.Raw, &meta)
 	if err != nil {
 		return "", err
 	}
