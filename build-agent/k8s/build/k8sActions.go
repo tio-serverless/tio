@@ -87,19 +87,10 @@ func NewJob(b dataBus.BuildModel, d *dataBus.DataBus) (err error) {
 	ttl := int32(60 * 10)
 	bf := int32(1)
 
-	//var ev []apiv1.EnvVar
-
-	//for key, value := range commenv {
-	//	ev = append(ev, apiv1.EnvVar{
-	//		Name:  key,
-	//		Value: value,
-	//	})
-	//}
-
 	job := v1.Job{
 		TypeMeta: metav1.TypeMeta{},
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      fmt.Sprintf("%s", b.Name),
+			Name:      fmt.Sprintf("tio-%s", b.Name),
 			Namespace: kc.namespace,
 		},
 		Spec: v1.JobSpec{
@@ -107,13 +98,13 @@ func NewJob(b dataBus.BuildModel, d *dataBus.DataBus) (err error) {
 			TTLSecondsAfterFinished: &ttl,
 			Template: apiv1.PodTemplateSpec{
 				ObjectMeta: metav1.ObjectMeta{
-					Name:      fmt.Sprintf("%s", b.Name),
+					Name:      fmt.Sprintf("tio-%s", b.Name),
 					Namespace: kc.namespace,
 				},
 				Spec: apiv1.PodSpec{
 					Containers: []apiv1.Container{
 						{
-							Name:            b.Name,
+							Name:            fmt.Sprintf("tio-%s", b.Name),
 							Image:           d.BuildImage,
 							ImagePullPolicy: apiv1.PullAlways,
 							VolumeMounts: []apiv1.VolumeMount{
