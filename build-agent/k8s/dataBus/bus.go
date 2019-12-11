@@ -128,7 +128,7 @@ func debug(bus *DataBus) {
 	logrus.Debug("DATA-BUS")
 	logrus.Debug("*************************************")
 	logrus.Debugf("Listen on: %d", bus.Port)
-
+	logrus.Debugf("Control: %s", bus.Control)
 	logrus.Debug("Kubernetes: ")
 	logrus.Debugf("  Namespace: %s", bus.K8S.Namespace)
 	logrus.Debugf("  Config: %s", bus.K8S.Config)
