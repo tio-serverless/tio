@@ -20,7 +20,7 @@ func (k *SimpleK8s) NewDeploy(d deploy) (string, error) {
 	var ev []apiv1.EnvVar
 
 	ev = append(ev, apiv1.EnvVar{
-		Name: "POD_IP",
+		Name: "MY_POD_IP",
 		ValueFrom: &apiv1.EnvVarSource{
 			FieldRef: &apiv1.ObjectFieldSelector{
 				APIVersion: "v1",
@@ -74,7 +74,7 @@ func (k *SimpleK8s) NewDeploy(d deploy) (string, error) {
 							Name:            d.Name,
 							Image:           d.Image,
 							Env:             ev,
-							ImagePullPolicy: apiv1.PullIfNotPresent,
+							ImagePullPolicy: apiv1.PullAlways,
 							LivenessProbe: &apiv1.Probe{
 								Handler: apiv1.Handler{
 									Exec:    nil,
@@ -98,7 +98,7 @@ func (k *SimpleK8s) NewDeploy(d deploy) (string, error) {
 							Name:            "consul-sidecar",
 							Image:           k.B.K.Sidecar,
 							Env:             ev,
-							ImagePullPolicy: apiv1.PullIfNotPresent,
+							ImagePullPolicy: apiv1.PullAlways,
 						},
 					},
 					RestartPolicy:                 apiv1.RestartPolicyAlways,
