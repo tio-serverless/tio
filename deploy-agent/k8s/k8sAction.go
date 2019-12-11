@@ -22,7 +22,7 @@ func CreateNewDeploy(config *data.B, k MyK8s, s model.Server) (string, error) {
 	}
 
 	env := make(map[string]string)
-
+	
 	env["MY_POD_PORT"] = "80"
 	env["MY_SERVICE_NAME"] = s.Name
 	env["CONSUL_ADDRESS"] = config.K.Consul

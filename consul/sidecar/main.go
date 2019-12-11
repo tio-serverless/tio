@@ -60,7 +60,7 @@ func main() {
 	var err error
 	for _, add := range strings.Split(os.Getenv("CONSUL_ADDRESS"), ";") {
 		if err = registerMySelf(add); err != nil {
-			logrus.Debugf("register error: %s", err)
+			logrus.Errorf("register error: %s", err)
 			continue
 		}
 		break
@@ -95,14 +95,17 @@ func registerMySelf(address string) error {
 func registerKV(cli *api.Client) error {
 	m := meta{Url: os.Getenv("MY_SERVICE_URL")}
 
-	switch strings.ToLower(os.Getenv("MY_SERVICE_TYPE")) {
-	case "tcp":
-		m.RouteType = 2
-	case "http":
-		m.RouteType = 1
-	case "grpc":
-		m.RouteType = 0
-	}
+	//switch strings.ToLower(os.Getenv("MY_SERVICE_TYPE")) {
+	//case "tcp":
+	//	m.RouteType = 2
+	//case "http":
+	//	m.RouteType = 1
+	//case "grpc":
+	//	m.RouteType = 0
+	//}
+
+	m.RouteType, _ = strconv.Atoi(os.Getenv("MY_SERVICE_TYPE"))
+
 	data, _ := json.Marshal(m)
 
 	_, err := cli.KV().Put(&api.KVPair{
