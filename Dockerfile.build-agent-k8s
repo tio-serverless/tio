@@ -1,4 +1,4 @@
-FROM golang:stretch
+FROM vikings/alpine
 ENV TIO_BUILD_CONFIG=/build.toml
 COPY bin/tio-build-agent-k8s /tio-build-agent-k8s
 ENTRYPOINT ["/tio-build-agent-k8s"]

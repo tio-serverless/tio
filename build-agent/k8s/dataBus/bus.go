@@ -16,24 +16,12 @@ type BuildModel struct {
 }
 
 type DataBus struct {
-	// Service Listen Port
-	Port int `toml:"port"`
-
-	K8S k8sConf `toml:"k8s"`
-
-	BuildImage string `toml:"buildImage"` //构建服务的基础镜像
-	BaseImage  string `toml:"baseImage"`  //运行服务的基础镜像
-	Control    string `toml:"control"`
-	// Support build language
-	//Language map[string][]string `toml:"language"`
-	//// LanguageRuntime
-	//// Format:
-	//// map[language name] = map[tag]name
-	//LanguageRuntime map[string]map[string]string
-	//// Postgres metadata
-	//Postgres string `toml:"postgres"`
-	//Token    string `toml:"token"`
-	//Addr     string `toml:"addr"`
+	Port       int     `toml:"port"`
+	K8S        k8sConf `toml:"k8s"`
+	Log        string  `toml:"log"`
+	BuildImage string  `toml:"buildImage"` //构建服务的基础镜像
+	BaseImage  string  `toml:"baseImage"`  //运行服务的基础镜像
+	Control    string  `toml:"control"`
 }
 
 /*
@@ -71,6 +59,7 @@ func InitBus(file string) (b *DataBus, err error) {
 		return
 	}
 
+	enableLog(b)
 	debug(b)
 
 	return
@@ -109,19 +98,24 @@ func isValid(bus *DataBus) error {
 		bus.K8S.Namespace = "default"
 	}
 
-	//if len(bus.LanguageRuntime) == 0 {
-	//	return errors.New("No Valid Language! ")
-	//}
-
 	if bus.Port == 0 {
 		bus.Port = 80
 	}
 
-	//if bus.Postgres == "" {
-	//	return errors.New("No Valid Postgres Addr! ")
-	//}
-
 	return nil
+}
+
+func enableLog(b *DataBus) {
+	switch b.Log {
+	case "debug":
+		logrus.SetLevel(logrus.DebugLevel)
+	case "warn":
+		logrus.SetLevel(logrus.WarnLevel)
+	case "error":
+		logrus.SetLevel(logrus.ErrorLevel)
+	default:
+		logrus.SetLevel(logrus.InfoLevel)
+	}
 }
 
 func debug(bus *DataBus) {
