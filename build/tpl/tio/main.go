@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"log"
+	"net"
 	"net/http"
 	"time"
 
@@ -16,14 +17,19 @@ func main() {
 		writer.Write([]byte("OK"))
 	})
 
-	srv := &http.Server{
-		Handler: r,
-		Addr:    "0.0.0.0:80",
-		WriteTimeout: 15 * time.Second,
-		ReadTimeout:  15 * time.Second,
+	l, err := net.Listen("tcp4", ":80")
+	if err != nil {
+		log.Fatal(err)
 	}
+	log.Fatal(http.Serve(l, r))
 
-	log.Fatal(srv.ListenAndServe())
+	//srv := &http.Server{
+	//
+	//	WriteTimeout: 15 * time.Second,
+	//	ReadTimeout:  15 * time.Second,
+	//}
+	//
+	//log.Fatal(srv.ListenAndServe())
 }
 
 func handler(writer http.ResponseWriter, request *http.Request) {
