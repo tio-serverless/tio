@@ -125,7 +125,7 @@ func callBuildAgent(key, request string) error {
 	}
 
 	if reply.Code != 0 {
-		return errors.New(fmt.Sprintf("Build Agent Return %d", reply.Code))
+		return errors.New(fmt.Sprintf("Build Agent Return %s", reply.Msg))
 	}
 
 	return nil
@@ -134,7 +134,7 @@ func callBuildAgent(key, request string) error {
 func splitUidAndSrvName(fileName string) (int, string) {
 	var uid int
 	var name string
-	fs := strings.Split(fileName, "_")
+	fs := strings.Split(fileName, "-")
 	if len(fs) != 2 {
 		return uid, name
 	}
