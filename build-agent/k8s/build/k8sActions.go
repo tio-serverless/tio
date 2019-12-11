@@ -86,15 +86,13 @@ func NewJob(b dataBus.BuildModel, d *dataBus.DataBus) (err error) {
 
 	name := fmt.Sprintf("tio-%s", b.Name)
 
-	oldJob, err := GetJob(name, d)
+	_, err = GetJob(name, d)
 	if err != nil {
-		if !strings.Contains(err.Error(), "not found") {
-			return err
-		}
-	}
-
-	if oldJob != nil {
-		if err = RemoveJob(name); err != nil {
+		if strings.Contains(err.Error(), "already exists") {
+			if err = RemoveJob(name); err != nil {
+				return err
+			}
+		} else if !strings.Contains(err.Error(), "not found") {
 			return err
 		}
 	}
