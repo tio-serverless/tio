@@ -1,0 +1,225 @@
+package deploy
+
+import (
+	"fmt"
+	"strconv"
+
+	"github.com/sirupsen/logrus"
+	v1 "k8s.io/api/batch/v1"
+	apiv1 "k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/tools/clientcmd"
+	"tio/build-agent/k8s/dataBus"
+)
+
+/*
+Deploy Single Job In Kubernetes Cluster
+*/
+
+var kc *k8sClient
+
+type k8sClient struct {
+	client    *kubernetes.Clientset
+	namespace string
+}
+
+func InitK8sClient(bus *dataBus.DataBus) (err error) {
+
+	config, err := clientcmd.BuildConfigFromFlags("", bus.K8S.Config)
+	if err != nil {
+		return err
+	}
+
+	clientset, err := kubernetes.NewForConfig(config)
+	if err != nil {
+		return err
+	}
+
+	kc = new(k8sClient)
+
+	kc.client = clientset
+	kc.namespace = bus.K8S.Namespace
+
+	info, err := kc.client.ServerVersion()
+	if err != nil {
+		return err
+	}
+
+	logrus.Infof("Kubernetes Version: %s", info.String())
+	return
+}
+
+//func DeleteJob(b store.Build) (err error) {
+//	job := fmt.Sprintf("%s-%d", b.Name, b.Id)
+//	logrus.Infof("Remove Job: %s", job)
+//	_deletePropagationForeground := metav1.DeletePropagationForeground
+//
+//	err = kc.client.BatchV1().Jobs(kc.namespace).Delete(job, &metav1.DeleteOptions{
+//		PropagationPolicy: &_deletePropagationForeground,
+//	})
+//
+//	if err != nil && strings.Contains(err.Error(), "not found") {
+//		return nil
+//	}
+//
+//	for {
+//		j, err := kc.client.BatchV1().Jobs(kc.namespace).Get(job, metav1.GetOptions{})
+//		if err == nil && j.Name != "" {
+//			time.Sleep(1 * time.Second)
+//			continue
+//		}
+//
+//		if err != nil && strings.Contains(err.Error(), "not found") {
+//			return nil
+//		}
+//
+//		return err
+//	}
+//
+//}
+
+// NewJob
+// commenv is the common environment. Every user will use it.
+func NewJob(b dataBus.BuildModel, d *dataBus.DataBus) (err error) {
+
+	// Clear build job after 10mins.
+	ttl := int32(60 * 10)
+	bf := int32(1)
+
+	//var ev []apiv1.EnvVar
+
+	//for key, value := range commenv {
+	//	ev = append(ev, apiv1.EnvVar{
+	//		Name:  key,
+	//		Value: value,
+	//	})
+	//}
+
+	job := v1.Job{
+		TypeMeta: metav1.TypeMeta{},
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      fmt.Sprintf("%s", b.Name),
+			Namespace: kc.namespace,
+		},
+		Spec: v1.JobSpec{
+			BackoffLimit:            &bf,
+			TTLSecondsAfterFinished: &ttl,
+			Template: apiv1.PodTemplateSpec{
+				ObjectMeta: metav1.ObjectMeta{
+					Name:      fmt.Sprintf("%s", b.Name),
+					Namespace: kc.namespace,
+				},
+				Spec: apiv1.PodSpec{
+					Containers: []apiv1.Container{
+						{
+							Name:            b.Name,
+							Image:           d.BuildImage,
+							ImagePullPolicy: apiv1.PullAlways,
+							VolumeMounts: []apiv1.VolumeMount{
+								{
+									Name:      "dockersock",
+									MountPath: "/var/run/docker.sock",
+								},
+							},
+							Command: []string{
+								"-zip", b.Address,
+								"-base", d.BaseImage,
+								"-control", d.Control,
+								"-sid", strconv.Itoa(int(b.Sid)),
+							},
+						},
+					},
+					RestartPolicy: apiv1.RestartPolicyNever,
+					Volumes: []apiv1.Volume{
+						{
+							Name: "dockersock",
+							VolumeSource: apiv1.VolumeSource{
+								HostPath: &apiv1.HostPathVolumeSource{
+									Path: "/var/run/docker.sock",
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+
+	//for _, e := range ev {
+	//	job.Spec.Template.Spec.Containers[0].Env = append(job.Spec.Template.Spec.Containers[0].Env, e)
+	//}
+
+	j, err := kc.client.BatchV1().Jobs(kc.namespace).Create(&job)
+	if err != nil {
+		return err
+	}
+
+	logrus.Debugf("Job Pod Num: %d", j.Status.Succeeded)
+
+	return nil
+}
+
+//func GetJobLog(jobname string, flowing bool, ls build_rpc_v1.BuildService_GetJobLogServer) (err error) {
+//	pod, err := getPodOfJob(jobname)
+//	if err != nil {
+//		return
+//	}
+//
+//	logrus.Infof("Find pod %s of job %s", pod, jobname)
+//
+//	line := int64(1000)
+//	req := kc.client.CoreV1().Pods(kc.namespace).GetLogs(pod, &apiv1.PodLogOptions{
+//		TailLines: &line,
+//		Follow:    flowing,
+//	})
+//
+//	podLogs, err := req.Stream()
+//	if err != nil {
+//		return errors.New("error in opening stream")
+//	}
+//
+//	defer podLogs.Close()
+//
+//	for {
+//		data := make([]byte, 1024)
+//		n, err := podLogs.Read(data)
+//		//logrus.Errorf("%d, err: %v", n, err)
+//		if err != nil {
+//			//fmt.Print(string(data[:n]))
+//			return ls.Send(&build_rpc_v1.Log{
+//				Message: string(data[:n]),
+//			})
+//		}
+//
+//		//fmt.Print(string(data[:n]))
+//		if ls.Send(&build_rpc_v1.Log{
+//			Message: string(data[:n]),
+//		}) != nil {
+//			break
+//		}
+//	}
+//
+//	return
+//}
+//
+//func getPodOfJob(jobname string) (podname string, err error) {
+//	selector := fmt.Sprintf("job-name=%s", jobname)
+//
+//	logrus.Debugf("Select Pod via %s", selector)
+//
+//	p, err := kc.client.CoreV1().Pods(kc.namespace).List(metav1.ListOptions{
+//		LabelSelector: selector,
+//	})
+//	if err != nil {
+//		return
+//	}
+//
+//	l := len(p.Items)
+//	if l == 0 {
+//		err = errors.New("Can not find the pod of this job. ")
+//		return
+//	}
+//
+//	return p.Items[l-1].Name, nil
+//}
