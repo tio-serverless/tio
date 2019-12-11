@@ -185,6 +185,8 @@ func GetJob(name string, b *dataBus.DataBus) (*v1.Job, error) {
 }
 
 func RemoveJob(name string) error {
+	deletePolicy := metav1.DeletePropagationForeground
 	return kc.client.BatchV1().Jobs(kc.namespace).Delete(name, &metav1.DeleteOptions{
+		PropagationPolicy: &deletePolicy,
 	})
 }
