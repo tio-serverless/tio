@@ -15,28 +15,28 @@ func TestSplitUidAndSrvName(t *testing.T) {
 		}
 	}{
 		{
-			fileName: "1234_first-name",
+			fileName: "1234-firstname",
 			expect: struct {
 				id   int
 				name string
-			}{id: 1234, name: "first-name"},
+			}{id: 1234, name: "firstname"},
 		},
 		{
-			fileName: "1234-first-name",
-			expect: struct {
-				id   int
-				name string
-			}{id: 0, name: ""},
-		},
-		{
-			fileName: "1234_first_name",
+			fileName: "1234_firstname",
 			expect: struct {
 				id   int
 				name string
 			}{id: 0, name: ""},
 		},
 		{
-			fileName: "a1234_first_name",
+			fileName: "1234_firstname",
+			expect: struct {
+				id   int
+				name string
+			}{id: 0, name: ""},
+		},
+		{
+			fileName: "a1234_firstname",
 			expect: struct {
 				id   int
 				name string

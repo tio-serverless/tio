@@ -15,9 +15,15 @@ type BuildModel struct {
 	Sid     int32
 }
 
+type docker struct {
+	User   string
+	Passwd string
+}
+
 type DataBus struct {
 	Port       int     `toml:"port"`
 	K8S        k8sConf `toml:"k8s"`
+	Docker     docker  `toml:"docker"`
 	Log        string  `toml:"log"`
 	BuildImage string  `toml:"buildImage"` //构建服务的基础镜像
 	BaseImage  string  `toml:"baseImage"`  //运行服务的基础镜像
@@ -126,15 +132,8 @@ func debug(bus *DataBus) {
 	logrus.Debug("Kubernetes: ")
 	logrus.Debugf("  Namespace: %s", bus.K8S.Namespace)
 	logrus.Debugf("  Config: %s", bus.K8S.Config)
-
-	logrus.Debug("")
-
-	//for l, v := range bus.LanguageRuntime {
-	//	logrus.Debugf("Language: %s", l)
-	//	for tag, image := range v {
-	//		logrus.Debugf("  %s:%s", image, tag)
-	//	}
-	//}
-
+	logrus.Debug("Docker: ")
+	logrus.Printf("  User: %s*****", bus.Docker.User[:2])
+	logrus.Printf("  Passwd: %s*****", bus.Docker.Passwd[:2])
 	logrus.Debug("*************************************")
 }

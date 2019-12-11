@@ -113,7 +113,17 @@ func NewJob(b dataBus.BuildModel, d *dataBus.DataBus) (err error) {
 									MountPath: "/var/run/docker.sock",
 								},
 							},
-							Command: []string{
+							Env: []apiv1.EnvVar{
+								{
+									Name:  "TIO_DOCKER_USER",
+									Value: d.Docker.User,
+								},
+								{
+									Name:  "TIO_DOCKER_PASSWD",
+									Value: d.Docker.Passwd,
+								},
+							},
+							Args: []string{
 								"-zip", b.Address,
 								"-base", d.BaseImage,
 								"-control", d.Control,
