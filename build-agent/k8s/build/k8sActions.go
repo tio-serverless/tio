@@ -3,6 +3,7 @@ package deploy
 import (
 	"fmt"
 	"strconv"
+	"strings"
 
 	"github.com/sirupsen/logrus"
 	v1 "k8s.io/api/batch/v1"
@@ -87,7 +88,9 @@ func NewJob(b dataBus.BuildModel, d *dataBus.DataBus) (err error) {
 
 	oldJob, err := GetJob(name, d)
 	if err != nil {
-		return err
+		if !strings.Contains(err.Error(), "not found") {
+			return err
+		}
 	}
 
 	if oldJob != nil {
@@ -178,10 +181,6 @@ func GetJob(name string, b *dataBus.DataBus) (*v1.Job, error) {
 	j, err := kc.client.BatchV1().Jobs(kc.namespace).Get(name, metav1.GetOptions{})
 	if err != nil {
 		return nil, err
-	}
-
-	if j.UID == "" {
-		return nil, nil
 	}
 
 	return j, nil

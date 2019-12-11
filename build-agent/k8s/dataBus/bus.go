@@ -17,7 +17,7 @@ type BuildModel struct {
 
 type docker struct {
 	User   string `toml:"user"`
-	Passwd string `toml:"passswd"`
+	Passwd string `toml:"passwd"`
 }
 
 type DataBus struct {
