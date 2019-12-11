@@ -127,12 +127,12 @@ func registerService(cli *api.Client, port int, ip string) error {
 		DeregisterCriticalServiceAfter: "3s",
 	}
 
-	switch strings.ToLower(os.Getenv("MY_SERVICE_TYPE")) {
-	case "tcp":
+	switch os.Getenv("MY_SERVICE_TYPE") {
+	case "2":
 		check.TCP = fmt.Sprintf("%s:%d", ip, port)
-	case "http":
+	case "1":
 		check.HTTP = fmt.Sprintf("http://%s:%d/_ping", ip, port)
-	case "grpc":
+	case "0":
 		check.GRPC = fmt.Sprintf("%s:%d", ip, port)
 		check.GRPCUseTLS = false
 	}
