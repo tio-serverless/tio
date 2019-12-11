@@ -108,12 +108,13 @@ func createJob() {
 	}
 
 	b.J = &job{
-		User:  b.UserName,
-		Name:  b.BuildInfo.Name,
-		Image: fmt.Sprintf("%s:%s-%s", b.Registry, b.BuildInfo.Name, version),
-		API:   b.BuildInfo.API,
-		Rate:  b.BuildInfo.Rate,
-		SType: b.BuildInfo.Stype,
+		User:    b.UserName,
+		Name:    b.BuildInfo.Name,
+		Image:   fmt.Sprintf("%s:%s-%s", b.Registry, b.BuildInfo.Name, version),
+		API:     b.BuildInfo.API,
+		Rate:    b.BuildInfo.Rate,
+		SType:   b.BuildInfo.Stype,
+		Version: b.BuildInfo.Version,
 	}
 }
 

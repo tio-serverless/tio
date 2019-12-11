@@ -22,13 +22,14 @@ type buildInfo struct {
 }
 
 type job struct {
-	User   string
-	Name   string
-	Image  string
-	API    string
-	Rate   int32
-	Status int
-	SType  string
+	User    string
+	Name    string
+	Image   string
+	API     string
+	Rate    int32
+	Status  int
+	SType   string
+	Version string
 }
 
 func dclientInit() error {

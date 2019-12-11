@@ -31,7 +31,7 @@ func SaveNewSrv(b *data.B, uid int, name string) (int, error) {
 	return ns.Id, nil
 }
 
-func UpdateSrvBuildResult(b *data.B, sid, status int, name, path, image, raw, stype string) error {
+func UpdateSrvBuildResult(b *data.B, sid, status int, name, path, image, raw, stype, version string) error {
 	ns, err := b.DBCli.QueryTioServerById(sid)
 	if err != nil {
 		return err
@@ -55,6 +55,7 @@ func UpdateSrvBuildResult(b *data.B, sid, status int, name, path, image, raw, st
 	default:
 		ns.Stype = 2
 	}
+	ns.Version = version
 	return b.DBCli.UpdateTioServer(ns)
 }
 
