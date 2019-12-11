@@ -169,21 +169,22 @@ func (k *SimpleK8s) IsHasDeploy(id string) (bool, error) {
 }
 
 func (k *SimpleK8s) ReplaceDeploy(d deploy) error {
-	oldDeployment, err := k.client.AppsV1().Deployments(k.B.K.Namespace).Get(d.Name, metav1.GetOptions{
+	deployClient := k.client.AppsV1().Deployments(k.B.K.Namespace)
+	oldDeployment, err := deployClient.Get(d.Name, metav1.GetOptions{
 	})
 
 	if err != nil {
 		return err
 	}
 
-	for _, c := range oldDeployment.Spec.Template.Spec.Containers {
+	for i, c := range oldDeployment.Spec.Template.Spec.Containers {
 		if c.Name != "coonsul-sidecar" {
-			c.Image = d.Image
+			oldDeployment.Spec.Template.Spec.Containers[i].Image = d.Image
 			break
 		}
 	}
 
-	_, err = k.client.AppsV1().Deployments(k.B.K.Namespace).Update(oldDeployment)
+	_, err = deployClient.Update(oldDeployment)
 	return nil
 }
 
