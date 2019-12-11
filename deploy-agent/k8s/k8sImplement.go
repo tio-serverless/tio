@@ -168,6 +168,25 @@ func (k *SimpleK8s) IsHasDeploy(id string) (bool, error) {
 	return true, nil
 }
 
+func (k *SimpleK8s) ReplaceDeploy(d deploy) error {
+	oldDeployment, err := k.client.AppsV1().Deployments(k.B.K.Namespace).Get(d.Name, metav1.GetOptions{
+	})
+
+	if err != nil {
+		return err
+	}
+
+	for _, c := range oldDeployment.Spec.Template.Spec.Containers {
+		if c.Name != "coonsul-sidecar" {
+			c.Image = d.Image
+			break
+		}
+	}
+
+	_, err = k.client.AppsV1().Deployments(k.B.K.Namespace).Update(oldDeployment)
+	return nil
+}
+
 func int32Ptr(i int) *int32 {
 	i32 := int32(i)
 	return &i32

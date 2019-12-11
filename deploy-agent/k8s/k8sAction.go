@@ -22,12 +22,8 @@ func CreateNewDeploy(config *data.B, k MyK8s, s model.Server) (string, error) {
 	}
 
 	if isExist {
-		err = k.Delete(d.Name)
-		if err != nil {
-			logrus.Errorf("Remove Exist Deployment Error. %s", err)
-		} else {
-			logrus.Debugf("Remove Exist Deployment[%s] OK. %s", d.Name)
-		}
+		logrus.Debugf("Replace Exist Deployment[%s]", d.Name)
+		return d.Name, k.ReplaceDeploy(d)
 	}
 
 	var meta data.MyDeploy
