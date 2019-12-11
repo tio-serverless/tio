@@ -11,7 +11,8 @@ import (
 var b *dataBus.DataBus
 
 func main() {
-	b, err := dataBus.InitBus(os.Getenv("TIO_BUILD_CONFIG"))
+	var err error
+	b, err = dataBus.InitBus(os.Getenv("TIO_BUILD_CONFIG"))
 	if err != nil {
 		logrus.Fatal(err)
 	}
