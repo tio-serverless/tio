@@ -6,13 +6,13 @@ go:
 env:
   global:
     - TIO_VERSION=v0.1.0
-    - TIO_BUILD_NAME=vikings/tio-build
-    - TIO_CONTROL_NAME=vikings/tio-control
-    - TIO_BUILD_AGENT_HOST_NAME=vikings/tio-build-agent-host
-    - TIO_CONSUL_AGENT=vikings/tio-consul-agent
-    - TIO_CONSUL_WATCH=vikings/tio-consul-watch
-    - TIO_DEPLOY_AGENT=vikings/tio-deploy-agent
-    - TIO_BUILD_AGENT_K8S_NAME=vikings/tio-build-agent-k8s
+    - TIO_BUILD_NAME=tioserverless/build
+    - TIO_CONTROL_NAME=tioserverless/control
+    - TIO_BUILD_AGENT_HOST_NAME=tioserverless/build-agent-host
+    - TIO_CONSUL_AGENT=tioserverless/consul-agent
+    - TIO_CONSUL_WATCH=tioserverless/consul-watch
+    - TIO_DEPLOY_AGENT=tioserverless/deploy-agent
+    - TIO_BUILD_AGENT_K8S_NAME=tioserverless/build-agent-k8s
 
 services:
   - docker
