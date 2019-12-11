@@ -115,6 +115,7 @@ func callBuildAgent(key, request string) error {
 	defer cancel()
 
 	reply, err := c.Build(ctx, &tio_build_v1.Request{
+		Name:    strings.Split(key, ".")[0],
 		Address: request,
 		Sid:     int32(sid),
 	})
