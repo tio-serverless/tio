@@ -39,7 +39,7 @@ func dclientInit() error {
 	}
 
 	b.DClient = client
-	b.Registry = "vikings/tio-go-runtime"
+	b.Registry = "tioserverless/go-runtime"
 
 	return nil
 }
