@@ -83,6 +83,19 @@ func InitK8sClient(bus *dataBus.DataBus) (err error) {
 // commenv is the common environment. Every user will use it.
 func NewJob(b dataBus.BuildModel, d *dataBus.DataBus) (err error) {
 
+	name := fmt.Sprintf("tio-%s", b.Name)
+
+	oldJob, err := GetJob(name, d)
+	if err != nil {
+		return err
+	}
+
+	if oldJob != nil {
+		if err = RemoveJob(name); err != nil {
+			return err
+		}
+	}
+
 	// Clear build job after 10mins.
 	ttl := int32(60 * 10)
 	bf := int32(1)
@@ -90,7 +103,7 @@ func NewJob(b dataBus.BuildModel, d *dataBus.DataBus) (err error) {
 	job := v1.Job{
 		TypeMeta: metav1.TypeMeta{},
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      fmt.Sprintf("tio-%s", b.Name),
+			Name:      name,
 			Namespace: kc.namespace,
 		},
 		Spec: v1.JobSpec{
@@ -98,13 +111,13 @@ func NewJob(b dataBus.BuildModel, d *dataBus.DataBus) (err error) {
 			TTLSecondsAfterFinished: &ttl,
 			Template: apiv1.PodTemplateSpec{
 				ObjectMeta: metav1.ObjectMeta{
-					Name:      fmt.Sprintf("tio-%s", b.Name),
+					Name:      name,
 					Namespace: kc.namespace,
 				},
 				Spec: apiv1.PodSpec{
 					Containers: []apiv1.Container{
 						{
-							Name:            fmt.Sprintf("tio-%s", b.Name),
+							Name:            name,
 							Image:           d.BuildImage,
 							ImagePullPolicy: apiv1.PullAlways,
 							VolumeMounts: []apiv1.VolumeMount{
@@ -161,66 +174,20 @@ func NewJob(b dataBus.BuildModel, d *dataBus.DataBus) (err error) {
 	return nil
 }
 
-//func GetJobLog(jobname string, flowing bool, ls build_rpc_v1.BuildService_GetJobLogServer) (err error) {
-//	pod, err := getPodOfJob(jobname)
-//	if err != nil {
-//		return
-//	}
-//
-//	logrus.Infof("Find pod %s of job %s", pod, jobname)
-//
-//	line := int64(1000)
-//	req := kc.client.CoreV1().Pods(kc.namespace).GetLogs(pod, &apiv1.PodLogOptions{
-//		TailLines: &line,
-//		Follow:    flowing,
-//	})
-//
-//	podLogs, err := req.Stream()
-//	if err != nil {
-//		return errors.New("error in opening stream")
-//	}
-//
-//	defer podLogs.Close()
-//
-//	for {
-//		data := make([]byte, 1024)
-//		n, err := podLogs.Read(data)
-//		//logrus.Errorf("%d, err: %v", n, err)
-//		if err != nil {
-//			//fmt.Print(string(data[:n]))
-//			return ls.Send(&build_rpc_v1.Log{
-//				Message: string(data[:n]),
-//			})
-//		}
-//
-//		//fmt.Print(string(data[:n]))
-//		if ls.Send(&build_rpc_v1.Log{
-//			Message: string(data[:n]),
-//		}) != nil {
-//			break
-//		}
-//	}
-//
-//	return
-//}
-//
-//func getPodOfJob(jobname string) (podname string, err error) {
-//	selector := fmt.Sprintf("job-name=%s", jobname)
-//
-//	logrus.Debugf("Select Pod via %s", selector)
-//
-//	p, err := kc.client.CoreV1().Pods(kc.namespace).List(metav1.ListOptions{
-//		LabelSelector: selector,
-//	})
-//	if err != nil {
-//		return
-//	}
-//
-//	l := len(p.Items)
-//	if l == 0 {
-//		err = errors.New("Can not find the pod of this job. ")
-//		return
-//	}
-//
-//	return p.Items[l-1].Name, nil
-//}
+func GetJob(name string, b *dataBus.DataBus) (*v1.Job, error) {
+	j, err := kc.client.BatchV1().Jobs(kc.namespace).Get(name, metav1.GetOptions{})
+	if err != nil {
+		return nil, err
+	}
+
+	if j.UID == "" {
+		return nil, nil
+	}
+
+	return j, nil
+}
+
+func RemoveJob(name string) error {
+	return kc.client.BatchV1().Jobs(kc.namespace).Delete(name, &metav1.DeleteOptions{
+	})
+}
