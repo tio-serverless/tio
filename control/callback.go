@@ -48,7 +48,7 @@ func restWeb() {
 
 		err = json.Unmarshal([]byte(cu.Message), &cui)
 		if err != nil {
-			logrus.Error(err.Error())
+			logrus.Errorf("Parse Upload Info Error: %s, CodeUpload: %v", err.Error(), cu)
 			return
 		}
 
