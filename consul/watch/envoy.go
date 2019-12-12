@@ -13,10 +13,11 @@ import (
 
 func startGrpc(xds *xdsrv) {
 	grpcServer := grpc.NewServer()
-	lis, _ := net.Listen("tcp", fmt.Sprintf(":%s", os.Getenv("MY_GRPC_PORT")))
+	lis, _ := net.Listen("tcp4", fmt.Sprintf("0.0.0.0:%s", os.Getenv("MY_GRPC_PORT")))
 	envoy_api_v2.RegisterRouteDiscoveryServiceServer(grpcServer, xds)
 	envoy_api_v2.RegisterClusterDiscoveryServiceServer(grpcServer, xds)
 
+	logrus.Infof("GRPC Srv Listen on: %s", fmt.Sprintf("0.0.0.0:%s", os.Getenv("MY_GRPC_PORT")))
 	if err := grpcServer.Serve(lis); err != nil {
 		logrus.Fatal(err)
 	}
