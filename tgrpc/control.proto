@@ -28,4 +28,11 @@ service ControlService {
 
     rpc GetBuildStatus (BuildStatus) returns (BuildReply) {
     }
+
+    rpc GetToken (TioUserRequest) returns (TioUserReply) {
+
+    }
+
+    rpc Login (TioUserRequest) returns (TioUserReply) {
+    }
 }

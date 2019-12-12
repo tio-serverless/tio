@@ -11,8 +11,33 @@ enum JobStatus {
     DeployFailed = 5;
 }
 
+enum CommonRespCode {
+    RespSucc = 0;
+    RespFaild = -1;
+}
 
 message TioReply {
-    int32 code = 1;
+    CommonRespCode code = 1;
     string msg = 2;
+}
+
+message TioUserRequest {
+    string name = 1;
+    string passwd = 2;
+}
+
+message TioUserReply {
+    CommonRespCode Code = 1;
+    TioToken token = 2;
+    TioUserInfo user = 3;
+}
+
+message TioUserInfo {
+    int32 uid = 1;
+}
+
+message TioToken {
+    string accessKey = 1;
+    string secretKey = 2;
+    string bucket = 3;
 }

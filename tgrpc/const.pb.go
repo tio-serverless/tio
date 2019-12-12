@@ -57,12 +57,37 @@ func (JobStatus) EnumDescriptor() ([]byte, []int) {
 	return fileDescriptor_5adb9555099c2688, []int{0}
 }
 
+type CommonRespCode int32
+
+const (
+	CommonRespCode_RespSucc  CommonRespCode = 0
+	CommonRespCode_RespFaild CommonRespCode = -1
+)
+
+var CommonRespCode_name = map[int32]string{
+	0:  "RespSucc",
+	-1: "RespFaild",
+}
+
+var CommonRespCode_value = map[string]int32{
+	"RespSucc":  0,
+	"RespFaild": -1,
+}
+
+func (x CommonRespCode) String() string {
+	return proto.EnumName(CommonRespCode_name, int32(x))
+}
+
+func (CommonRespCode) EnumDescriptor() ([]byte, []int) {
+	return fileDescriptor_5adb9555099c2688, []int{1}
+}
+
 type TioReply struct {
-	Code                 int32    `protobuf:"varint,1,opt,name=code,proto3" json:"code,omitempty"`
-	Msg                  string   `protobuf:"bytes,2,opt,name=msg,proto3" json:"msg,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
+	Code                 CommonRespCode `protobuf:"varint,1,opt,name=code,proto3,enum=CommonRespCode" json:"code,omitempty"`
+	Msg                  string         `protobuf:"bytes,2,opt,name=msg,proto3" json:"msg,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}       `json:"-"`
+	XXX_unrecognized     []byte         `json:"-"`
+	XXX_sizecache        int32          `json:"-"`
 }
 
 func (m *TioReply) Reset()         { *m = TioReply{} }
@@ -90,11 +115,11 @@ func (m *TioReply) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_TioReply proto.InternalMessageInfo
 
-func (m *TioReply) GetCode() int32 {
+func (m *TioReply) GetCode() CommonRespCode {
 	if m != nil {
 		return m.Code
 	}
-	return 0
+	return CommonRespCode_RespSucc
 }
 
 func (m *TioReply) GetMsg() string {
@@ -104,25 +129,237 @@ func (m *TioReply) GetMsg() string {
 	return ""
 }
 
+type TioUserRequest struct {
+	Name                 string   `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Passwd               string   `protobuf:"bytes,2,opt,name=passwd,proto3" json:"passwd,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *TioUserRequest) Reset()         { *m = TioUserRequest{} }
+func (m *TioUserRequest) String() string { return proto.CompactTextString(m) }
+func (*TioUserRequest) ProtoMessage()    {}
+func (*TioUserRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_5adb9555099c2688, []int{1}
+}
+
+func (m *TioUserRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_TioUserRequest.Unmarshal(m, b)
+}
+func (m *TioUserRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_TioUserRequest.Marshal(b, m, deterministic)
+}
+func (m *TioUserRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_TioUserRequest.Merge(m, src)
+}
+func (m *TioUserRequest) XXX_Size() int {
+	return xxx_messageInfo_TioUserRequest.Size(m)
+}
+func (m *TioUserRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_TioUserRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_TioUserRequest proto.InternalMessageInfo
+
+func (m *TioUserRequest) GetName() string {
+	if m != nil {
+		return m.Name
+	}
+	return ""
+}
+
+func (m *TioUserRequest) GetPasswd() string {
+	if m != nil {
+		return m.Passwd
+	}
+	return ""
+}
+
+type TioUserReply struct {
+	Code                 CommonRespCode `protobuf:"varint,1,opt,name=Code,proto3,enum=CommonRespCode" json:"Code,omitempty"`
+	Token                *TioToken      `protobuf:"bytes,2,opt,name=token,proto3" json:"token,omitempty"`
+	User                 *TioUserInfo   `protobuf:"bytes,3,opt,name=user,proto3" json:"user,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}       `json:"-"`
+	XXX_unrecognized     []byte         `json:"-"`
+	XXX_sizecache        int32          `json:"-"`
+}
+
+func (m *TioUserReply) Reset()         { *m = TioUserReply{} }
+func (m *TioUserReply) String() string { return proto.CompactTextString(m) }
+func (*TioUserReply) ProtoMessage()    {}
+func (*TioUserReply) Descriptor() ([]byte, []int) {
+	return fileDescriptor_5adb9555099c2688, []int{2}
+}
+
+func (m *TioUserReply) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_TioUserReply.Unmarshal(m, b)
+}
+func (m *TioUserReply) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_TioUserReply.Marshal(b, m, deterministic)
+}
+func (m *TioUserReply) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_TioUserReply.Merge(m, src)
+}
+func (m *TioUserReply) XXX_Size() int {
+	return xxx_messageInfo_TioUserReply.Size(m)
+}
+func (m *TioUserReply) XXX_DiscardUnknown() {
+	xxx_messageInfo_TioUserReply.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_TioUserReply proto.InternalMessageInfo
+
+func (m *TioUserReply) GetCode() CommonRespCode {
+	if m != nil {
+		return m.Code
+	}
+	return CommonRespCode_RespSucc
+}
+
+func (m *TioUserReply) GetToken() *TioToken {
+	if m != nil {
+		return m.Token
+	}
+	return nil
+}
+
+func (m *TioUserReply) GetUser() *TioUserInfo {
+	if m != nil {
+		return m.User
+	}
+	return nil
+}
+
+type TioUserInfo struct {
+	Uid                  int32    `protobuf:"varint,1,opt,name=uid,proto3" json:"uid,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *TioUserInfo) Reset()         { *m = TioUserInfo{} }
+func (m *TioUserInfo) String() string { return proto.CompactTextString(m) }
+func (*TioUserInfo) ProtoMessage()    {}
+func (*TioUserInfo) Descriptor() ([]byte, []int) {
+	return fileDescriptor_5adb9555099c2688, []int{3}
+}
+
+func (m *TioUserInfo) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_TioUserInfo.Unmarshal(m, b)
+}
+func (m *TioUserInfo) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_TioUserInfo.Marshal(b, m, deterministic)
+}
+func (m *TioUserInfo) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_TioUserInfo.Merge(m, src)
+}
+func (m *TioUserInfo) XXX_Size() int {
+	return xxx_messageInfo_TioUserInfo.Size(m)
+}
+func (m *TioUserInfo) XXX_DiscardUnknown() {
+	xxx_messageInfo_TioUserInfo.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_TioUserInfo proto.InternalMessageInfo
+
+func (m *TioUserInfo) GetUid() int32 {
+	if m != nil {
+		return m.Uid
+	}
+	return 0
+}
+
+type TioToken struct {
+	AccessKey            string   `protobuf:"bytes,1,opt,name=accessKey,proto3" json:"accessKey,omitempty"`
+	SecretKey            string   `protobuf:"bytes,2,opt,name=secretKey,proto3" json:"secretKey,omitempty"`
+	Bucket               string   `protobuf:"bytes,3,opt,name=bucket,proto3" json:"bucket,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *TioToken) Reset()         { *m = TioToken{} }
+func (m *TioToken) String() string { return proto.CompactTextString(m) }
+func (*TioToken) ProtoMessage()    {}
+func (*TioToken) Descriptor() ([]byte, []int) {
+	return fileDescriptor_5adb9555099c2688, []int{4}
+}
+
+func (m *TioToken) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_TioToken.Unmarshal(m, b)
+}
+func (m *TioToken) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_TioToken.Marshal(b, m, deterministic)
+}
+func (m *TioToken) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_TioToken.Merge(m, src)
+}
+func (m *TioToken) XXX_Size() int {
+	return xxx_messageInfo_TioToken.Size(m)
+}
+func (m *TioToken) XXX_DiscardUnknown() {
+	xxx_messageInfo_TioToken.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_TioToken proto.InternalMessageInfo
+
+func (m *TioToken) GetAccessKey() string {
+	if m != nil {
+		return m.AccessKey
+	}
+	return ""
+}
+
+func (m *TioToken) GetSecretKey() string {
+	if m != nil {
+		return m.SecretKey
+	}
+	return ""
+}
+
+func (m *TioToken) GetBucket() string {
+	if m != nil {
+		return m.Bucket
+	}
+	return ""
+}
+
 func init() {
 	proto.RegisterEnum("JobStatus", JobStatus_name, JobStatus_value)
+	proto.RegisterEnum("CommonRespCode", CommonRespCode_name, CommonRespCode_value)
 	proto.RegisterType((*TioReply)(nil), "TioReply")
+	proto.RegisterType((*TioUserRequest)(nil), "TioUserRequest")
+	proto.RegisterType((*TioUserReply)(nil), "TioUserReply")
+	proto.RegisterType((*TioUserInfo)(nil), "TioUserInfo")
+	proto.RegisterType((*TioToken)(nil), "TioToken")
 }
 
 func init() { proto.RegisterFile("const.proto", fileDescriptor_5adb9555099c2688) }
 
 var fileDescriptor_5adb9555099c2688 = []byte{
-	// 181 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x44, 0xce, 0xcd, 0x0a, 0x82, 0x40,
-	0x10, 0xc0, 0xf1, 0xd6, 0x8f, 0xd0, 0xd1, 0x6a, 0xd9, 0x93, 0x47, 0xe9, 0x24, 0x1d, 0xa4, 0xe8,
-	0x0d, 0x24, 0x82, 0x3a, 0x6a, 0xa7, 0x6e, 0xba, 0x2e, 0xb2, 0xb0, 0x39, 0xa2, 0xbb, 0x81, 0x6f,
-	0x1f, 0x6e, 0x41, 0xb7, 0xff, 0x6f, 0x98, 0x81, 0x81, 0x88, 0x63, 0x3f, 0xe9, 0x7c, 0x18, 0x51,
-	0xe3, 0xfe, 0x08, 0xc1, 0x43, 0x62, 0x29, 0x06, 0x35, 0x33, 0x06, 0x1e, 0xc7, 0x56, 0x24, 0x24,
-	0x25, 0x99, 0x5f, 0xda, 0x66, 0x14, 0xdc, 0xd7, 0xd4, 0x25, 0x4e, 0x4a, 0xb2, 0xb0, 0x5c, 0xf2,
-	0x20, 0x21, 0xbc, 0x63, 0x53, 0xe9, 0x5a, 0x9b, 0x89, 0x6d, 0x20, 0x2c, 0x8c, 0x54, 0x6d, 0x65,
-	0x38, 0xa7, 0x2b, 0xb6, 0x83, 0xc8, 0xf2, 0x5a, 0x4b, 0x25, 0x5a, 0x4a, 0x58, 0x0c, 0x81, 0x1d,
-	0xdc, 0xfa, 0x8e, 0x3a, 0xcb, 0xf6, 0x45, 0x0c, 0x0a, 0xe7, 0x85, 0xee, 0x9f, 0x95, 0xe1, 0xd4,
-	0x63, 0x14, 0xe2, 0x2f, 0x7f, 0xd7, 0x7e, 0x41, 0x9f, 0x5b, 0x2d, 0x31, 0xe7, 0xd8, 0xeb, 0x11,
-	0x55, 0xfe, 0x3e, 0x35, 0x6b, 0xfb, 0xf5, 0xf9, 0x13, 0x00, 0x00, 0xff, 0xff, 0x02, 0xa7, 0x31,
-	0x85, 0xc4, 0x00, 0x00, 0x00,
+	// 368 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x7c, 0x52, 0xc1, 0x8e, 0xd3, 0x30,
+	0x10, 0x25, 0xdb, 0x74, 0xb5, 0x9e, 0x84, 0xac, 0xe5, 0xc3, 0xaa, 0x07, 0xa4, 0xad, 0xc2, 0x65,
+	0xb5, 0x87, 0x48, 0x2c, 0x12, 0x27, 0x2e, 0x6c, 0x11, 0xd2, 0xc2, 0xcd, 0x0d, 0x17, 0x0e, 0x48,
+	0xa9, 0x33, 0x54, 0x56, 0x93, 0x4c, 0x88, 0xed, 0xa2, 0x7e, 0x3d, 0xc8, 0x8e, 0xa1, 0x70, 0x21,
+	0x87, 0x68, 0xde, 0x7b, 0x9e, 0x37, 0xf3, 0x2c, 0x43, 0xa6, 0x68, 0x30, 0xb6, 0x1a, 0x27, 0xb2,
+	0x54, 0xbe, 0x83, 0xab, 0x5a, 0x93, 0xc4, 0xb1, 0x3b, 0x89, 0x97, 0x90, 0x2a, 0x6a, 0x71, 0x95,
+	0xac, 0x93, 0xbb, 0xe2, 0xe1, 0xba, 0xda, 0x50, 0xdf, 0xd3, 0x20, 0xd1, 0x8c, 0x1b, 0x6a, 0x51,
+	0x06, 0x51, 0x70, 0x58, 0xf4, 0x66, 0xbf, 0xba, 0x58, 0x27, 0x77, 0x4c, 0xfa, 0xb2, 0x7c, 0x0b,
+	0x45, 0xad, 0xe9, 0xb3, 0xc1, 0x49, 0xe2, 0x77, 0x87, 0xc6, 0x0a, 0x01, 0xe9, 0xd0, 0xf4, 0xb3,
+	0x11, 0x93, 0xa1, 0x16, 0x37, 0x70, 0x39, 0x36, 0xc6, 0xfc, 0x68, 0x63, 0x6b, 0x44, 0xe5, 0x11,
+	0xf2, 0x3f, 0xdd, 0x71, 0x89, 0xcd, 0xff, 0x96, 0xf0, 0x7f, 0x71, 0x0b, 0x4b, 0x4b, 0x07, 0x1c,
+	0x82, 0x57, 0xf6, 0xc0, 0xaa, 0x5a, 0x53, 0xed, 0x09, 0x39, 0xf3, 0x62, 0x0d, 0xa9, 0x33, 0x38,
+	0xad, 0x16, 0x41, 0xcf, 0xab, 0x38, 0xe2, 0x69, 0xf8, 0x46, 0x32, 0x28, 0xe5, 0x2d, 0x64, 0x7f,
+	0x91, 0x3e, 0x96, 0xd3, 0x6d, 0x98, 0xba, 0x94, 0xbe, 0x2c, 0xbf, 0x86, 0x9b, 0x09, 0xae, 0xe2,
+	0x05, 0xb0, 0x46, 0x29, 0x34, 0xe6, 0x13, 0x9e, 0x62, 0xaa, 0x33, 0xe1, 0x55, 0x83, 0x6a, 0x42,
+	0xeb, 0xd5, 0x39, 0xdd, 0x99, 0xf0, 0xc1, 0x77, 0x4e, 0x1d, 0xd0, 0x86, 0x65, 0x98, 0x8c, 0xe8,
+	0x5e, 0x03, 0xfb, 0x48, 0xbb, 0xad, 0x6d, 0xac, 0x33, 0xe2, 0x39, 0xb0, 0x47, 0xa7, 0xbb, 0x76,
+	0xeb, 0x94, 0xe2, 0xcf, 0xc4, 0x35, 0x64, 0x01, 0x7e, 0x68, 0x74, 0x87, 0x2d, 0x4f, 0x44, 0x0e,
+	0x57, 0x81, 0x78, 0x1a, 0xf6, 0xfc, 0xc2, 0x9f, 0x7e, 0x8f, 0x63, 0x47, 0x27, 0x0f, 0x17, 0x67,
+	0xb8, 0x75, 0x8a, 0xa7, 0x82, 0x43, 0x3e, 0xc3, 0xd8, 0xbd, 0xbc, 0x7f, 0x03, 0xc5, 0xbf, 0xd7,
+	0xe8, 0xfd, 0x7c, 0x1d, 0xc7, 0xdd, 0x00, 0xf3, 0xc8, 0x9f, 0x6f, 0xf9, 0xcf, 0xdf, 0x5f, 0xf2,
+	0xc8, 0xbf, 0x14, 0x56, 0x53, 0xa5, 0x68, 0xb0, 0x13, 0x75, 0xd5, 0xf1, 0xd5, 0xee, 0x32, 0xbc,
+	0x9a, 0xd7, 0xbf, 0x02, 0x00, 0x00, 0xff, 0xff, 0x50, 0x2f, 0x48, 0x9c, 0x44, 0x02, 0x00, 0x00,
 }

@@ -33,6 +33,45 @@ type server struct {
 	B *data.B
 }
 
+func (s server) GetToken(ctx context.Context, in *tio_control_v1.TioUserRequest) (*tio_control_v1.TioUserReply, error) {
+	logrus.Debugf("User[%s] Use [%s] Wants Get Upload Token", in.Name, in.Passwd)
+
+	_, err := db.QueryUser(s.B, in.Name, in.Passwd)
+	if err != nil {
+		logrus.Errorf("Query User Info Error. %s", err.Error())
+		return &tio_control_v1.TioUserReply{
+			Code: tio_control_v1.CommonRespCode_RespFaild,
+		}, nil
+	}
+
+	return &tio_control_v1.TioUserReply{
+		Code: tio_control_v1.CommonRespCode_RespSucc,
+		Token: &tio_control_v1.TioToken{
+			AccessKey: s.B.Storage.AcessKey,
+			SecretKey: s.B.Storage.SecretKey,
+			Bucket:    s.B.Storage.Domain,
+		},
+	}, nil
+}
+
+func (s server) Login(ctx context.Context, in *tio_control_v1.TioUserRequest) (*tio_control_v1.TioUserReply, error) {
+	logrus.Debugf("User[%s] Use [%s] Request Login", in.Name, in.Passwd)
+	u, err := db.QueryUser(s.B, in.Name, in.Passwd)
+	if err != nil {
+		logrus.Errorf("Query User Info Error. %s", err.Error())
+		return &tio_control_v1.TioUserReply{
+			Code: tio_control_v1.CommonRespCode_RespFaild,
+		}, nil
+	}
+
+	return &tio_control_v1.TioUserReply{
+		Code: tio_control_v1.CommonRespCode_RespSucc,
+		User: &tio_control_v1.TioUserInfo{
+			Uid: int32(u.Id),
+		},
+	}, nil
+}
+
 func (s server) UpdateBuildStatus(ctx context.Context, in *tio_control_v1.BuildStatus) (*tio_control_v1.BuildReply, error) {
 	logrus.Infof("user: %s name: %s image: %s rate: %d api: %s status: %d srvid: %d type: %s version: %s", in.User, in.Name, in.Image, in.Rate, in.Api, in.Status, in.Sid, in.Stype, in.Version)
 	var err error
