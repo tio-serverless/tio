@@ -86,13 +86,17 @@ func NewJob(b dataBus.BuildModel, d *dataBus.DataBus) (err error) {
 
 	name := fmt.Sprintf("tio-%s", b.Name)
 
-	_, err = GetJob(name, d)
+	j, err := GetJob(name)
 	if err != nil {
-		if strings.Contains(err.Error(), "already exists") {
-			if err := RemoveJob(name); err != nil {
-				return err
-			}
-		} else if !strings.Contains(err.Error(), "not found") {
+		if !strings.Contains(err.Error(), "not found") {
+			j = nil
+		} else {
+			return err
+		}
+	}
+
+	if j != nil && j.Name != "" {
+		if err := RemoveJob(name); err != nil {
 			return err
 		}
 	}
@@ -165,7 +169,7 @@ func NewJob(b dataBus.BuildModel, d *dataBus.DataBus) (err error) {
 	//	job.Spec.Template.Spec.Containers[0].Env = append(job.Spec.Template.Spec.Containers[0].Env, e)
 	//}
 
-	j, err := kc.client.BatchV1().Jobs(kc.namespace).Create(&job)
+	j, err = kc.client.BatchV1().Jobs(kc.namespace).Create(&job)
 	if err != nil {
 		return err
 	}
@@ -175,7 +179,7 @@ func NewJob(b dataBus.BuildModel, d *dataBus.DataBus) (err error) {
 	return nil
 }
 
-func GetJob(name string, b *dataBus.DataBus) (*v1.Job, error) {
+func GetJob(name string) (*v1.Job, error) {
 	j, err := kc.client.BatchV1().Jobs(kc.namespace).Get(name, metav1.GetOptions{})
 	if err != nil {
 		return nil, err
