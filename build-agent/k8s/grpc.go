@@ -25,6 +25,7 @@ func (s server) Build(ctx context.Context, in *tio_control_v1.Request) (*tio_con
 	}, b)
 
 	if err != nil {
+		logrus.Errorf("Create Job Error. %s", err.Error())
 		return &tio_control_v1.Reply{
 			Code: -1,
 			Msg:  err.Error(),

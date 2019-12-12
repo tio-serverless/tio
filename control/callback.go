@@ -40,7 +40,7 @@ func restWeb() {
 
 		err = json.Unmarshal(content, &cu)
 		if err != nil {
-			logrus.Error(err.Error())
+			logrus.Errorf("Parse Json Error: %s, Body: %s", err.Error(), string(content))
 			return
 		}
 
