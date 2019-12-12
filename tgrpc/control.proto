@@ -2,11 +2,7 @@ syntax = "proto3";
 
 option go_package = "tio.control.v1";
 
-enum JobStatus {
-    BuildSucc = 0;
-    BuildFailed = 1;
-    BuildIng = 2;
-}
+import "const.proto";
 
 message BuildStatus {
     string user = 1;
@@ -14,7 +10,11 @@ message BuildStatus {
     string image = 3;
     string api = 4;
     int32 rate = 5;
-    JobStatus status = 6;
+    string raw = 6;
+    JobStatus status = 7;
+    int32 sid = 8;
+    string stype = 9; //http/grpc/tcp
+    string version = 10;
 }
 
 message BuildReply {

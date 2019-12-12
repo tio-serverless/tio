@@ -16,5 +16,7 @@ services:
       - TIO_CONTROL_S_DOMAIN=<QiNiu CDN Domain>
     links:
       - "build-agent:build.agent.tio"
+    volumes:
+      - "
     image: "vikings/tio-control:v0.1.0-develop"
     container_name: "tio-control"

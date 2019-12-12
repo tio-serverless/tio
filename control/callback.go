@@ -8,6 +8,8 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -16,6 +18,8 @@ import (
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"tio/control/data"
+	"tio/control/db"
+	"tio/database/model"
 	tio_build_v1 "tio/tgrpc"
 )
 
@@ -30,17 +34,13 @@ func restWeb() {
 
 		content, err := ioutil.ReadAll(r.Body)
 		if err != nil {
-			//w.WriteHeader(http.StatusInternalServerError)
-			//w.Write([]byte(err.Error()))
 			logrus.Error(err.Error())
 			return
 		}
 
 		err = json.Unmarshal(content, &cu)
 		if err != nil {
-			//w.WriteHeader(http.StatusInternalServerError)
-			//w.Write([]byte(err.Error()))
-			logrus.Error(err.Error())
+			logrus.Errorf("Parse Json Error: %s, Body: %s", err.Error(), string(content))
 			return
 		}
 
@@ -48,9 +48,7 @@ func restWeb() {
 
 		err = json.Unmarshal([]byte(cu.Message), &cui)
 		if err != nil {
-			//w.WriteHeader(http.StatusInternalServerError)
-			//w.Write([]byte(err.Error()))
-			logrus.Error(err.Error())
+			logrus.Errorf("Parse Upload Info Error: %s, CodeUpload: %v", err.Error(), cu)
 			return
 		}
 
@@ -58,10 +56,8 @@ func restWeb() {
 
 		logrus.Debugf("New Request [%s]", cui.Key)
 
-		err = callBuildAgent(url)
+		err = callBuildAgent(cui.Key, url)
 		if err != nil {
-			//w.WriteHeader(http.StatusInternalServerError)
-			//w.Write([]byte(err.Error()))
 			logrus.Error(err.Error())
 			return
 		}
@@ -70,9 +66,8 @@ func restWeb() {
 	})
 
 	srv := &http.Server{
-		Handler: router,
-		Addr:    add,
-		// Good practice: enforce timeouts for servers you create!
+		Handler:      router,
+		Addr:         add,
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
 	}
@@ -88,7 +83,25 @@ func makePrivateUrl(key string) string {
 	return storage.MakePrivateURL(mac, b.Storage.Domain, key, deadline)
 }
 
-func callBuildAgent(request string) error {
+func callBuildAgent(key, request string) error {
+	var err error
+
+	uid, name := splitUidAndSrvName(key)
+	if uid == 0 {
+		return errors.New(fmt.Sprintf("Can not split uid and srv name from [%s]. ", key))
+	}
+
+	sid, err := db.SaveNewSrv(b, uid, name)
+	if err != nil {
+		return errors.New(fmt.Sprintf("Save Srv Error [%s]. ", err))
+	}
+
+	defer func() {
+		if err != nil {
+			db.UpdateSrvStatus(b, sid, model.SrvBuildFailed)
+		}
+	}()
+
 	conn, err := grpc.Dial(b.BuildAgent, grpc.WithInsecure())
 	if err != nil {
 		log.Fatal(fmt.Sprintf("Connect Build Service Error: %s", err.Error()))
@@ -102,7 +115,9 @@ func callBuildAgent(request string) error {
 	defer cancel()
 
 	reply, err := c.Build(ctx, &tio_build_v1.Request{
+		Name:    strings.Split(key, ".")[0],
 		Address: request,
+		Sid:     int32(sid),
 	})
 
 	if err != nil {
@@ -110,8 +125,26 @@ func callBuildAgent(request string) error {
 	}
 
 	if reply.Code != 0 {
-		return errors.New(fmt.Sprintf("Build Agent Return %d", reply.Code))
+		return errors.New(fmt.Sprintf("Build Agent Return %s", reply.Msg))
 	}
 
 	return nil
+}
+
+func splitUidAndSrvName(fileName string) (int, string) {
+	var uid int
+	var name string
+	fs := strings.Split(fileName, "-")
+	if len(fs) != 2 {
+		return uid, name
+	}
+
+	uid, err := strconv.Atoi(fs[0])
+	if err != nil {
+		return uid, name
+	}
+
+	name = fs[1]
+
+	return uid, name
 }

@@ -7,7 +7,7 @@ import (
 	"log"
 
 	"google.golang.org/grpc"
-	tio_control_v1 "tio/tgrpc"
+	"tio/tgrpc"
 )
 
 func updateStatus(address string, j *job) error {
@@ -21,12 +21,16 @@ func updateStatus(address string, j *job) error {
 	c := tio_control_v1.NewControlServiceClient(conn)
 
 	reply, err := c.UpdateBuildStatus(context.Background(), &tio_control_v1.BuildStatus{
-		User:   j.User,
-		Name:   j.Name,
-		Status: tio_control_v1.JobStatus(j.Status),
-		Api:    j.API,
-		Rate:   j.Rate,
-		Image:  j.Image,
+		User:    j.User,
+		Name:    j.Name,
+		Status:  tio_control_v1.JobStatus(j.Status),
+		Api:     j.API,
+		Rate:    j.Rate,
+		Image:   j.Image,
+		Sid:     int32(sid),
+		Raw:     raw,
+		Stype:   j.SType,
+		Version: j.Version,
 	})
 
 	if err != nil {

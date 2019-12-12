@@ -18,12 +18,15 @@ var (
 	zipName string
 	control string
 	baseImg string
+	sid     int
+	raw     string
 )
 
 func init() {
 	flag.StringVar(&zipName, "zip", "", "The Zip File URL")
 	flag.StringVar(&control, "control", "", "The Control GRPC Address")
 	flag.StringVar(&baseImg, "base", "", "Docker Build Base Image")
+	flag.IntVar(&sid, "sid", -1, "The Srv ID")
 }
 
 func initBus() {
@@ -96,7 +99,6 @@ func main() {
 		logrus.Fatalln(err)
 	}
 
-
 }
 
 func createJob() {
@@ -106,11 +108,13 @@ func createJob() {
 	}
 
 	b.J = &job{
-		User:  b.UserName,
-		Name:  b.BuildInfo.Name,
-		Image: fmt.Sprintf("%s:%s-%s", b.Registry, b.BuildInfo.Name, version),
-		API:   b.BuildInfo.API,
-		Rate:  b.BuildInfo.Rate,
+		User:    b.UserName,
+		Name:    b.BuildInfo.Name,
+		Image:   fmt.Sprintf("%s:%s-%s", b.Registry, b.BuildInfo.Name, version),
+		API:     b.BuildInfo.API,
+		Rate:    b.BuildInfo.Rate,
+		SType:   b.BuildInfo.Stype,
+		Version: b.BuildInfo.Version,
 	}
 }
 

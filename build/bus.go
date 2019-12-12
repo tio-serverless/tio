@@ -18,15 +18,18 @@ type buildInfo struct {
 	Version string `toml:"version"`
 	API     string `toml:"api"`
 	Rate    int32  `toml:"rate"`
+	Stype   string `toml:"type"`
 }
 
 type job struct {
-	User   string
-	Name   string
-	Image  string
-	API    string
-	Rate   int32
-	Status int
+	User    string
+	Name    string
+	Image   string
+	API     string
+	Rate    int32
+	Status  int
+	SType   string
+	Version string
 }
 
 func dclientInit() error {
@@ -36,7 +39,7 @@ func dclientInit() error {
 	}
 
 	b.DClient = client
-	b.Registry = "vikings/tio-go-runtime"
+	b.Registry = "tioserverless/go-runtime"
 
 	return nil
 }

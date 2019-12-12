@@ -1,0 +1,3 @@
+FROM vikings/alpine
+COPY bin/tio-consul-watch /tio-consul-watch
+ENTRYPOINT ["/tio-consul-watch"]

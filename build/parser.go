@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -44,6 +45,9 @@ func parserSource() error {
 	if err != nil {
 		return err
 	}
+
+	data, _ := ioutil.ReadFile(b.Root + "/tio/.tio.toml")
+	raw = string(data)
 
 	return nil
 }

@@ -1,9 +1,11 @@
 syntax = "proto3";
 
-option go_package = "tio.build.v1";
+option go_package = "tio.control.v1";
 
 message Request {
     string address = 1;
+    int32 sid = 2;
+    string name = 3;
 }
 
 message Reply {
