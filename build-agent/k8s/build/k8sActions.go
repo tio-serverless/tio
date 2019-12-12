@@ -51,35 +51,6 @@ func InitK8sClient(bus *dataBus.DataBus) (err error) {
 	return
 }
 
-//func DeleteJob(b store.Build) (err error) {
-//	job := fmt.Sprintf("%s-%d", b.Name, b.Id)
-//	logrus.Infof("Remove Job: %s", job)
-//	_deletePropagationForeground := metav1.DeletePropagationForeground
-//
-//	err = kc.client.BatchV1().Jobs(kc.namespace).Delete(job, &metav1.DeleteOptions{
-//		PropagationPolicy: &_deletePropagationForeground,
-//	})
-//
-//	if err != nil && strings.Contains(err.Error(), "not found") {
-//		return nil
-//	}
-//
-//	for {
-//		j, err := kc.client.BatchV1().Jobs(kc.namespace).Get(job, metav1.GetOptions{})
-//		if err == nil && j.Name != "" {
-//			time.Sleep(1 * time.Second)
-//			continue
-//		}
-//
-//		if err != nil && strings.Contains(err.Error(), "not found") {
-//			return nil
-//		}
-//
-//		return err
-//	}
-//
-//}
-
 // NewJob
 // commenv is the common environment. Every user will use it.
 func NewJob(b dataBus.BuildModel, d *dataBus.DataBus) (err error) {
@@ -88,7 +59,7 @@ func NewJob(b dataBus.BuildModel, d *dataBus.DataBus) (err error) {
 
 	j, err := GetJob(name)
 	if err != nil {
-		if !strings.Contains(err.Error(), "not found") {
+		if strings.Contains(err.Error(), "not found") {
 			j = nil
 		} else {
 			return err
@@ -164,10 +135,6 @@ func NewJob(b dataBus.BuildModel, d *dataBus.DataBus) (err error) {
 			},
 		},
 	}
-
-	//for _, e := range ev {
-	//	job.Spec.Template.Spec.Containers[0].Env = append(job.Spec.Template.Spec.Containers[0].Env, e)
-	//}
 
 	j, err = kc.client.BatchV1().Jobs(kc.namespace).Create(&job)
 	if err != nil {
