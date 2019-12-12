@@ -70,6 +70,7 @@ func NewJob(b dataBus.BuildModel, d *dataBus.DataBus) (err error) {
 		if err := RemoveJob(name); err != nil {
 			return err
 		}
+		logrus.Debugf("%s Removed", name)
 	}
 
 	// Clear build job after 10mins.
@@ -156,7 +157,7 @@ func GetJob(name string) (*v1.Job, error) {
 }
 
 func RemoveJob(name string) error {
-	deletePolicy := metav1.DeletePropagationForeground
+	deletePolicy := metav1.DeletePropagationBackground
 	return kc.client.BatchV1().Jobs(kc.namespace).Delete(name, &metav1.DeleteOptions{
 		PropagationPolicy: &deletePolicy,
 	})
