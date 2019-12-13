@@ -47,6 +47,10 @@ func InitBus(file string) (*B, error) {
 		b.Storage.Domain = os.Getenv("TIO_CONTROL_S_DOMAIN")
 	}
 
+	if b.Storage.CallBackUrl == "" {
+		b.Storage.CallBackUrl = os.Getenv("TIO_CONTROL_S_CALLBACKURL")
+	}
+
 	if b.DBInfo.Engine != "" {
 		dc, err := database.GetDBClient(b.DBInfo.Engine, b.DBInfo.Connect)
 		if err != nil {
