@@ -44,7 +44,7 @@ func (p *TDB_Postgres) Version() string {
 }
 
 func (p *TDB_Postgres) SaveTioUser(user *model.User) error {
-	sql := "INSERT INTO user(name, passwd) VALUES ($1, $2)"
+	sql := "INSERT INTO tio-user(name, passwd) VALUES ($1, $2)"
 	logrus.Debugf("Save New User: [%s]", sql)
 
 	_, err := p.db.Exec(sql, user.Name, user.Passwd)
@@ -55,7 +55,7 @@ func (p *TDB_Postgres) QueryTioUser(name string) (model.User, error) {
 
 	u := model.User{}
 
-	sql := "SELECT * FROM user WHERE name=$1"
+	sql := "SELECT * FROM tio-user WHERE name=$1"
 	logrus.Debugf("Query User: [%s]", sql)
 	rows, err := p.db.Query(sql, name)
 	if err != nil {
@@ -71,7 +71,7 @@ func (p *TDB_Postgres) QueryTioUser(name string) (model.User, error) {
 	return u, nil
 }
 func (p *TDB_Postgres) UpdateTioUser(user *model.User) error {
-	sql := "UPDATE user SET passwd=$2 WHERE name=$1"
+	sql := "UPDATE tio-user SET passwd=$2 WHERE name=$1"
 	logrus.Debugf("Update User: [%s]", sql)
 
 	_, err := p.db.Exec(sql, user.Name, user.Passwd)
@@ -80,7 +80,7 @@ func (p *TDB_Postgres) UpdateTioUser(user *model.User) error {
 }
 
 func (p *TDB_Postgres) DeleteTioUser(name string) error {
-	sql := "DELETE user WHERE name=$1"
+	sql := "DELETE tio-user WHERE name=$1"
 	logrus.Debugf("Delete User: [%s]", sql)
 
 	_, err := p.db.Exec(sql, name)
