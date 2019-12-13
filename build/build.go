@@ -16,6 +16,9 @@ import (
 func build(name string) error {
 
 	cmd := exec.Command("go", "env")
+	cmd.Env=append(os.Environ(),
+		"GOPROXY=https://goproxy.cn,direct")
+	
 	var stdout, stderr bytes.Buffer
 	cmd.Stdout = &stdout
 	cmd.Stderr = &stderr
@@ -34,25 +37,25 @@ func build(name string) error {
 	logrus.Info(outStr)
 	logrus.Infof(errStr)
 
-	cmd = exec.Command("go", "mod", "tidy")
-	cmd.Dir = fmt.Sprintf("%s/tio", b.Root)
-
-	cmd.Stdout = &stdout
-	cmd.Stderr = &stderr
-
-	//logrus.Infof("Work Dir: %s", cmd.Dir)
-	//logrus.Infof("Command: %s %v", cmd.Path, cmd.Args)
-	//logrus.Info("===========Build Log===========")
-	//logrus.Info("")
-
-	err = cmd.Run()
-	if err != nil {
-		return err
-	}
-
-	outStr, errStr = string(stdout.Bytes()), string(stderr.Bytes())
-	logrus.Info(outStr)
-	logrus.Infof(errStr)
+	//cmd = exec.Command("go", "mod", "tidy")
+	//cmd.Dir = fmt.Sprintf("%s/tio", b.Root)
+	//
+	//cmd.Stdout = &stdout
+	//cmd.Stderr = &stderr
+	//
+	////logrus.Infof("Work Dir: %s", cmd.Dir)
+	////logrus.Infof("Command: %s %v", cmd.Path, cmd.Args)
+	////logrus.Info("===========Build Log===========")
+	////logrus.Info("")
+	//
+	//err = cmd.Run()
+	//if err != nil {
+	//	return err
+	//}
+	//
+	//outStr, errStr = string(stdout.Bytes()), string(stderr.Bytes())
+	//logrus.Info(outStr)
+	//logrus.Infof(errStr)
 
 	cmd = exec.Command("go", "mod", "vendor")
 	cmd.Dir = fmt.Sprintf("%s/tio", b.Root)
