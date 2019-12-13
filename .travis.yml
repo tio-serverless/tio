@@ -28,6 +28,7 @@ install:
   - go build -mod=vendor -ldflags "-X main._VERSION_=$TIO_VERSION -X main._BRANCH_=$TRAVIS_BRANCH" -o bin/consul-agent consul/sidecar/*.go
   - go build -mod=vendor -ldflags "-X main._VERSION_=$TIO_VERSION -X main._BRANCH_=$TRAVIS_BRANCH" -o bin/tio-deploy deploy-agent/*.go
   - go build -mod=vendor -ldflags "-X main._VERSION_=$TIO_VERSION -X main._BRANCH_=$TRAVIS_BRANCH" -o bin/tio-consul-watch consul/watch/*.go
+  - go build -mod=vendor -ldflags "-X tio/client/cmd._VERSION_=$TIO_VERSION -X tio/client/cmd._BRANCH_=$TRAVIS_BRANCH" -o bin/tio-cli client/*.go
 
 
 after_script:

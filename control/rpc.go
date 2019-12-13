@@ -33,6 +33,75 @@ type server struct {
 	B *data.B
 }
 
+func (s server) GetBuildStatus(ctx context.Context, in *tio_control_v1.TioBuildQueryRequest) (*tio_control_v1.TioBuildQueryReply, error) {
+	logrus.Infof("User [%d] Wants Query [%s] Status Limit [%d]", in.Uid, in.Name, in.Limit)
+	ss, err := db.QueryUserAllSrv(s.B, int(in.Uid), int(in.Limit), in.Name)
+	if err != nil {
+		logrus.Errorf("Query Status Error. %s", err)
+		return &tio_control_v1.TioBuildQueryReply{
+			Code:   tio_control_v1.CommonRespCode_RespFaild,
+			Builds: nil,
+		}, nil
+	}
+
+	var bs []*tio_control_v1.BuildStatus
+	for _, s := range ss {
+
+		b := &tio_control_v1.BuildStatus{
+			Name:    s.Name,
+			Api:     s.Path,
+			Version: s.Version,
+			Status:  tio_control_v1.JobStatus(s.Status),
+		}
+		bs = append(bs, b)
+	}
+	return &tio_control_v1.TioBuildQueryReply{
+		Code:   tio_control_v1.CommonRespCode_RespSucc,
+		Builds: bs,
+	}, nil
+}
+
+
+func (s server) GetToken(ctx context.Context, in *tio_control_v1.TioUserRequest) (*tio_control_v1.TioUserReply, error) {
+	logrus.Debugf("User[%s] Use [%s] Wants Get Upload Token", in.Name, in.Passwd)
+
+	_, err := db.QueryUser(s.B, in.Name, in.Passwd)
+	if err != nil {
+		logrus.Errorf("Query User Info Error. %s", err.Error())
+		return &tio_control_v1.TioUserReply{
+			Code: tio_control_v1.CommonRespCode_RespFaild,
+		}, nil
+	}
+
+	return &tio_control_v1.TioUserReply{
+		Code: tio_control_v1.CommonRespCode_RespSucc,
+		Token: &tio_control_v1.TioToken{
+			AccessKey:   s.B.Storage.AcessKey,
+			SecretKey:   s.B.Storage.SecretKey,
+			Bucket:      s.B.Storage.Bucket,
+			CallBackUrl: s.B.Storage.CallBackUrl,
+		},
+	}, nil
+}
+
+func (s server) Login(ctx context.Context, in *tio_control_v1.TioUserRequest) (*tio_control_v1.TioUserReply, error) {
+	logrus.Debugf("User[%s] Use [%s] Request Login", in.Name, in.Passwd)
+	u, err := db.QueryUser(s.B, in.Name, in.Passwd)
+	if err != nil {
+		logrus.Errorf("Query User Info Error. %s", err.Error())
+		return &tio_control_v1.TioUserReply{
+			Code: tio_control_v1.CommonRespCode_RespFaild,
+		}, nil
+	}
+
+	return &tio_control_v1.TioUserReply{
+		Code: tio_control_v1.CommonRespCode_RespSucc,
+		User: &tio_control_v1.TioUserInfo{
+			Uid: int32(u.Id),
+		},
+	}, nil
+}
+
 func (s server) UpdateBuildStatus(ctx context.Context, in *tio_control_v1.BuildStatus) (*tio_control_v1.BuildReply, error) {
 	logrus.Infof("user: %s name: %s image: %s rate: %d api: %s status: %d srvid: %d type: %s version: %s", in.User, in.Name, in.Image, in.Rate, in.Api, in.Status, in.Sid, in.Stype, in.Version)
 	var err error
@@ -48,15 +117,6 @@ func (s server) UpdateBuildStatus(ctx context.Context, in *tio_control_v1.BuildS
 			}, nil
 		}
 
-		//err = db.UpdateSrvImage(b, int(in.Sid), in.Image)
-		//if err != nil {
-		//	logrus.Errorf("Update Srv Image Error [%s]", err)
-		//	return &tio_control_v1.BuildReply{
-		//		Code: -1,
-		//		Msg:  err.Error(),
-		//	}, nil
-		//}
-
 		ns, _ := db.QuerySrvById(b, int(in.Sid))
 
 		msg <- ns
@@ -68,8 +128,4 @@ func (s server) UpdateBuildStatus(ctx context.Context, in *tio_control_v1.BuildS
 		Code: 0,
 		Msg:  "OK",
 	}, nil
-}
-
-func (s server) GetBuildStatus(context.Context, *tio_control_v1.BuildStatus) (*tio_control_v1.BuildReply, error) {
-	panic("implement me")
 }

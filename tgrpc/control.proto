@@ -22,10 +22,28 @@ message BuildReply {
     string msg = 2;
 }
 
+message TioBuildQueryRequest {
+    int32 uid = 1;
+    string name = 2;
+    int32 limit = 3;
+}
+
+message TioBuildQueryReply {
+    CommonRespCode Code = 1;
+    repeated BuildStatus builds = 2;
+}
+
 service ControlService {
     rpc UpdateBuildStatus (BuildStatus) returns (BuildReply) {
     }
 
-    rpc GetBuildStatus (BuildStatus) returns (BuildReply) {
+    rpc GetBuildStatus (TioBuildQueryRequest) returns (TioBuildQueryReply) {
+    }
+
+    rpc GetToken (TioUserRequest) returns (TioUserReply) {
+
+    }
+
+    rpc Login (TioUserRequest) returns (TioUserReply) {
     }
 }

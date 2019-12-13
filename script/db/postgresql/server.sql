@@ -26,6 +26,10 @@ CREATE TABLE "tio"."server" (
 
 ALTER TABLE "tio"."server" OWNER TO "tio";
 
+CREATE INDEX "user_name" ON "tio"."server" (
+  "uid",
+  "name"
+);
 -- ----------------------------
 -- Primary Key structure for table server
 -- ----------------------------
@@ -34,5 +38,5 @@ ALTER TABLE "tio"."server" ADD CONSTRAINT "server_pkey" PRIMARY KEY ("id");
 -- ----------------------------
 -- Foreign Keys structure for table server
 -- ----------------------------
-ALTER TABLE "tio"."server" ADD CONSTRAINT "user_id" FOREIGN KEY ("uid") REFERENCES "tio"."user" ("id") ON DELETE CASCADE ON UPDATE NO ACTION;
+ALTER TABLE "tio"."server" ADD CONSTRAINT "user_id" FOREIGN KEY ("uid") REFERENCES "tio"."tio_user" ("id") ON DELETE CASCADE ON UPDATE NO ACTION;
 ALTER TABLE "tio"."server" ALTER COLUMN  "id" set default nextval('server_id');

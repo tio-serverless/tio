@@ -44,7 +44,7 @@ func (p *TDB_Postgres) Version() string {
 }
 
 func (p *TDB_Postgres) SaveTioUser(user *model.User) error {
-	sql := "INSERT INTO user(name, passwd) VALUES ($1, $2)"
+	sql := "INSERT INTO tio_user(name, passwd) VALUES ($1, $2)"
 	logrus.Debugf("Save New User: [%s]", sql)
 
 	_, err := p.db.Exec(sql, user.Name, user.Passwd)
@@ -55,7 +55,7 @@ func (p *TDB_Postgres) QueryTioUser(name string) (model.User, error) {
 
 	u := model.User{}
 
-	sql := "SELECT * FROM user WHERE name=$1"
+	sql := "SELECT * FROM tio_user WHERE name=$1"
 	logrus.Debugf("Query User: [%s]", sql)
 	rows, err := p.db.Query(sql, name)
 	if err != nil {
@@ -71,7 +71,7 @@ func (p *TDB_Postgres) QueryTioUser(name string) (model.User, error) {
 	return u, nil
 }
 func (p *TDB_Postgres) UpdateTioUser(user *model.User) error {
-	sql := "UPDATE user SET passwd=$2 WHERE name=$1"
+	sql := "UPDATE tio_user SET passwd=$2 WHERE name=$1"
 	logrus.Debugf("Update User: [%s]", sql)
 
 	_, err := p.db.Exec(sql, user.Name, user.Passwd)
@@ -80,7 +80,7 @@ func (p *TDB_Postgres) UpdateTioUser(user *model.User) error {
 }
 
 func (p *TDB_Postgres) DeleteTioUser(name string) error {
-	sql := "DELETE user WHERE name=$1"
+	sql := "DELETE tio_user WHERE name=$1"
 	logrus.Debugf("Delete User: [%s]", sql)
 
 	_, err := p.db.Exec(sql, name)
@@ -96,18 +96,18 @@ func (p *TDB_Postgres) SaveTioServer(s *model.Server) error {
 	return err
 }
 
-func (p *TDB_Postgres) QueryTioServerByUser(uid, limit int) ([]model.Server, error) {
+func (p *TDB_Postgres) QueryTioServerByUser(uid, limit int, name string) ([]model.Server, error) {
 	var ss []model.Server
 
 	var sql string
 	if limit > 0 {
-		sql = fmt.Sprintf("SELECT * FROM server WHERE uid=$1 ORDER BY timestamp desc LIMIT %d", limit)
+		sql = fmt.Sprintf("SELECT * FROM server WHERE uid=$1 AND name=$2 ORDER BY version desc, id asc LIMIT %d", limit)
 	} else {
-		sql = fmt.Sprintf("SELECT * FROM server WHERE uid=$1 ORDER BY timestamp desc")
+		sql = fmt.Sprintf("SELECT * FROM server WHERE uid=$1 AND name=$2 ORDER BY version desc, id asc")
 	}
 
 	logrus.Debugf("Query Server:[%s]", sql)
-	rows, err := p.db.Query(sql, uid)
+	rows, err := p.db.Query(sql, uid, name)
 	if err != nil {
 		return ss, err
 	}
@@ -155,10 +155,11 @@ func (p *TDB_Postgres) QueryTioServerByName(name string) (*model.Server, error) 
 		return &s, err
 	}
 
-	if rows.Next() {
+	for rows.Next() {
 		err = rows.Scan(&s.Id, &s.Name, &s.Version, &s.Uid, &s.Stype, &s.Domain, &s.Path, &s.TVersion, &s.Timestamp, &s.Status, &s.Image, &s.Raw)
-	} else {
-		return &s, errors.New("No Match Server")
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	return &s, nil
@@ -182,3 +183,27 @@ func (p *TDB_Postgres) DeleteTioServer(name string) error {
 	return err
 
 }
+
+//func (p *TDB_Postgres) QueryUserServer(uid int, name string) ([]model.Server, error) {
+//	sql := fmt.Sprintf("SELECT * FROM server WHERE uid=$1 AND name=$2 order by version desc, id asc")
+//	logrus.Debugf("Query User [%d] Serverless [%s] SQL [%s]", uid, name, sql)
+//
+//	var ss []model.Server
+//
+//	rows, err := p.db.Query(sql, uid)
+//	if err != nil {
+//		return ss, err
+//	}
+//
+//	for rows.Next() {
+//		s := model.Server{}
+//		err = rows.Scan(&s.Id, &s.Name, &s.Version, &s.Uid, &s.Stype, &s.Domain, &s.Path, &s.TVersion, &s.Timestamp, &s.Status, &s.Image, &s.Raw)
+//		if err != nil {
+//			logrus.Errorf("Scan Server Error. %s", err)
+//			continue
+//		}
+//		ss = append(ss, s)
+//	}
+//
+//	return ss, nil
+//}
