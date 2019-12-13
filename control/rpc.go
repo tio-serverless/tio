@@ -49,7 +49,7 @@ func (s server) GetToken(ctx context.Context, in *tio_control_v1.TioUserRequest)
 		Token: &tio_control_v1.TioToken{
 			AccessKey:   s.B.Storage.AcessKey,
 			SecretKey:   s.B.Storage.SecretKey,
-			Bucket:      s.B.Storage.Domain,
+			Bucket:      s.B.Storage.Bucket,
 			CallBackUrl: s.B.Storage.CallBackUrl,
 		},
 	}, nil

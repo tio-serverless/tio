@@ -62,7 +62,8 @@ If login success, tio-cli will store useid into $HOME/.tio/tio.toml`,
 		}
 
 		c.User.Uid = uid
-
+		c.User.Name = user
+		c.User.Passwd = passwd
 		err = model.UpdateConf(c, path)
 		if err != nil {
 			fmt.Println(err)

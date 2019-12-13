@@ -23,7 +23,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
-	"path/filepath"
 
 	"github.com/BurntSushi/toml"
 	"github.com/qiniu/api.v7/v7/auth/qbox"
@@ -51,6 +50,8 @@ var deployCmd = &cobra.Command{
 			os.Exit(-1)
 		}
 
+		deployCmdDir = pathconver(deployCmdDir)
+
 		dir, name, err := zipDir(deployCmdDir)
 		if err != nil {
 			fmt.Printf("Zip Error. %s", err)
@@ -69,9 +70,16 @@ var deployCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(deployCmd)
-	deployCmd.PersistentFlags().StringVarP(&deployCmdDir, "dir", "-d", ".", "The Serveless Code Dir")
+	deployCmd.PersistentFlags().StringVarP(&deployCmdDir, "dir", "d", ".", "The Serveless Code Dir")
 }
 
+func pathconver(p string) string {
+	switch p {
+	case ".":
+		return os.Getenv("PWD")
+	}
+	return p
+}
 func queryToken() (accessKey, secretKey, bucket, callBackUrl string, err error) {
 	if b.TioUrl == "" || b.TioPort == 0 {
 		err = errors.New("Please setting repostry metedata in $HOME/.tio.toml")
@@ -87,7 +95,7 @@ func queryToken() (accessKey, secretKey, bucket, callBackUrl string, err error) 
 }
 
 func upload(accessKey, secretKey, bucket, callBackUrl, filePath, fileName string) error {
-	localFile := filePath
+	localFile := fmt.Sprintf("%s/%s", filePath, fileName)
 	key := fileName
 
 	putPolicy := storage.PutPolicy{
@@ -124,7 +132,8 @@ func upload(accessKey, secretKey, bucket, callBackUrl, filePath, fileName string
 }
 
 func zipDir(path string) (zipDirName, zipFileName string, err error) {
-	zipDirName = filepath.Dir(path)
+	//zipDirName = filepath.Dir(path)
+	zipDirName = path
 
 	uid, err := getUserID()
 	if err != nil {
@@ -167,15 +176,15 @@ func zipDir(path string) (zipDirName, zipFileName string, err error) {
 }
 
 func getMetaData(path string) (name string, err error) {
-	zipDirName := filepath.Dir(path)
-	if _, err := os.Stat(fmt.Sprintf("%s/.tio.toml", zipDirName)); os.IsNotExist(err) {
-		err = errors.New(fmt.Sprintf("Can not find .tio.toml in %s", zipDirName))
+	//zipDirName := filepath.Dir(path)
+	if _, err := os.Stat(fmt.Sprintf("%s/.tio.toml", path)); os.IsNotExist(err) {
+		err = errors.New(fmt.Sprintf("Can not find .tio.toml in %s", path))
 		return name, err
 	}
 
 	var m model.MetaData
 
-	_, err = toml.DecodeFile(fmt.Sprintf("%s/.tio.toml", zipDirName), &m)
+	_, err = toml.DecodeFile(fmt.Sprintf("%s/.tio.toml", path), &m)
 	if err != nil {
 		return
 	}
@@ -184,11 +193,12 @@ func getMetaData(path string) (name string, err error) {
 }
 
 func getUserID() (id int, err error) {
-	path := fmt.Sprintf("%s/.tio/tio.toml", os.Getenv("HOME"))
-	c, err := model.ReadConf(path)
-	if err != nil {
-		return
-	}
-
-	return c.User.Uid, nil
+	//path := fmt.Sprintf("%s/.tio/tio.toml", os.Getenv("HOME"))
+	//c, err := model.ReadConf(path)
+	//if err != nil {
+	//	return
+	//}
+	//
+	//return c.User.Uid, nil
+	return b.Uid, nil
 }

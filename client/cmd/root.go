@@ -48,8 +48,8 @@ func Execute() {
 }
 
 func init() {
-	cobra.OnInitialize(initConfig)
 
+	cobra.OnInitialize(initConfig)
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
@@ -87,13 +87,15 @@ func initConfig() {
 	if err := viper.ReadInConfig(); err == nil {
 		fmt.Println("Using config file:", viper.ConfigFileUsed())
 	}
+
+	initBus()
 }
 
 func initBus() {
 	b = new(databus.B)
 	if repostry, ok := viper.Get("repostry").(map[string]interface{}); ok {
 		b.TioUrl = repostry["url"].(string)
-		b.TioPort = repostry["port"].(int)
+		b.TioPort = int(repostry["port"].(int64))
 	}
 
 	c, _ := model.ReadConf(fmt.Sprintf("%s/.tio/tio.toml", os.Getenv("HOME")))

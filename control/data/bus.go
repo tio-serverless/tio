@@ -27,6 +27,7 @@ type storage struct {
 	AcessKey    string `toml:"accessKey"`
 	SecretKey   string `toml:"secretKey"`
 	Domain      string `toml:"domain"`
+	Bucket      string `toml:"bucket"`
 	CallBackUrl string `toml:"callbackurl"`
 }
 
@@ -40,11 +41,17 @@ func InitBus(file string) (*B, error) {
 	if b.Storage.AcessKey == "" {
 		b.Storage.AcessKey = os.Getenv("TIO_CONTROL_S_AKEY")
 	}
+
 	if b.Storage.SecretKey == "" {
 		b.Storage.SecretKey = os.Getenv("TIO_CONTROL_S_SKEY")
 	}
+
 	if b.Storage.Domain == "" {
 		b.Storage.Domain = os.Getenv("TIO_CONTROL_S_DOMAIN")
+	}
+
+	if b.Storage.Bucket == "" {
+		b.Storage.Bucket = os.Getenv("TIO_CONTROL_S_BUCKET")
 	}
 
 	if b.Storage.CallBackUrl == "" {
