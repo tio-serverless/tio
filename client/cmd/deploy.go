@@ -64,7 +64,7 @@ var deployCmd = &cobra.Command{
 			os.Exit(-1)
 		}
 
-		fmt.Println("Code Upload Succ. Pleae wait a moment for build and deploy. You can use status command for query progress")
+		fmt.Println("Code Upload Succ. Please wait a moment for build and deploy. You can use status command for query progress")
 	},
 }
 
@@ -140,7 +140,7 @@ func zipDir(path string) (zipDirName, zipFileName string, err error) {
 		return
 	}
 
-	name, err := getMetaData(path)
+	name, err := getServerlessName(path)
 	if err != nil {
 		return
 	}
@@ -175,30 +175,40 @@ func zipDir(path string) (zipDirName, zipFileName string, err error) {
 	return
 }
 
-func getMetaData(path string) (name string, err error) {
-	//zipDirName := filepath.Dir(path)
+func getMetaData(path string) (m model.MetaData, err error) {
+	m = model.MetaData{}
+
 	if _, err := os.Stat(fmt.Sprintf("%s/.tio.toml", path)); os.IsNotExist(err) {
 		err = errors.New(fmt.Sprintf("Can not find .tio.toml in %s", path))
-		return name, err
+		return m, err
 	}
-
-	var m model.MetaData
 
 	_, err = toml.DecodeFile(fmt.Sprintf("%s/.tio.toml", path), &m)
 	if err != nil {
 		return
 	}
 
+	return m, nil
+}
+
+func getServerlessName(path string) (name string, err error) {
+	m, err := getMetaData(path)
+	if err != nil {
+		return "", err
+	}
+
 	return m.BuildInfo.Name, nil
 }
 
+func getServrelessVersion(path string) (version string, err error) {
+	m, err := getMetaData(path)
+	if err != nil {
+		return "", err
+	}
+
+	return m.BuildInfo.Version, nil
+}
+
 func getUserID() (id int, err error) {
-	//path := fmt.Sprintf("%s/.tio/tio.toml", os.Getenv("HOME"))
-	//c, err := model.ReadConf(path)
-	//if err != nil {
-	//	return
-	//}
-	//
-	//return c.User.Uid, nil
 	return b.Uid, nil
 }

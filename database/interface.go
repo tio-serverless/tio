@@ -12,7 +12,7 @@ type TioDb interface {
 	DeleteTioUser(string) error
 
 	SaveTioServer(server *model.Server) error
-	QueryTioServerByUser(int, int) ([]model.Server, error)
+	QueryTioServerByUser(int, int, string) ([]model.Server, error)
 	QueryTioServerByName(string) (*model.Server, error)
 	QueryTioServerById(int) (*model.Server, error)
 	UpdateTioServer(server *model.Server) error

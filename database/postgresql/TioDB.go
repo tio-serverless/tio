@@ -96,18 +96,18 @@ func (p *TDB_Postgres) SaveTioServer(s *model.Server) error {
 	return err
 }
 
-func (p *TDB_Postgres) QueryTioServerByUser(uid, limit int) ([]model.Server, error) {
+func (p *TDB_Postgres) QueryTioServerByUser(uid, limit int, name string) ([]model.Server, error) {
 	var ss []model.Server
 
 	var sql string
 	if limit > 0 {
-		sql = fmt.Sprintf("SELECT * FROM server WHERE uid=$1 ORDER BY timestamp desc LIMIT %d", limit)
+		sql = fmt.Sprintf("SELECT * FROM server WHERE uid=$1 AND name=$2 ORDER BY version desc, id asc LIMIT %d", limit)
 	} else {
-		sql = fmt.Sprintf("SELECT * FROM server WHERE uid=$1 ORDER BY timestamp desc")
+		sql = fmt.Sprintf("SELECT * FROM server WHERE uid=$1 AND name=$2 ORDER BY version desc, id asc")
 	}
 
 	logrus.Debugf("Query Server:[%s]", sql)
-	rows, err := p.db.Query(sql, uid)
+	rows, err := p.db.Query(sql, uid, name)
 	if err != nil {
 		return ss, err
 	}
@@ -155,10 +155,11 @@ func (p *TDB_Postgres) QueryTioServerByName(name string) (*model.Server, error) 
 		return &s, err
 	}
 
-	if rows.Next() {
+	for rows.Next() {
 		err = rows.Scan(&s.Id, &s.Name, &s.Version, &s.Uid, &s.Stype, &s.Domain, &s.Path, &s.TVersion, &s.Timestamp, &s.Status, &s.Image, &s.Raw)
-	} else {
-		return &s, errors.New("No Match Server")
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	return &s, nil
@@ -182,3 +183,27 @@ func (p *TDB_Postgres) DeleteTioServer(name string) error {
 	return err
 
 }
+
+//func (p *TDB_Postgres) QueryUserServer(uid int, name string) ([]model.Server, error) {
+//	sql := fmt.Sprintf("SELECT * FROM server WHERE uid=$1 AND name=$2 order by version desc, id asc")
+//	logrus.Debugf("Query User [%d] Serverless [%s] SQL [%s]", uid, name, sql)
+//
+//	var ss []model.Server
+//
+//	rows, err := p.db.Query(sql, uid)
+//	if err != nil {
+//		return ss, err
+//	}
+//
+//	for rows.Next() {
+//		s := model.Server{}
+//		err = rows.Scan(&s.Id, &s.Name, &s.Version, &s.Uid, &s.Stype, &s.Domain, &s.Path, &s.TVersion, &s.Timestamp, &s.Status, &s.Image, &s.Raw)
+//		if err != nil {
+//			logrus.Errorf("Scan Server Error. %s", err)
+//			continue
+//		}
+//		ss = append(ss, s)
+//	}
+//
+//	return ss, nil
+//}

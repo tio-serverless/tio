@@ -26,6 +26,10 @@ CREATE TABLE "tio"."server" (
 
 ALTER TABLE "tio"."server" OWNER TO "tio";
 
+CREATE INDEX "user_name" ON "tio"."server" (
+  "uid",
+  "name"
+);
 -- ----------------------------
 -- Primary Key structure for table server
 -- ----------------------------

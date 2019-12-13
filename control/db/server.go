@@ -86,8 +86,8 @@ func UpdateSrvImage(b *data.B, sid int, image string) error {
 	return b.DBCli.UpdateTioServer(ns)
 }
 
-func QueryUserAllSrv(b *data.B, uid, limit int) ([]model.Server, error) {
-	return b.DBCli.QueryTioServerByUser(uid, limit)
+func QueryUserAllSrv(b *data.B, uid, limit int, name string) ([]model.Server, error) {
+	return b.DBCli.QueryTioServerByUser(uid, limit, name)
 }
 
 func QuerySrvById(b *data.B, sid int) (*model.Server, error) {
