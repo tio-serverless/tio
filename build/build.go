@@ -15,7 +15,7 @@ import (
 
 func build(name string) error {
 
-	cmd := exec.Command("go", "build", "-x", "-mod=vendor", "-o", fmt.Sprintf("bin/%s", name))
+	cmd := exec.Command("go", "mod", "tidy")
 	cmd.Dir = fmt.Sprintf("%s/tio", b.Root)
 
 	var stdout, stderr bytes.Buffer
@@ -36,6 +36,36 @@ func build(name string) error {
 	logrus.Info(outStr)
 	logrus.Infof(errStr)
 
+	cmd = exec.Command("go", "mod", "vendor")
+	cmd.Dir = fmt.Sprintf("%s/tio", b.Root)
+
+	cmd.Stdout = &stdout
+	cmd.Stderr = &stderr
+
+	err = cmd.Run()
+	if err != nil {
+		return err
+	}
+
+	outStr, errStr = string(stdout.Bytes()), string(stderr.Bytes())
+	logrus.Info(outStr)
+	logrus.Infof(errStr)
+
+	cmd = exec.Command("go", "build", "-x", "-mod=vendor", "-o", fmt.Sprintf("bin/%s", name))
+	cmd.Dir = fmt.Sprintf("%s/tio", b.Root)
+
+	cmd.Stdout = &stdout
+	cmd.Stderr = &stderr
+
+	err = cmd.Run()
+	if err != nil {
+		return err
+	}
+
+	outStr, errStr = string(stdout.Bytes()), string(stderr.Bytes())
+	logrus.Info(outStr)
+	logrus.Infof(errStr)
+	
 	err = createDockfile(name)
 	if err != nil {
 		return err
