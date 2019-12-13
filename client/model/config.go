@@ -10,6 +10,12 @@ import (
 	"github.com/BurntSushi/toml"
 )
 
+type Server struct {
+	Name    string
+	Version string
+	Status  string
+}
+
 type Config struct {
 	User User `toml:"user"`
 	//Repo Repostry `toml:"repo"`
