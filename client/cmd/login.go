@@ -22,7 +22,6 @@ import (
 	"strings"
 
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 	"tio/client/model"
 	"tio/client/rpc"
 )
@@ -40,14 +39,6 @@ var loginCmd = &cobra.Command{
 If login success, tio-cli will store useid into $HOME/.tio/tio.toml`,
 	Run: func(cmd *cobra.Command, args []string) {
 
-		address, user, passwd, err := getLoginParams()
-		if err != nil {
-			fmt.Println(err)
-			os.Exit(-1)
-		}
-
-		output(fmt.Sprintf("url: %s name: %s \n", address, user))
-
 		path := fmt.Sprintf("%s/.tio/tio.toml", os.Getenv("HOME"))
 		c, err := model.ReadConf(path)
 		if err != nil {
@@ -55,6 +46,13 @@ If login success, tio-cli will store useid into $HOME/.tio/tio.toml`,
 			os.Exit(-1)
 		}
 
+		address, user, passwd, err := getLoginParams()
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(-1)
+		}
+
+		output(fmt.Sprintf("url: %s name: %s \n", address, user))
 		uid, err := rpc.Login(address, user, passwd)
 		if err != nil {
 			fmt.Print("Login Failed! ")
@@ -89,32 +87,22 @@ func getLoginParams() (address, username, passwd string, err error) {
 	var port int
 
 	if loginCmdURL == "" {
-		if repostry, ok := viper.Get("repostry").(map[string]interface{}); ok {
-			if u, ok := repostry["url"]; ok {
-				url = u.(string)
-			} else {
-				err = errors.New("Can not find repostry url. PLease setting it in config file or type it via `-t` ")
-				return
-			}
-		} else {
+		if b.TioUrl == "" {
 			err = errors.New("Can not find repostry url. PLease setting it in config file or type it via `-t` ")
 			return
+		} else {
+			url = b.TioUrl
 		}
 	} else {
 		url = loginCmdURL
 	}
 
 	if loginCmdPort == 0 {
-		if repostry, ok := viper.Get("repostry").(map[string]interface{}); ok {
-			if p, ok := repostry["port"]; ok {
-				port = int(p.(int64))
-			} else {
-				err = errors.New("Can not find repostry port. PLease setting it in config file or type it via `--port` ")
-				return
-			}
-		} else {
+		if b.TioPort == 0 {
 			err = errors.New("Can not find repostry port. PLease setting it in config file or type it via `--port` ")
 			return
+		} else {
+			port = b.TioPort
 		}
 	} else {
 		port = loginCmdPort

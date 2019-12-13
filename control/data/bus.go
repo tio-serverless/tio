@@ -24,9 +24,10 @@ type dbInfo struct {
 	Connect string `toml:"connect"`
 }
 type storage struct {
-	AcessKey  string `toml:"accessKey"`
-	SecretKey string `toml:"secretKey"`
-	Domain    string `toml:"domain"`
+	AcessKey    string `toml:"accessKey"`
+	SecretKey   string `toml:"secretKey"`
+	Domain      string `toml:"domain"`
+	CallBackUrl string `toml:"callbackurl"`
 }
 
 func InitBus(file string) (*B, error) {

@@ -40,4 +40,5 @@ message TioToken {
     string accessKey = 1;
     string secretKey = 2;
     string bucket = 3;
+    string callBackUrl = 4;
 }

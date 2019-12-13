@@ -22,7 +22,11 @@ import (
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"tio/client/databus"
+	"tio/client/model"
 )
+
+var b *databus.B
 
 var cfgFile string
 var debug bool
@@ -83,4 +87,20 @@ func initConfig() {
 	if err := viper.ReadInConfig(); err == nil {
 		fmt.Println("Using config file:", viper.ConfigFileUsed())
 	}
+}
+
+func initBus() {
+	b = new(databus.B)
+	if repostry, ok := viper.Get("repostry").(map[string]interface{}); ok {
+		b.TioUrl = repostry["url"].(string)
+		b.TioPort = repostry["port"].(int)
+	}
+
+	c, _ := model.ReadConf(fmt.Sprintf("%s/.tio/tio.toml", os.Getenv("HOME")))
+
+	b.UserName = c.User.Name
+	b.Uid = c.User.Uid
+	b.Passwd = c.User.Passwd
+
+	return
 }

@@ -16,11 +16,25 @@ type Config struct {
 }
 
 type User struct {
-	Uid int `toml:"uid"`
+	Name   string `toml:"name"`
+	Uid    int    `toml:"uid"`
+	Passwd string `toml:"passwd"`
 }
 
 type Repostry struct {
 	Url string `toml:"url"`
+}
+
+type MetaData struct {
+	BuildInfo buildInfo `toml:"build"`
+}
+
+type buildInfo struct {
+	Name    string `toml:"name"`
+	Version string `toml:"version"`
+	API     string `toml:"api"`
+	Rate    int32  `toml:"rate"`
+	Stype   string `toml:"type"`
 }
 
 func ReadConf(path string) (c Config, err error) {
