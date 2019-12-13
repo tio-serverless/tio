@@ -2,8 +2,10 @@ package model
 
 import (
 	"bytes"
+	"fmt"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 
 	"github.com/BurntSushi/toml"
 )
@@ -43,8 +45,11 @@ func UpdateConf(c Config, path string) error {
 		return err
 	}
 
-	if _, err := os.Stat(path); os.IsNotExist(err) {
-		os.MkdirAll(path, 0700)
+	dir := filepath.Dir(path)
+
+	if _, err := os.Stat(dir); os.IsNotExist(err) {
+		fmt.Println("$HOME/.tio Not Exist")
+		os.MkdirAll(dir, 0700)
 	}
 
 	return ioutil.WriteFile(path, []byte(buf.String()), 0700)

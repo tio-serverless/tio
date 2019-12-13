@@ -2,6 +2,7 @@ package rpc
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"google.golang.org/grpc"
@@ -30,5 +31,8 @@ func Login(address, name, passwd string) (uid int, err error) {
 		return uid, err
 	}
 
+	if r.User == nil{
+		return 0, errors.New("User / Passwd Not Match ")
+	}
 	return int(r.User.Uid), nil
 }

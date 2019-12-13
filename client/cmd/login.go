@@ -48,7 +48,7 @@ If login success, tio-cli will store useid into $HOME/.tio/tio.toml`,
 
 		output(fmt.Sprintf("url: %s name: %s \n", address, user))
 
-		path := "$HOME/.tio/tio.toml"
+		path := fmt.Sprintf("%s/.tio/tio.toml", os.Getenv("HOME"))
 		c, err := model.ReadConf(path)
 		if err != nil {
 			fmt.Println(err)
