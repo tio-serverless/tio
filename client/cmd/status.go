@@ -51,10 +51,10 @@ var statusCmd = &cobra.Command{
 
 		ss, err := rpc.Status(fmt.Sprintf("%s:%d", b.TioUrl, b.TioPort), b.Uid, statusLimit, statusName)
 		if err != nil {
-			fmt.Println("Query status error! %s ", err)
+			fmt.Printf("Query status error! %s \n", err)
 			os.Exit(-1)
 		}
-		
+
 		fmt.Println()
 		fmt.Println("--------------Serverless  Status--------------")
 		fmt.Println()
