@@ -64,6 +64,7 @@ var deployCmd = &cobra.Command{
 			os.Exit(-1)
 		}
 
+		os.Remove(fmt.Sprintf("%s/%s", dir, name))
 		fmt.Println("Code Upload Succ. Please wait a moment for build and deploy. You can use status command for query progress")
 	},
 }

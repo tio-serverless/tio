@@ -1,0 +1,90 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: build
+  namespace: {{ .Release.Namespace }}
+spec:
+  externalTrafficPolicy: Cluster
+  ports:
+  - name: tcp-80-80
+    nodePort: 30409
+    port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: build
+    release: build
+  sessionAffinity: None
+  type: LoadBalancer
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: control
+  namespace: {{ .Release.Namespace }}
+spec:
+  externalTrafficPolicy: Cluster
+  ports:
+  - name: tcp-80-80
+    nodePort: 31426
+    port: 80
+    protocol: TCP
+    targetPort: 80
+  - name: tcp-8000-8000
+    nodePort: 32525
+    port: 8000
+    protocol: TCP
+    targetPort: 8000
+  selector:
+    app: control
+    release: control
+  sessionAffinity: None
+  type: LoadBalancer
+
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: deploy
+  namespace: {{ .Release.Namespace }}
+spec:
+  ports:
+  - name: tcp-80-80
+    port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: deploy
+    release: deploy
+  sessionAffinity: None
+  type: ClusterIP
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: envoy
+  namespace: {{ .Release.Namespace }}
+spec:
+  externalTrafficPolicy: Cluster
+  ports:
+  - name: tcp-80-80
+    nodePort: 32659
+    port: 80
+    protocol: TCP
+    targetPort: 80
+  - name: tcp-9901-9901
+    nodePort: 31256
+    port: 9901
+    protocol: TCP
+    targetPort: 9901
+  selector:
+    app: envoy-01
+    release: envoy-01
+  sessionAffinity: None
+  type: LoadBalancer

@@ -1,0 +1,268 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  labels:
+    app: build
+    release: build
+  name: build
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: build
+      release: build
+  template:
+    metadata:
+      labels:
+        app: build
+        release: build
+    spec:
+      containers:
+      - env:
+        - name: TIO_BUILD_CONFIG
+          value: /conf/conf
+        image: tioserverless/build-agent-k8s:{{ .Values.tio.version }}-{{ .Values.tio.branch }}
+        imagePullPolicy: Always
+        name: build
+        resources:
+          limits:
+            cpu: 500m
+            memory: 1Gi
+          requests:
+            cpu: 250m
+            memory: 256Mi
+        securityContext:
+          privileged: false
+          procMount: Default
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /conf
+          name: conf
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - configMap:
+          defaultMode: 420
+          items:
+          - key: config
+            mode: 420
+            path: k8s
+          - key: tio-build.toml
+            mode: 420
+            path: conf
+          name: build
+        name: conf
+
+---
+
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  labels:
+    app: control
+    release: control
+  name: control
+  namespace: {{ .Release.Namespace}}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: control
+      release: control
+  template:
+    metadata:
+      labels:
+        app: control
+        release: control
+    spec:
+      containers:
+      - env:
+        - name: TIO_CONTROL_S_AKEY
+          value: {{ .Values.qiniu.accessKey }}
+        - name: TIO_CONTROL_S_SKEY
+          value: {{ .Values.qiniu.secretKey }}
+        - name: TIO_CONTROL_S_DOMAIN
+          value: {{ .Values.qiniu.domain }}
+        - name: TIO_CONTROL_S_CALLBACKURL
+          value: {{ .Values.qiniu.callbackurl }}
+        - name: TIO_CONTROL_S_BUCKET
+          value: {{ .Values.qiniu.bucket }}
+        - name: TIO_CONTROL_CONFIG
+          value: /conf/control.toml
+        image: tioserverless/control:{{ .Values.tio.version }}-{{ .Values.tio.branch }}
+        imagePullPolicy: Always
+        name: control
+        resources:
+          limits:
+            cpu: 500m
+            memory: 1Gi
+          requests:
+            cpu: 250m
+            memory: 256Mi
+        securityContext:
+          privileged: false
+          procMount: Default
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /conf
+          name: conf
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - configMap:
+          defaultMode: 420
+          name: control
+        name: conf
+
+---
+
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  labels:
+    app: deploy
+    release: deploy
+  name: deploy
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: deploy
+      release: deploy
+  template:
+    metadata:
+      labels:
+        app: deploy
+        release: deploy
+    spec:
+      containers:
+      - env:
+        - name: TIO_DEPLOY_CONFIG
+          value: /k8s/deploy.toml
+        image: tioserverless/deploy-agent:{{ .Values.tio.version }}-{{ .Values.tio.branch }}
+        imagePullPolicy: Always
+        name: deploy
+        resources:
+          limits:
+            cpu: 500m
+            memory: 1Gi
+          requests:
+            cpu: 250m
+            memory: 256Mi
+        securityContext:
+          privileged: false
+          procMount: Default
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /k8s
+          name: conf
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - configMap:
+          defaultMode: 420
+          items:
+          - key: k8s-config
+            mode: 420
+            path: config
+          - key: deploy-agent.toml
+            mode: 420
+            path: deploy.toml
+          name: deploy
+        name: conf
+
+---
+
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  labels:
+    app: envoy-01
+    release: envoy-01
+  name: envoy-01
+  namespace: {{ .Release.Namespace }}
+spec:
+  selector:
+    matchLabels:
+      app: envoy-01
+      release: envoy-01
+  template:
+    metadata:
+      labels:
+        app: envoy-01
+        release: envoy-01
+    spec:
+      containers:
+      - args:
+        - -c
+        - /etc/envoy/envoy.yaml
+        - --service-node
+        - sn1
+        - --service-cluster
+        - sc1
+        command:
+        - envoy
+        image: envoyproxy/envoy
+        imagePullPolicy: IfNotPresent
+        name: envoy
+        resources:
+          limits:
+            cpu: 500m
+            memory: 512Mi
+          requests:
+            cpu: 250m
+            memory: 256Mi
+        securityContext:
+          privileged: false
+          procMount: Default
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /etc/envoy
+          name: conf
+      - env:
+        - name: MY_GRPC_PORT
+          value: "8000"
+        - name: CONSUL_ADDRESS
+          value: {{ .Values.k8s.deploy.consul }}
+        - name: DEBUG
+          value: {{ .Values.tio.log }}
+        image: tioserverless/consul-watch:{{ .Values.tio.version }}-{{ .Values.tio.branch }}
+        imagePullPolicy: Always
+        name: consul
+        resources:
+          limits:
+            cpu: 500m
+            memory: 1Gi
+          requests:
+            cpu: 250m
+            memory: 256Mi
+        securityContext:
+          privileged: false
+          procMount: Default
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - configMap:
+          defaultMode: 420
+          name: bootstarp
+        name: conf

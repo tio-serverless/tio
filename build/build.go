@@ -15,8 +15,9 @@ import (
 
 func build(name string) error {
 
-	cmd := exec.Command("go", "build", "-x", "-mod=vendor", "-o", fmt.Sprintf("bin/%s", name))
-	cmd.Dir = fmt.Sprintf("%s/tio", b.Root)
+	cmd := exec.Command("go", "env")
+	cmd.Env=append(os.Environ(),
+		"GOPROXY=https://goproxy.cn,direct")
 
 	var stdout, stderr bytes.Buffer
 	cmd.Stdout = &stdout
@@ -33,6 +34,66 @@ func build(name string) error {
 	}
 
 	outStr, errStr := string(stdout.Bytes()), string(stderr.Bytes())
+	logrus.Info(outStr)
+	logrus.Infof(errStr)
+
+	cmd = exec.Command("go", "mod", "tidy")
+	cmd.Dir = fmt.Sprintf("%s/tio", b.Root)
+	cmd.Env=append(os.Environ(),
+		"GOPROXY=https://goproxy.cn,direct")
+
+	cmd.Stdout = &stdout
+	cmd.Stderr = &stderr
+	
+	err = cmd.Run()
+	if err != nil {
+		outStr, errStr = string(stdout.Bytes()), string(stderr.Bytes())
+		logrus.Info(outStr)
+		logrus.Infof(errStr)
+		return err
+	}
+
+	outStr, errStr = string(stdout.Bytes()), string(stderr.Bytes())
+	logrus.Info(outStr)
+	logrus.Infof(errStr)
+
+	cmd = exec.Command("go", "mod", "vendor")
+	cmd.Dir = fmt.Sprintf("%s/tio", b.Root)
+	cmd.Env=append(os.Environ(),
+		"GOPROXY=https://goproxy.cn,direct")
+
+	cmd.Stdout = &stdout
+	cmd.Stderr = &stderr
+
+	err = cmd.Run()
+	if err != nil {
+		outStr, errStr = string(stdout.Bytes()), string(stderr.Bytes())
+		logrus.Info(outStr)
+		logrus.Infof(errStr)
+		return err
+	}
+
+	outStr, errStr = string(stdout.Bytes()), string(stderr.Bytes())
+	logrus.Info(outStr)
+	logrus.Infof(errStr)
+
+	cmd = exec.Command("go", "build", "-x", "-mod=vendor", "-o", fmt.Sprintf("bin/%s", name))
+	cmd.Dir = fmt.Sprintf("%s/tio", b.Root)
+	cmd.Env=append(os.Environ(),
+		"GOPROXY=https://goproxy.cn,direct")
+
+	cmd.Stdout = &stdout
+	cmd.Stderr = &stderr
+
+	err = cmd.Run()
+	if err != nil {
+		outStr, errStr = string(stdout.Bytes()), string(stderr.Bytes())
+		logrus.Info(outStr)
+		logrus.Infof(errStr)
+		return err
+	}
+
+	outStr, errStr = string(stdout.Bytes()), string(stderr.Bytes())
 	logrus.Info(outStr)
 	logrus.Infof(errStr)
 
