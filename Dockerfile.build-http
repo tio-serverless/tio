@@ -1,5 +1,5 @@
 FROM golang:stretch
 RUN echo "go env -w GOPROXY=https://goproxy.cn,direct" >> /root/.bashrc
-COPY build/tpl /go/src/
+COPY build/tpl-http /go/src/
 COPY bin/tio-build /tio-build
 ENTRYPOINT ["/tio-build"]
