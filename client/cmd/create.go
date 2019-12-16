@@ -41,7 +41,7 @@ var createCmd = &cobra.Command{
 		case "grpc":
 			output("Create GRPC Code Template")
 			if err := outputTpl(grpcTpl); err != nil {
-				fmt.Println("Create Implement.go Error. %s", err)
+				fmt.Printf("Create Implement.go Error. %s\n", err)
 				os.Exit(-1)
 			}
 
@@ -50,7 +50,7 @@ var createCmd = &cobra.Command{
 			}
 
 			if err := os.Mkdir("rpc", 0700); err != nil {
-				fmt.Println("Create rpc dir Error. %s", err)
+				fmt.Printf("Create rpc dir Error. %s \n", err)
 				os.Exit(-1)
 			}
 
