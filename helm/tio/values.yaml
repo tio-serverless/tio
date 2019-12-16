@@ -1,0 +1,30 @@
+# Default values for tio.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+replicaCount: 1
+tio:
+  version: "v0.1.0"
+  branch: "develop"
+  log: "debug"
+build:
+  base: "ubuntu"
+k8s:
+  build:
+    config: "A invalid k8s config. Must specify by yourself"
+    namespace: "default"
+  deploy:
+    config: "A invalid k8s config. Must specify by yourself"
+    namespace: "default"
+    sidecar: "tioserverless/consul-agent"
+    consul: "http://consul-consul-server-0.consul-consul-server.default.svc.cluster.local:8500;http://consul-consul-server-1.consul-consul-server.default.svc.cluster.local:8500;http://consul-consul-server-2.consul-consul-server.default.svc.cluster.local:8500"
+docker:
+  user: "The-Docker-User"
+  passwd: "The-Docker-Passwd"
+db:
+  connect: "postgres://tio:tio@postgres:5432/tio?sslmode=disable"
+qiniu:
+  accessKey: "The-QiNiu-Access-Key"
+  secretKey: "The-QiNiu-Secret-Key"
+  domain: "The-QiNiu-Domain"
+  bucket: "The-QiNiu-Bucket"
+  callbackurl: "QiNiu-CallBackUrl"
