@@ -146,7 +146,7 @@ func zipDir(path string) (zipDirName, zipFileName string, err error) {
 		return
 	}
 
-	stype, err := getServerlessName(path)
+	stype, err := getServerlessType(path)
 	if err != nil {
 		return
 	}

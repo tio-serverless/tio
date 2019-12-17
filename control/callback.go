@@ -141,6 +141,12 @@ func splitUidAndSrvName(fileName string) (int, string, string) {
 	var name string
 	var stype string
 
+	if !strings.HasSuffix(fileName, ".zip") {
+		return uid, name, stype
+	}
+
+	fileName = strings.Split(fileName, ".")[0]
+
 	fs := strings.Split(fileName, "-")
 	if len(fs) != 3 {
 		return uid, name, stype

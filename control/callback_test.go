@@ -21,10 +21,26 @@ func TestSplitUidAndSrvName(t *testing.T) {
 				id    int
 				name  string
 				stype string
+			}{id: 0, name: "", stype: ""},
+		},
+		{
+			fileName: "1234-firstname-grpc.zip",
+			expect: struct {
+				id    int
+				name  string
+				stype string
 			}{id: 1234, name: "firstname", stype: "grpc"},
 		},
 		{
 			fileName: "1234_firstname_grpc",
+			expect: struct {
+				id    int
+				name  string
+				stype string
+			}{id: 0, name: "", stype: ""},
+		},
+		{
+			fileName: "1234_firstname_grpc.zip",
 			expect: struct {
 				id    int
 				name  string
