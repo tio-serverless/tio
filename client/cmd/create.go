@@ -81,19 +81,28 @@ import (
 	"google.golang.org/grpc"
 )
 
+// register 
+// Register your grpc server.
 func register(s *grpc.Server, srv *server) {
-	rpc.RegisterEchoServer(s, srv)
+	// Please invoke your grpc register funcion, e.g. rpc.RegisterEchoServer(s, srv)
+	
 }
 
 
 // type server struct{}
+//
 // Server as the truly grpc server instance, it has been declared.
 // So please implement GRPC function as the blowing:
 // func (s server) Hello(context.Context, *rpc.HelloRequest) (*rpc.HelloResponse, error) {
-//		return &rpc.HelloResponse{
-//			Message: "From TIO",
-//		}, nil
+//		return &rpc.HelloResponse{}, nil
 //	}
+//
+// If you want to initialize server struct, please type code in the flowing function.
+//
+// func (s server) ServerInit(){
+//	 panic("Please Implement Me!")
+// }
+
 `
 
 func outputTpl(tpl string) error {
