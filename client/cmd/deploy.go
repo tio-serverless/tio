@@ -20,9 +20,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"os"
+	"path/filepath"
+	"strings"
 
 	"github.com/BurntSushi/toml"
 	"github.com/qiniu/api.v7/v7/auth/qbox"
@@ -152,33 +154,77 @@ func zipDir(path string) (zipDirName, zipFileName string, err error) {
 	}
 
 	zipFileName = fmt.Sprintf("%d-%s-%s.zip", uid, name, stype)
-	fzip, _ := os.Create(fmt.Sprintf("%s/%s", zipDirName, zipFileName))
-	w := zip.NewWriter(fzip)
-
-	files, err := ioutil.ReadDir(zipDirName)
+	err = RecursiveZip(zipDirName, zipFileName)
 	if err != nil {
-		return
+		fmt.Errorf("Zip Error. %s", err.Error())
+		return zipDirName, zipFileName, err
 	}
-
-	for _, f := range files {
-		ff, err := w.Create(f.Name())
-		if err != nil {
-			return zipDirName, zipFileName, err
-		}
-
-		d, err := ioutil.ReadFile(fmt.Sprintf("%s/%s", zipDirName, f.Name()))
-		if err != nil {
-			return zipDirName, zipFileName, err
-		}
-
-		_, err = ff.Write(d)
-		if err != nil {
-			return zipDirName, zipFileName, err
-		}
-	}
-
-	w.Close()
+	//fzip, _ := os.Create(fmt.Sprintf("%s/%s", zipDirName, zipFileName))
+	//w := zip.NewWriter(fzip)
+	//
+	//files, err := ioutil.ReadDir(zipDirName)
+	//if err != nil {
+	//	return
+	//}
+	//
+	//for _, f := range files {
+	//	ff, err := w.Create(f.Name())
+	//	if err != nil {
+	//		return zipDirName, zipFileName, err
+	//	}
+	//
+	//	d, err := ioutil.ReadFile(fmt.Sprintf("%s/%s", zipDirName, f.Name()))
+	//	if err != nil {
+	//		return zipDirName, zipFileName, err
+	//	}
+	//
+	//	_, err = ff.Write(d)
+	//	if err != nil {
+	//		return zipDirName, zipFileName, err
+	//	}
+	//}
+	//
+	//w.Close()
 	return
+}
+
+func RecursiveZip(pathToZip, destinationPath string) error {
+	destinationFile, err := os.Create(destinationPath)
+	if err != nil {
+		return err
+	}
+
+	myZip := zip.NewWriter(destinationFile)
+	err = filepath.Walk(pathToZip, func(filePath string, info os.FileInfo, err error) error {
+		if info.IsDir() {
+			return nil
+		}
+		if err != nil {
+			return err
+		}
+		relPath := strings.TrimPrefix(filePath, filepath.Dir(pathToZip))
+		zipFile, err := myZip.Create(relPath)
+		if err != nil {
+			return err
+		}
+		fsFile, err := os.Open(filePath)
+		if err != nil {
+			return err
+		}
+		_, err = io.Copy(zipFile, fsFile)
+		if err != nil {
+			return err
+		}
+		return nil
+	})
+	if err != nil {
+		return err
+	}
+	err = myZip.Close()
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func getMetaData(path string) (m model.MetaData, err error) {

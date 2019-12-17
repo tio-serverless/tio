@@ -131,7 +131,7 @@ func callBuildAgent(key, request string) error {
 		return errors.New(fmt.Sprintf("Build Agent Return %s", reply.Msg))
 	}
 
-	return nil
+	return db.UpdateSrvStatus(b, sid, model.SrvBuilding)
 }
 
 // splitUidAndSrvName 从文件名中获取用户ID、服务名称和服务类型

@@ -61,7 +61,6 @@ func (s server) GetBuildStatus(ctx context.Context, in *tio_control_v1.TioBuildQ
 	}, nil
 }
 
-
 func (s server) GetToken(ctx context.Context, in *tio_control_v1.TioUserRequest) (*tio_control_v1.TioUserReply, error) {
 	logrus.Debugf("User[%s] Use [%s] Wants Get Upload Token", in.Name, in.Passwd)
 
@@ -118,10 +117,11 @@ func (s server) UpdateBuildStatus(ctx context.Context, in *tio_control_v1.BuildS
 		}
 
 		ns, _ := db.QuerySrvById(b, int(in.Sid))
-
 		msg <- ns
 	case tio_control_v1.JobStatus_BuildFailed:
 		err = db.UpdateSrvStatus(b, int(in.Sid), model.SrvBuildFailed)
+	case tio_control_v1.JobStatus_BuildIng:
+		err = db.UpdateSrvStatus(b, int(in.Sid), model.SrvBuilding)
 	}
 
 	return &tio_control_v1.BuildReply{

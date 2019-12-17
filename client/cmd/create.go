@@ -26,6 +26,7 @@ import (
 
 var createType string
 var createRewrite bool
+var createTioConf bool
 
 // createCmd represents the create command
 var createCmd = &cobra.Command{
@@ -36,6 +37,10 @@ var createCmd = &cobra.Command{
 + HTTP
 + NSQ.`,
 	Run: func(cmd *cobra.Command, args []string) {
+
+		if createTioConf {
+			createNewTioConf(createType)
+		}
 
 		switch strings.ToLower(createType) {
 		case "grpc":
@@ -70,7 +75,26 @@ func init() {
 
 	createCmd.PersistentFlags().StringVarP(&createType, "type", "t", "", "Code Template. GRPC/HTTP/NSQ")
 	createCmd.PersistentFlags().BoolVarP(&createRewrite, "rewrite", "r", false, "Rewrite implement.go and re-create rpc dir")
+	createCmd.PersistentFlags().BoolVarP(&createTioConf, "conf", "c", false, "Rewrite .tio.toml")
 	createCmd.MarkPersistentFlagRequired(createType)
+}
+
+func createNewTioConf(stype string) {
+	var conf = `user=""
+[build]
+    name=""
+    version=""
+    api=""
+    rate=10
+    type="%s"
+[deploy]
+    url=""`
+
+	file := ".tio.toml"
+	os.Remove(file)
+	if err := ioutil.WriteFile(file, []byte(fmt.Sprintf(conf, stype)), 0600); err != nil{
+		fmt.Println(err)
+	}
 }
 
 var grpcTpl = `package main
