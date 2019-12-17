@@ -95,7 +95,7 @@ func NewJob(b dataBus.BuildModel, d *dataBus.DataBus) (err error) {
 					Containers: []apiv1.Container{
 						{
 							Name:            name,
-							Image:           d.BuildImage,
+							Image:           d.BuildImage[b.BuildType],
 							ImagePullPolicy: apiv1.PullAlways,
 							VolumeMounts: []apiv1.VolumeMount{
 								{

@@ -146,7 +146,12 @@ func zipDir(path string) (zipDirName, zipFileName string, err error) {
 		return
 	}
 
-	zipFileName = fmt.Sprintf("%d-%s.zip", uid, name)
+	stype, err := getServerlessName(path)
+	if err != nil {
+		return
+	}
+
+	zipFileName = fmt.Sprintf("%d-%s-%s.zip", uid, name, stype)
 	fzip, _ := os.Create(fmt.Sprintf("%s/%s", zipDirName, zipFileName))
 	w := zip.NewWriter(fzip)
 
@@ -201,6 +206,14 @@ func getServerlessName(path string) (name string, err error) {
 	return m.BuildInfo.Name, nil
 }
 
+func getServerlessType(path string) (stype string, err error) {
+	m, err := getMetaData(path)
+	if err != nil {
+		return stype, err
+	}
+
+	return m.BuildInfo.Stype, nil
+}
 func getServrelessVersion(path string) (version string, err error) {
 	m, err := getMetaData(path)
 	if err != nil {

@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net"
+	"strings"
 
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
@@ -17,11 +18,12 @@ type server struct {
 }
 
 func (s server) Build(ctx context.Context, in *tio_control_v1.Request) (*tio_control_v1.Reply, error) {
-	logrus.Debugf("New Build Request. Name: [%s] Sid: [%d] Address: [%s]", in.Name, in.Sid, in.Address)
+	logrus.Debugf("New Build Request. Name: [%s] Type: [%s] Sid: [%d] Address: [%s]", in.Name, in.BuildType, in.Sid, in.Address)
 	err := deploy.NewJob(dataBus.BuildModel{
-		Name:    in.Name,
-		Address: in.Address,
-		Sid:     in.Sid,
+		Name:      strings.ToLower(in.Name),
+		Address:   in.Address,
+		Sid:       in.Sid,
+		BuildType: strings.ToLower(in.BuildType),
 	}, b)
 
 	if err != nil {
