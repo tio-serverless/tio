@@ -188,7 +188,7 @@ func (k *SimpleK8s) ReplaceDeploy(d deploy) error {
 					}
 				}
 			}
-			//break
+			continue
 		}
 		if c.Name == "coonsul-sidecar" {
 			for n, e := range oldDeployment.Spec.Template.Spec.Containers[i].Env {
