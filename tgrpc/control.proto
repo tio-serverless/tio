@@ -41,9 +41,12 @@ service ControlService {
     }
 
     rpc GetToken (TioUserRequest) returns (TioUserReply) {
-
     }
 
     rpc Login (TioUserRequest) returns (TioUserReply) {
+    }
+
+    //    GetAgentMeta 获取其它Agents元数据
+    rpc GetAgentMeta (TioAgentRequest) returns (TioAgentReply) {
     }
 }

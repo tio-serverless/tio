@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net"
+	"strings"
 
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
@@ -31,6 +32,25 @@ func startRpc() {
 
 type server struct {
 	B *data.B
+}
+
+func (s server) GetAgentMeta(ctx context.Context, in *tio_control_v1.TioAgentRequest) (*tio_control_v1.TioAgentReply, error) {
+	switch strings.ToLower(in.Name) {
+	case "build":
+		return &tio_control_v1.TioAgentReply{
+			Code:    tio_control_v1.CommonRespCode_RespSucc,
+			Address: b.BuildAgent,
+		}, nil
+	case "deploy":
+		return &tio_control_v1.TioAgentReply{
+			Code:    tio_control_v1.CommonRespCode_RespSucc,
+			Address: b.DeployAgent,
+		}, nil
+	default:
+		return &tio_control_v1.TioAgentReply{
+			Code: tio_control_v1.CommonRespCode_RespFaild,
+		}, nil
+	}
 }
 
 func (s server) GetBuildStatus(ctx context.Context, in *tio_control_v1.TioBuildQueryRequest) (*tio_control_v1.TioBuildQueryReply, error) {

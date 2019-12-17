@@ -43,3 +43,12 @@ message TioToken {
     string bucket = 3;
     string callBackUrl = 4;
 }
+
+message TioAgentRequest {
+    string name = 1;
+}
+
+message TioAgentReply {
+    CommonRespCode Code = 1;
+    string address = 2;
+}
