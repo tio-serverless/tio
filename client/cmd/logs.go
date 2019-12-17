@@ -46,17 +46,6 @@ var logsCmd = &cobra.Command{
 			os.Exit(-1)
 		}
 
-		if logsRunning {
-			address, err := queryAgentAddress("deploy")
-			if err != nil {
-				fmt.Println(err.Error())
-				os.Exit(-1)
-			}
-
-			fmt.Println(address)
-			fmt.Printf("----------[%s-Running-Log]----------")
-		}
-
 		if logsBuild {
 			address, err := queryAgentAddress("build")
 			if err != nil {
@@ -65,8 +54,23 @@ var logsCmd = &cobra.Command{
 			}
 
 			fmt.Println(address)
-			fmt.Printf("----------[%s-Build-Log]----------")
+			fmt.Printf("----------[%s-Build-Log]----------", logsName)
+			os.Exit(0)
 		}
+
+		if logsRunning {
+			address, err := queryAgentAddress("deploy")
+			if err != nil {
+				fmt.Println(err.Error())
+				os.Exit(-1)
+			}
+
+			fmt.Println(address)
+			fmt.Printf("----------[%s-Running-Log]----------", logsName)
+
+		}
+
+
 
 	},
 }
