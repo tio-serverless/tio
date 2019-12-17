@@ -28,6 +28,7 @@ func main() {
 	s := grpc.NewServer()
 	hs := health.NewServer()
 	hs.SetServingStatus("Tio-GRPC-Service", grpc_health_v1.HealthCheckResponse_SERVING)
+	grpc_health_v1.RegisterHealthServer(s, hs)
 
 	reflection.Register(s)
 	srv := &server{}
@@ -47,5 +48,3 @@ func main() {
 		logrus.Fatalf("failed to serve: %v", err)
 	}
 }
-
-

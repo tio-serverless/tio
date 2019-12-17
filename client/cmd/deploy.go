@@ -59,7 +59,7 @@ var deployCmd = &cobra.Command{
 			fmt.Printf("Zip Error. %s", err)
 			os.Exit(-1)
 		}
-
+		
 		err = upload(ak, sk, bk, cbu, dir, name)
 		if err != nil {
 			fmt.Printf("Upload Code Error. %s", err)
@@ -202,7 +202,10 @@ func RecursiveZip(pathToZip, destinationPath string) error {
 		if err != nil {
 			return err
 		}
-		relPath := strings.TrimPrefix(filePath, filepath.Dir(pathToZip))
+		if strings.HasSuffix(info.Name(), ".zip") {
+			return nil
+		}
+		relPath := strings.TrimPrefix(filePath, pathToZip)
 		zipFile, err := myZip.Create(relPath)
 		if err != nil {
 			return err
