@@ -188,7 +188,17 @@ func (k *SimpleK8s) ReplaceDeploy(d deploy) error {
 					}
 				}
 			}
-			break
+			//break
+		}
+		if c.Name == "coonsul-sidecar" {
+			for n, e := range oldDeployment.Spec.Template.Spec.Containers[i].Env {
+				if v, ok := d.Env[e.Name]; ok {
+					oldDeployment.Spec.Template.Spec.Containers[i].Env[n] = apiv1.EnvVar{
+						Name:  e.Name,
+						Value: v,
+					}
+				}
+			}
 		}
 	}
 
