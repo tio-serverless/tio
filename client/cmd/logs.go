@@ -63,7 +63,7 @@ var logsCmd = &cobra.Command{
 					if !ok {
 						os.Exit(0)
 					}
-					log := strings.Split(l, "\n")
+					log := strings.Split(l, "\\n")
 					for _, content := range log {
 						fmt.Println(content)
 					}
@@ -85,11 +85,11 @@ var logsCmd = &cobra.Command{
 					if !ok {
 						os.Exit(0)
 					}
-					fmt.Println(l)
-					//log := strings.Split(l, "/\n")
-					//for _, content := range log {
-					//	fmt.Println(content)
-					//}
+					//fmt.Println(l)
+					log := strings.Split(l, "\\n")
+					for _, content := range log {
+						fmt.Println(content)
+					}
 				}
 			}
 		}
