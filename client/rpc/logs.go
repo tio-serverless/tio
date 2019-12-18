@@ -8,7 +8,7 @@ import (
 	tio_control_v1 "tio/tgrpc"
 )
 
-func GetBuildLogs(address, name string, flowing bool, logs chan string) error {
+func GetBuildLogs(address, name, stype string, flowing bool, logs chan string) error {
 	conn, err := grpc.Dial(address, grpc.WithInsecure())
 	if err != nil {
 		return err
@@ -16,7 +16,7 @@ func GetBuildLogs(address, name string, flowing bool, logs chan string) error {
 
 	defer conn.Close()
 
-	c := tio_control_v1.NewBuildServiceClient(conn)
+	c := tio_control_v1.NewControlServiceClient(conn)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
@@ -24,6 +24,7 @@ func GetBuildLogs(address, name string, flowing bool, logs chan string) error {
 	r, err := c.GetLogs(ctx, &tio_control_v1.TioLogRequest{
 		Name:    name,
 		Flowing: flowing,
+		Stype:   stype,
 	})
 
 	if err != nil {

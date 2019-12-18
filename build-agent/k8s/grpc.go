@@ -17,7 +17,7 @@ import (
 type server struct {
 }
 
-func (s server) GetLogs(in *tio_control_v1.TioLogRequest, ls tio_control_v1.BuildService_GetLogsServer) error {
+func (s server) GetLogs(in *tio_control_v1.TioLogRequest, ls tio_control_v1.LogService_GetLogsServer) error {
 	logrus.Debugf("Fetch [%s] Build Logs Use Flowing  [%v] ?", in.Name, in.Flowing)
 	logs := make(chan string, 1000)
 	err := deploy.GetLogs(in.Name, in.Flowing, logs)
@@ -40,6 +40,10 @@ func (s server) GetLogs(in *tio_control_v1.TioLogRequest, ls tio_control_v1.Buil
 		}
 	}
 }
+
+//func (s server) GetLogs(in *tio_control_v1.TioLogRequest, ls tio_control_v1.BuildService_GetLogsServer) error {
+
+//}
 
 func (s server) Build(ctx context.Context, in *tio_control_v1.Request) (*tio_control_v1.Reply, error) {
 	logrus.Debugf("New Build Request. Name: [%s] Type: [%s] Sid: [%d] Address: [%s]", in.Name, in.BuildType, in.Sid, in.Address)
@@ -73,7 +77,9 @@ func start(port int) {
 	}
 	s := grpc.NewServer()
 
-	tio_control_v1.RegisterBuildServiceServer(s, &server{})
+	ss := new(server)
+	tio_control_v1.RegisterBuildServiceServer(s, ss)
+	tio_control_v1.RegisterLogServiceServer(s, ss)
 
 	reflection.Register(s)
 
