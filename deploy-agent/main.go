@@ -55,9 +55,9 @@ type grcpSrv struct {
 	cli k8s.MyK8s
 }
 
-func (g grcpSrv) UpdateSrvMeta(ctx context.Context,in *tio_control_v1.SrvMeta) (*tio_control_v1.TioReply, error) {
+func (g grcpSrv) UpdateSrvMeta(ctx context.Context, in *tio_control_v1.SrvMeta) (*tio_control_v1.TioReply, error) {
 	logrus.Debugf("Update [%s] Metadata", in.Name)
-
+	return nil, nil
 }
 
 func (g grcpSrv) GetLogs(*tio_control_v1.TioLogRequest, tio_control_v1.TioDeployService_GetLogsServer) error {
