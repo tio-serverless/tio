@@ -206,6 +206,10 @@ func (k *SimpleK8s) ReplaceDeploy(d deploy) error {
 	return nil
 }
 
+func (k *SimpleK8s) GetLog(d deploy, log chan string) error {
+	return k.GetDeploymentLog(d.Name, true, log)
+}
+
 func int32Ptr(i int) *int32 {
 	i32 := int32(i)
 	return &i32

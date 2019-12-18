@@ -53,3 +53,9 @@ func ScalaInstances(k MyK8s, id string, num int) error {
 func DeleteDeploy(k MyK8s, id string) error {
 	return k.Delete(id)
 }
+
+func GetDeploymentLog(k MyK8s, name string, logs chan string) error {
+	return k.GetLog(deploy{
+		Name: name,
+	}, logs)
+}

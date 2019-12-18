@@ -60,8 +60,35 @@ func (g grcpSrv) UpdateSrvMeta(ctx context.Context, in *tio_control_v1.SrvMeta) 
 	return nil, nil
 }
 
-func (g grcpSrv) GetLogs(*tio_control_v1.TioLogRequest, tio_control_v1.TioDeployService_GetLogsServer) error {
-	panic("implement me")
+func (g grcpSrv) GetLogs(in *tio_control_v1.TioLogRequest, ls tio_control_v1.TioDeployService_GetLogsServer) error {
+	logrus.Debugf("Fetch [%s] Running Log", in.Name)
+	logs := make(chan string, 1000)
+	err := k8s.GetDeploymentLog(g.cli, in.Name, logs)
+	if err != nil {
+		return err
+	}
+
+	for {
+		select {
+		case l, ok := <-logs:
+			if !ok {
+				err := ls.Send(&tio_control_v1.TioLogReply{
+					Message: "Log Output Finish!",
+				})
+				if err != nil {
+					return err
+				}
+				return nil
+			}
+
+			err := ls.Send(&tio_control_v1.TioLogReply{
+				Message: l,
+			})
+			if err != nil {
+				return err
+			}
+		}
+	}
 }
 
 func (g grcpSrv) ScalaDeploy(ctx context.Context, in *tio_control_v1.DeployRequest) (*tio_control_v1.TioReply, error) {
