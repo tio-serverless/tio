@@ -26,4 +26,6 @@ service TioDeployService {
     rpc ScalaDeploy (DeployRequest) returns (TioReply) {
     }
 
+    rpc GetLogs (TioLogRequest) returns (stream TioLogReply) {
+    }
 }

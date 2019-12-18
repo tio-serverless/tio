@@ -55,6 +55,10 @@ type grcpSrv struct {
 	cli k8s.MyK8s
 }
 
+func (g grcpSrv) GetLogs(*tio_control_v1.TioLogRequest, tio_control_v1.TioDeployService_GetLogsServer) error {
+	panic("implement me")
+}
+
 func (g grcpSrv) ScalaDeploy(ctx context.Context, in *tio_control_v1.DeployRequest) (*tio_control_v1.TioReply, error) {
 	err := k8s.ScalaInstances(g.cli, in.Name, int(in.InstanceNum))
 	if err != nil {

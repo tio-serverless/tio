@@ -17,6 +17,30 @@ import (
 type server struct {
 }
 
+func (s server) GetLogs(in *tio_control_v1.TioLogRequest, ls tio_control_v1.BuildService_GetLogsServer) error {
+	logrus.Debugf("Fetch [%s] Build Logs Use Flowing  [%v] ?", in.Name, in.Flowing)
+	logs := make(chan string, 1000)
+	err := deploy.GetLogs(in.Name, in.Flowing, logs)
+	if err != nil {
+		ls.Send(&tio_control_v1.TioLogReply{
+			Message: fmt.Sprintf("Fetch Log Error. %s", err.Error()),
+		})
+		return nil
+	}
+
+	for {
+		select {
+		case s := <-logs:
+			if ls.Send(&tio_control_v1.TioLogReply{
+				Message: s,
+			}) != nil {
+				logrus.Error("Send log to [%s] error. Closed Chan", in.Name)
+				return nil
+			}
+		}
+	}
+}
+
 func (s server) Build(ctx context.Context, in *tio_control_v1.Request) (*tio_control_v1.Reply, error) {
 	logrus.Debugf("New Build Request. Name: [%s] Type: [%s] Sid: [%d] Address: [%s]", in.Name, in.BuildType, in.Sid, in.Address)
 	err := deploy.NewJob(dataBus.BuildModel{

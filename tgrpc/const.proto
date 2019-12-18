@@ -52,3 +52,12 @@ message TioAgentReply {
     CommonRespCode Code = 1;
     string address = 2;
 }
+
+message TioLogRequest {
+    string name = 1;
+    bool flowing = 2;
+}
+
+message TioLogReply {
+    string message = 1;
+}
