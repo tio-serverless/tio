@@ -81,13 +81,9 @@ func (s server) getLogFromAgent(address, name string, flowing bool, logs chan st
 	if err != nil {
 		logrus.Fatal(fmt.Sprintf("Connect Build Service Error: %s", err.Error()))
 	}
-
-	defer conn.Close()
-
+	
 	c := tio_control_v1.NewLogServiceClient(conn)
 	ctx, cancle := context.WithTimeout(context.Background(), 10*time.Second)
-
-	defer cancle()
 
 	reply, err := c.GetLogs(ctx, &tio_control_v1.TioLogRequest{
 		Name:    name,
@@ -99,6 +95,8 @@ func (s server) getLogFromAgent(address, name string, flowing bool, logs chan st
 	}
 
 	go func() {
+		defer conn.Close()
+		defer cancle()
 		for {
 			l, err := reply.Recv()
 			if err != nil {

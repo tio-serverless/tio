@@ -58,8 +58,8 @@ func GetLogs(jobname string, flowing bool, logs chan string) (err error) {
 		return errors.New("error in opening stream")
 	}
 
-	defer podLogs.Close()
 	go func() {
+		defer podLogs.Close()
 		for {
 			data := make([]byte, 1024)
 			n, err := podLogs.Read(data)

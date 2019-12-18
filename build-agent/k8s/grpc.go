@@ -40,11 +40,13 @@ func (s server) GetLogs(in *tio_control_v1.TioLogRequest, ls tio_control_v1.LogS
 				return nil
 			}
 
-			if ls.Send(&tio_control_v1.TioLogReply{
+			err := ls.Send(&tio_control_v1.TioLogReply{
 				Message: s,
-			}) != nil {
-				logrus.Errorf("Send log to [%s] error. Closed Chan", in.Name)
-				return nil
+			})
+
+			if err != nil {
+				logrus.Errorf("Send log to [%s] error %s. Closed Chan", in.Name, err.Error())
+				return err
 			}
 		}
 	}
