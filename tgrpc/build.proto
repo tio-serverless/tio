@@ -1,7 +1,6 @@
 syntax = "proto3";
 
 option go_package = "tio.control.v1";
-import "const.proto";
 
 message Request {
     string address = 1;

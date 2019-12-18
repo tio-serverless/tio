@@ -40,10 +40,10 @@ func startRpc() {
 		logrus.Fatalf("K8s Client Init Failed. [%s]", err.Error())
 	}
 
-	tio_control_v1.RegisterTioDeployServiceServer(s, &grcpSrv{
-		cli: &sk,
-	})
+	gs := &grcpSrv{cli: &sk}
 
+	tio_control_v1.RegisterTioDeployServiceServer(s, gs)
+	tio_control_v1.RegisterTioDeployCommServiceServer(s, gs)
 	reflection.Register(s)
 
 	if err := s.Serve(lis); err != nil {
@@ -53,6 +53,10 @@ func startRpc() {
 
 type grcpSrv struct {
 	cli k8s.MyK8s
+}
+
+func (g grcpSrv) UpdateSrvMeta(context.Context, *tio_control_v1.SrvMeta) (*tio_control_v1.TioReply, error) {
+	panic("implement me")
 }
 
 func (g grcpSrv) GetLogs(*tio_control_v1.TioLogRequest, tio_control_v1.TioDeployService_GetLogsServer) error {
@@ -95,8 +99,4 @@ func (g grcpSrv) NewDeploy(ctx context.Context, in *tio_control_v1.DeployRequest
 		Code: 0,
 		Msg:  id,
 	}, nil
-}
-
-func (g grcpSrv) UpdateSrvMeta(context.Context, *tio_control_v1.SrvMeta) (*tio_control_v1.TioReply, error) {
-	panic("implement me")
 }

@@ -49,19 +49,13 @@ var logsCmd = &cobra.Command{
 		name := fmt.Sprintf("%d-%s-%s", b.Uid, b.Sname, b.Stype)
 
 		if logsBuild {
-			//address, err := queryAgentAddress("build")
-			//if err != nil {
-			//	fmt.Println(err.Error())
-			//	os.Exit(-1)
-			//}
-			//
-			//fmt.Println(address)
 			fmt.Printf("----------[%s-Build-Log]----------\n", logsName)
 			logs := make(chan string, 1000)
 			if err := rpc.GetBuildLogs(fmt.Sprintf("%s:%d", b.TioUrl, b.TioPort), name, "build", logsFlowing, logs); err != nil {
 				fmt.Println(err.Error())
 				os.Exit(-1)
 			}
+			fmt.Println("---------")
 			for {
 				select {
 				case l := <-logs:

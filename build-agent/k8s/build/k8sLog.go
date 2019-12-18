@@ -63,9 +63,11 @@ func GetLogs(jobname string, flowing bool, logs chan string) (err error) {
 		data := make([]byte, 1024)
 		n, err := podLogs.Read(data)
 		if err != nil {
+			logrus.Errorf("read %s log error. %s", jobname, err.Error())
 			logs <- string(data[:n])
 			break
 		}
+		logrus.Debugf("Read Log %s", string(data[:n]))
 		logs <- string(data[:n])
 	}
 

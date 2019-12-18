@@ -19,6 +19,10 @@ type server struct {
 
 func (s server) GetLogs(in *tio_control_v1.TioLogRequest, ls tio_control_v1.LogService_GetLogsServer) error {
 	logrus.Debugf("Fetch [%s] Build Logs Use Flowing  [%v] ?", in.Name, in.Flowing)
+	ls.Send(&tio_control_v1.TioLogReply{
+		Message: fmt.Sprintf("%s - Log", in.Name),
+	})
+	
 	logs := make(chan string, 1000)
 	err := deploy.GetLogs(in.Name, in.Flowing, logs)
 	if err != nil {

@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+option go_package = "tio.control.v1";
+import "const.proto";
+
+//通用RPC服务,以下服务会被其它Agent所实现，control会代理client访问这些服务的请求
+
+message SrvMeta {
+    string name = 1;
+    map<string, string> env = 2;
+}
+
+service TioDeployCommService{
+    rpc UpdateSrvMeta (SrvMeta) returns (TioReply) {
+    }
+}

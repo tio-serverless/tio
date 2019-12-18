@@ -12,15 +12,8 @@ message DeployRequest {
     int32 instanceNum = 6;
 }
 
-message SrvMeta {
-    string name = 1;
-}
-
 service TioDeployService {
     rpc NewDeploy (DeployRequest) returns (TioReply) {
-    }
-
-    rpc UpdateSrvMeta (SrvMeta) returns (TioReply) {
     }
 
     rpc ScalaDeploy (DeployRequest) returns (TioReply) {
