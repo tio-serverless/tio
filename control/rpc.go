@@ -93,37 +93,68 @@ func (s server) getLogFromAgent(address, name string, flowing bool, logs chan st
 	}
 
 	c := tio_control_v1.NewLogServiceClient(conn)
-	ctx, cancle := context.WithTimeout(context.Background(), 10*time.Second)
+	if flowing {
+		reply, err := c.GetLogs(context.Background(), &tio_control_v1.TioLogRequest{
+			Name:    name,
+			Flowing: flowing,
+		})
+		if err != nil {
+			return err
+		}
 
-	reply, err := c.GetLogs(ctx, &tio_control_v1.TioLogRequest{
-		Name:    name,
-		Flowing: flowing,
-	})
+		go func() {
+			defer func() {
+				conn.Close()
 
-	if err != nil {
-		return err
-	}
+				if r := recover(); r != nil {
+					logrus.Errorf("panic [%s] recover", r)
+				}
+			}()
 
-	go func() {
-		defer func() {
-			conn.Close()
-			cancle()
-			if r := recover(); r != nil {
-				logrus.Errorf("panic [%s] recover", r)
+			for {
+				l, err := reply.Recv()
+				if err != nil {
+					close(logs)
+					return
+				}
+
+				//logrus.Debugf("Reve Log [%s]", l.Message)
+				logs <- l.Message
+			}
+		}()
+	} else {
+		ctx, cancle := context.WithTimeout(context.Background(), 10*time.Second)
+
+		reply, err := c.GetLogs(ctx, &tio_control_v1.TioLogRequest{
+			Name:    name,
+			Flowing: flowing,
+		})
+		if err != nil {
+			return err
+		}
+
+		go func() {
+			defer func() {
+				conn.Close()
+				cancle()
+				if r := recover(); r != nil {
+					logrus.Errorf("panic [%s] recover", r)
+				}
+			}()
+
+			for {
+				l, err := reply.Recv()
+				if err != nil {
+					close(logs)
+					return
+				}
+
+				//logrus.Debugf("Reve Log [%s]", l.Message)
+				logs <- l.Message
 			}
 		}()
 
-		for {
-			l, err := reply.Recv()
-			if err != nil {
-				close(logs)
-				return
-			}
-
-			//logrus.Debugf("Reve Log [%s]", l.Message)
-			logs <- l.Message
-		}
-	}()
+	}
 
 	return nil
 }

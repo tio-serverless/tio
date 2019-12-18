@@ -18,6 +18,7 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/spf13/cobra"
 	"tio/client/rpc"
@@ -62,7 +63,10 @@ var logsCmd = &cobra.Command{
 					if !ok {
 						os.Exit(0)
 					}
-					fmt.Println(l)
+					log := strings.Split(l, "\n")
+					for _, content := range log {
+						fmt.Println(content)
+					}
 				}
 			}
 
@@ -82,6 +86,10 @@ var logsCmd = &cobra.Command{
 						os.Exit(0)
 					}
 					fmt.Println(l)
+					//log := strings.Split(l, "/\n")
+					//for _, content := range log {
+					//	fmt.Println(content)
+					//}
 				}
 			}
 		}

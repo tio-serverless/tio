@@ -2,7 +2,6 @@ package rpc
 
 import (
 	"context"
-	"time"
 
 	"google.golang.org/grpc"
 	tio_control_v1 "tio/tgrpc"
@@ -16,9 +15,9 @@ func GetBuildLogs(address, name, stype string, flowing bool, logs chan string) e
 
 	c := tio_control_v1.NewControlServiceClient(conn)
 
-	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	//ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 
-	r, err := c.GetLogs(ctx, &tio_control_v1.TioLogRequest{
+	r, err := c.GetLogs(context.Background(), &tio_control_v1.TioLogRequest{
 		Name:    name,
 		Flowing: flowing,
 		Stype:   stype,
@@ -31,7 +30,7 @@ func GetBuildLogs(address, name, stype string, flowing bool, logs chan string) e
 	go func() {
 		defer func() {
 			conn.Close()
-			cancel()
+			//cancel()
 		}()
 
 		for {
@@ -40,7 +39,7 @@ func GetBuildLogs(address, name, stype string, flowing bool, logs chan string) e
 				close(logs)
 				return
 			}
-			
+
 			logs <- l.Message
 		}
 	}()
