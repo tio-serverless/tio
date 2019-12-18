@@ -10,7 +10,7 @@ import (
 )
 
 func getPodOfJob(jobname string) (podname string, err error) {
-	selector := fmt.Sprintf("job-name=%s", jobname)
+	selector := fmt.Sprintf("job-name=tio-%s", jobname)
 
 	logrus.Debugf("Select Pod via %s", selector)
 
