@@ -3,6 +3,7 @@ package k8s
 import (
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/sirupsen/logrus"
 	apiv1 "k8s.io/api/core/v1"
@@ -10,13 +11,19 @@ import (
 )
 
 func (k *SimpleK8s) getPodOfJob(name string) (podname string, err error) {
-	selector := fmt.Sprintf("tio-app=%s", name)
+	names := strings.Split(name, "-")
+	if len(names) != 3 {
+		return "", errors.New(fmt.Sprintf("Deployment Name Wrong[%s]. Should xxx-xx-xxx. ", name))
+	}
+
+	selector := fmt.Sprintf("tio-app=%s", names[1])
 
 	logrus.Debugf("Select Pod via %s", selector)
 
 	p, err := k.client.CoreV1().Pods(k.B.K.Namespace).List(metav1.ListOptions{
 		LabelSelector: selector,
 	})
+
 	if err != nil {
 		return
 	}

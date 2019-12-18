@@ -202,6 +202,7 @@ func (k *SimpleK8s) ReplaceDeploy(d deploy) error {
 		}
 	}
 
+	logrus.Debugf("Replace New Deployment [%v]", oldDeployment)
 	_, err = deployClient.Update(oldDeployment)
 	return nil
 }

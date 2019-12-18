@@ -61,6 +61,7 @@ func (g grcpSrv) GetLogs(in *tio_control_v1.TioLogRequest, ls tio_control_v1.Log
 	logs := make(chan string, 1000)
 	err := k8s.GetDeploymentLog(g.cli, in.Name, logs)
 	if err != nil {
+		logrus.Errorf("GetDeployment [%s] Log Error. ", in.Name, err.Error())
 		return err
 	}
 
