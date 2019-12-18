@@ -10,13 +10,14 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func (k *SimpleK8s) getPodOfJob(name string) (podname string, err error) {
+func (k *SimpleK8s) getPodOfJob(name string) (podname, containername string, err error) {
 	names := strings.Split(name, "-")
 	if len(names) != 3 {
-		return "", errors.New(fmt.Sprintf("Deployment Name Wrong[%s]. Should xxx-xx-xxx. ", name))
+		return "", "", errors.New(fmt.Sprintf("Deployment Name Wrong[%s]. Should xxx-xx-xxx. ", name))
 	}
 
-	selector := fmt.Sprintf("tio-app=%s", names[1])
+	containername = names[1]
+	selector := fmt.Sprintf("tio-app=%s", containername)
 
 	logrus.Debugf("Select Pod via %s", selector)
 
@@ -34,7 +35,7 @@ func (k *SimpleK8s) getPodOfJob(name string) (podname string, err error) {
 		return
 	}
 
-	return p.Items[l-1].Name, nil
+	return p.Items[l-1].Name, containername, nil
 }
 
 // GetLogs
@@ -46,7 +47,7 @@ func (k *SimpleK8s) GetDeploymentLog(name string, flowing bool, logs chan string
 		}
 	}()
 
-	pod, err := k.getPodOfJob(name)
+	pod, container, err := k.getPodOfJob(name)
 	if err != nil {
 		return
 	}
@@ -55,7 +56,7 @@ func (k *SimpleK8s) GetDeploymentLog(name string, flowing bool, logs chan string
 
 	line := int64(1000)
 	req := k.client.CoreV1().Pods(k.B.K.Namespace).GetLogs(pod, &apiv1.PodLogOptions{
-		Container: name,
+		Container: container,
 		TailLines: &line,
 		Follow:    flowing,
 	})
@@ -72,7 +73,9 @@ func (k *SimpleK8s) GetDeploymentLog(name string, flowing bool, logs chan string
 				logrus.Errorf("panic %s recover", r)
 			}
 		}()
+
 		data := make([]byte, 1024)
+
 		for {
 			n, err := podLogs.Read(data)
 			if err != err {
