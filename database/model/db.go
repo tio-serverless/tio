@@ -1,9 +1,10 @@
 package model
 
 const (
-	SrvBuilding = iota
+	SrvReady = iota
 	SrvBuildSuc
 	SrvBuildFailed
+	SrvBuilding
 	SrvDeploying
 	SrvDeploySuc
 	SrvDeployFailed

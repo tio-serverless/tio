@@ -3,12 +3,13 @@ syntax = "proto3";
 option go_package = "tio.control.v1";
 
 enum JobStatus {
-    BuildSucc = 0;
-    BuildFailed = 1;
-    BuildIng = 2;
-    DeployIng = 3;
-    DeploySuc = 4;
-    DeployFailed = 5;
+    Ready = 0;
+    BuildSucc = 1;
+    BuildFailed = 2;
+    BuildIng = 3;
+    DeployIng = 4;
+    DeploySuc = 5;
+    DeployFailed = 6;
 }
 
 enum CommonRespCode {
@@ -41,4 +42,30 @@ message TioToken {
     string secretKey = 2;
     string bucket = 3;
     string callBackUrl = 4;
+}
+
+message TioAgentRequest {
+    string name = 1;
+}
+
+message TioAgentReply {
+    CommonRespCode Code = 1;
+    string address = 2;
+}
+
+message TioLogRequest {
+    string name = 1;
+    bool flowing = 2;
+    string stype = 3;
+}
+
+message TioLogReply {
+    string message = 1;
+}
+
+
+service LogService {
+    //    GetLogs 代理客户端读取其它服务的日志
+    rpc GetLogs (TioLogRequest) returns (stream TioLogReply) {
+    }
 }

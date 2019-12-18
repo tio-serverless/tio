@@ -20,15 +20,15 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"os"
+	"path/filepath"
+	"strings"
 
-	"github.com/BurntSushi/toml"
 	"github.com/qiniu/api.v7/v7/auth/qbox"
 	"github.com/qiniu/api.v7/v7/storage"
 	"github.com/spf13/cobra"
-	"tio/client/model"
 	"tio/client/rpc"
 )
 
@@ -57,7 +57,7 @@ var deployCmd = &cobra.Command{
 			fmt.Printf("Zip Error. %s", err)
 			os.Exit(-1)
 		}
-
+		
 		err = upload(ak, sk, bk, cbu, dir, name)
 		if err != nil {
 			fmt.Printf("Upload Code Error. %s", err)
@@ -146,70 +146,85 @@ func zipDir(path string) (zipDirName, zipFileName string, err error) {
 		return
 	}
 
-	zipFileName = fmt.Sprintf("%d-%s.zip", uid, name)
-	fzip, _ := os.Create(fmt.Sprintf("%s/%s", zipDirName, zipFileName))
-	w := zip.NewWriter(fzip)
-
-	files, err := ioutil.ReadDir(zipDirName)
+	stype, err := getServerlessType(path)
 	if err != nil {
 		return
 	}
 
-	for _, f := range files {
-		ff, err := w.Create(f.Name())
-		if err != nil {
-			return zipDirName, zipFileName, err
-		}
-
-		d, err := ioutil.ReadFile(fmt.Sprintf("%s/%s", zipDirName, f.Name()))
-		if err != nil {
-			return zipDirName, zipFileName, err
-		}
-
-		_, err = ff.Write(d)
-		if err != nil {
-			return zipDirName, zipFileName, err
-		}
+	zipFileName = fmt.Sprintf("%d-%s-%s.zip", uid, name, stype)
+	err = RecursiveZip(zipDirName, zipFileName)
+	if err != nil {
+		fmt.Errorf("Zip Error. %s", err.Error())
+		return zipDirName, zipFileName, err
 	}
-
-	w.Close()
+	//fzip, _ := os.Create(fmt.Sprintf("%s/%s", zipDirName, zipFileName))
+	//w := zip.NewWriter(fzip)
+	//
+	//files, err := ioutil.ReadDir(zipDirName)
+	//if err != nil {
+	//	return
+	//}
+	//
+	//for _, f := range files {
+	//	ff, err := w.Create(f.Name())
+	//	if err != nil {
+	//		return zipDirName, zipFileName, err
+	//	}
+	//
+	//	d, err := ioutil.ReadFile(fmt.Sprintf("%s/%s", zipDirName, f.Name()))
+	//	if err != nil {
+	//		return zipDirName, zipFileName, err
+	//	}
+	//
+	//	_, err = ff.Write(d)
+	//	if err != nil {
+	//		return zipDirName, zipFileName, err
+	//	}
+	//}
+	//
+	//w.Close()
 	return
 }
 
-func getMetaData(path string) (m model.MetaData, err error) {
-	m = model.MetaData{}
-
-	if _, err := os.Stat(fmt.Sprintf("%s/.tio.toml", path)); os.IsNotExist(err) {
-		err = errors.New(fmt.Sprintf("Can not find .tio.toml in %s", path))
-		return m, err
-	}
-
-	_, err = toml.DecodeFile(fmt.Sprintf("%s/.tio.toml", path), &m)
+func RecursiveZip(pathToZip, destinationPath string) error {
+	destinationFile, err := os.Create(destinationPath)
 	if err != nil {
-		return
+		return err
 	}
 
-	return m, nil
-}
-
-func getServerlessName(path string) (name string, err error) {
-	m, err := getMetaData(path)
+	myZip := zip.NewWriter(destinationFile)
+	err = filepath.Walk(pathToZip, func(filePath string, info os.FileInfo, err error) error {
+		if info.IsDir() {
+			return nil
+		}
+		if err != nil {
+			return err
+		}
+		if strings.HasSuffix(info.Name(), ".zip") {
+			return nil
+		}
+		relPath := strings.TrimPrefix(filePath, pathToZip)
+		zipFile, err := myZip.Create(relPath)
+		if err != nil {
+			return err
+		}
+		fsFile, err := os.Open(filePath)
+		if err != nil {
+			return err
+		}
+		_, err = io.Copy(zipFile, fsFile)
+		if err != nil {
+			return err
+		}
+		return nil
+	})
 	if err != nil {
-		return "", err
+		return err
 	}
-
-	return m.BuildInfo.Name, nil
-}
-
-func getServrelessVersion(path string) (version string, err error) {
-	m, err := getMetaData(path)
+	err = myZip.Close()
 	if err != nil {
-		return "", err
+		return err
 	}
-
-	return m.BuildInfo.Version, nil
+	return nil
 }
 
-func getUserID() (id int, err error) {
-	return b.Uid, nil
-}

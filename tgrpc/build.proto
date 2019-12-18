@@ -6,6 +6,7 @@ message Request {
     string address = 1;
     int32 sid = 2;
     string name = 3;
+    string buildType = 4;
 }
 
 message Reply {
@@ -16,4 +17,6 @@ message Reply {
 service BuildService {
     rpc Build (Request) returns (Reply) {
     }
+//    rpc GetLogs (TioLogRequest) returns (stream TioLogReply) {
+//    }
 }

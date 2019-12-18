@@ -180,12 +180,35 @@ func (k *SimpleK8s) ReplaceDeploy(d deploy) error {
 	for i, c := range oldDeployment.Spec.Template.Spec.Containers {
 		if c.Name != "coonsul-sidecar" {
 			oldDeployment.Spec.Template.Spec.Containers[i].Image = d.Image
-			break
+			for n, e := range oldDeployment.Spec.Template.Spec.Containers[i].Env {
+				if v, ok := d.Env[e.Name]; ok {
+					oldDeployment.Spec.Template.Spec.Containers[i].Env[n] = apiv1.EnvVar{
+						Name:  e.Name,
+						Value: v,
+					}
+				}
+			}
+			continue
+		}
+		if c.Name == "coonsul-sidecar" {
+			for n, e := range oldDeployment.Spec.Template.Spec.Containers[i].Env {
+				if v, ok := d.Env[e.Name]; ok {
+					oldDeployment.Spec.Template.Spec.Containers[i].Env[n] = apiv1.EnvVar{
+						Name:  e.Name,
+						Value: v,
+					}
+				}
+			}
 		}
 	}
 
+	logrus.Debugf("Replace New Deployment [%v]", oldDeployment)
 	_, err = deployClient.Update(oldDeployment)
 	return nil
+}
+
+func (k *SimpleK8s) GetLog(d deploy, log chan string) error {
+	return k.GetDeploymentLog(d.Name, true, log)
 }
 
 func int32Ptr(i int) *int32 {

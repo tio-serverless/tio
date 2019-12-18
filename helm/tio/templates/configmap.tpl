@@ -9,9 +9,11 @@ data:
   tio-build.toml: |-
     log="{{ .Values.tio.log }}"
     port=80
-    buildImage="tioserverless/build:{{ .Values.tio.version }}-{{ .Values.tio.branch }}"
     baseImage="{{ .Values.build.base }}"
     control="control.{{ .Release.Namespace }}.svc.cluster.local:80"
+    [build]
+      http="tioserverless/build:http-{{ .Values.tio.version }}-{{ .Values.tio.branch }}"
+      grpc="tioserverless/build:grpc-{{ .Values.tio.version }}-{{ .Values.tio.branch }}"
     [k8s]
       namespace="{{ .Values.k8s.build.namespace }}"
       config="/conf/k8s"

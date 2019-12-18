@@ -40,10 +40,11 @@ func startRpc() {
 		logrus.Fatalf("K8s Client Init Failed. [%s]", err.Error())
 	}
 
-	tio_control_v1.RegisterTioDeployServiceServer(s, &grcpSrv{
-		cli: &sk,
-	})
+	gs := &grcpSrv{cli: &sk}
 
+	tio_control_v1.RegisterTioDeployServiceServer(s, gs)
+	tio_control_v1.RegisterLogServiceServer(s, gs)
+	tio_control_v1.RegisterTioDeployCommServiceServer(s, gs)
 	reflection.Register(s)
 
 	if err := s.Serve(lis); err != nil {
@@ -53,6 +54,43 @@ func startRpc() {
 
 type grcpSrv struct {
 	cli k8s.MyK8s
+}
+
+func (g grcpSrv) GetLogs(in *tio_control_v1.TioLogRequest, ls tio_control_v1.LogService_GetLogsServer) error {
+	logrus.Debugf("Fetch [%s] Running Log", in.Name)
+	logs := make(chan string, 1000)
+	err := k8s.GetDeploymentLog(g.cli, in.Name, logs)
+	if err != nil {
+		logrus.Errorf("GetDeployment [%s] Log Error. %s ", in.Name, err.Error())
+		return err
+	}
+
+	for {
+		select {
+		case l, ok := <-logs:
+			if !ok {
+				err := ls.Send(&tio_control_v1.TioLogReply{
+					Message: "Log Output Finish!",
+				})
+				if err != nil {
+					return err
+				}
+				return nil
+			}
+
+			err := ls.Send(&tio_control_v1.TioLogReply{
+				Message: l,
+			})
+			if err != nil {
+				return err
+			}
+		}
+	}
+}
+
+func (g grcpSrv) UpdateSrvMeta(ctx context.Context, in *tio_control_v1.SrvMeta) (*tio_control_v1.TioReply, error) {
+	logrus.Debugf("Update [%s] Metadata", in.Name)
+	return nil, nil
 }
 
 func (g grcpSrv) ScalaDeploy(ctx context.Context, in *tio_control_v1.DeployRequest) (*tio_control_v1.TioReply, error) {
@@ -91,8 +129,4 @@ func (g grcpSrv) NewDeploy(ctx context.Context, in *tio_control_v1.DeployRequest
 		Code: 0,
 		Msg:  id,
 	}, nil
-}
-
-func (g grcpSrv) UpdateSrvMeta(context.Context, *tio_control_v1.SrvMeta) (*tio_control_v1.TioReply, error) {
-	panic("implement me")
 }

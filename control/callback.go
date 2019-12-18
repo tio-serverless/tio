@@ -83,10 +83,12 @@ func makePrivateUrl(key string) string {
 	return storage.MakePrivateURL(mac, b.Storage.Domain, key, deadline)
 }
 
+// callBuildAgent
+// 从七牛云接受上传回调事件,然后记录DB后调用构建事件
 func callBuildAgent(key, request string) error {
 	var err error
 
-	uid, name := splitUidAndSrvName(key)
+	uid, name, stype := splitUidAndSrvName(key)
 	if uid == 0 {
 		return errors.New(fmt.Sprintf("Can not split uid and srv name from [%s]. ", key))
 	}
@@ -115,9 +117,10 @@ func callBuildAgent(key, request string) error {
 	defer cancel()
 
 	reply, err := c.Build(ctx, &tio_build_v1.Request{
-		Name:    strings.Split(key, ".")[0],
-		Address: request,
-		Sid:     int32(sid),
+		Name:      strings.Split(key, ".")[0],
+		Address:   request,
+		Sid:       int32(sid),
+		BuildType: stype,
 	})
 
 	if err != nil {
@@ -128,23 +131,33 @@ func callBuildAgent(key, request string) error {
 		return errors.New(fmt.Sprintf("Build Agent Return %s", reply.Msg))
 	}
 
-	return nil
+	return db.UpdateSrvStatus(b, sid, model.SrvBuilding)
 }
 
-func splitUidAndSrvName(fileName string) (int, string) {
+// splitUidAndSrvName 从文件名中获取用户ID、服务名称和服务类型
+// 文件名按照  id-name-type.zip 规则拼装
+func splitUidAndSrvName(fileName string) (int, string, string) {
 	var uid int
 	var name string
+	var stype string
+
+	if !strings.HasSuffix(fileName, ".zip") {
+		return uid, name, stype
+	}
+
+	fileName = strings.Split(fileName, ".")[0]
+
 	fs := strings.Split(fileName, "-")
-	if len(fs) != 2 {
-		return uid, name
+	if len(fs) != 3 {
+		return uid, name, stype
 	}
 
 	uid, err := strconv.Atoi(fs[0])
 	if err != nil {
-		return uid, name
+		return uid, name, stype
 	}
 
 	name = fs[1]
-
-	return uid, name
+	stype = fs[2]
+	return uid, name, stype
 }

@@ -10,9 +10,10 @@ import (
 )
 
 type BuildModel struct {
-	Name    string
-	Address string
-	Sid     int32
+	Name      string //构建做业务名称,对应用户上传的服务名称
+	Address   string //control地址,用于构建作业进行状态更新
+	Sid       int32  //作业ID,用于状态更新
+	BuildType string //构建类型,用于选择对应的代码模板
 }
 
 type docker struct {
@@ -21,13 +22,14 @@ type docker struct {
 }
 
 type DataBus struct {
-	Port       int     `toml:"port"`
-	K8S        k8sConf `toml:"k8s"`
-	Docker     docker  `toml:"docker"`
-	Log        string  `toml:"log"`
-	BuildImage string  `toml:"buildImage"` //构建服务的基础镜像
-	BaseImage  string  `toml:"baseImage"`  //运行服务的基础镜像
-	Control    string  `toml:"control"`
+	Port   int     `toml:"port"`
+	K8S    k8sConf `toml:"k8s"`
+	Docker docker  `toml:"docker"`
+	Log    string  `toml:"log"`
+	//BuildImage string  `toml:"buildImage"` //构建服务的基础镜像
+	BuildImage map[string]string `toml:"build"`
+	BaseImage  string            `toml:"baseImage"` //运行服务的基础镜像
+	Control    string            `toml:"control"`
 }
 
 /*
@@ -129,6 +131,10 @@ func debug(bus *DataBus) {
 	logrus.Debug("*************************************")
 	logrus.Debugf("Listen on: %d", bus.Port)
 	logrus.Debugf("Control: %s", bus.Control)
+	logrus.Debugf("Build: %s", bus.Control)
+	for key, val := range bus.BuildImage {
+		logrus.Debugf("  %s: %s", key, val)
+	}
 	logrus.Debug("Kubernetes: ")
 	logrus.Debugf("  Namespace: %s", bus.K8S.Namespace)
 	logrus.Debugf("  Config: %s", bus.K8S.Config)

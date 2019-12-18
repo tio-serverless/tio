@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"net"
+	"strings"
+	"time"
 
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
@@ -33,6 +35,149 @@ type server struct {
 	B *data.B
 }
 
+func (s server) GetLogs(in *tio_control_v1.TioLogRequest, ls tio_control_v1.ControlService_GetLogsServer) error {
+	logrus.Debugf("Fetch [%s] [%s] Logs", in.Name, in.Stype)
+
+	logs := make(chan string, 1000)
+
+	switch strings.ToLower(in.Stype) {
+	case "build":
+		if err := s.getLogFromAgent(b.BuildAgent, in.Name, in.Flowing, logs); err != nil {
+			logrus.Errorf("Fetch [%s] logs error. %s", in.Name, err.Error())
+			return err
+		}
+
+	case "deploy":
+		if err := s.getLogFromAgent(b.DeployAgent, in.Name, in.Flowing, logs); err != nil {
+			logrus.Errorf("Fetch [%s] logs error. %s", in.Name, err.Error())
+			return err
+		}
+
+	default:
+		return nil
+	}
+
+	for {
+		select {
+		case l, ok := <-logs:
+			if !ok {
+				err := ls.Send(&tio_control_v1.TioLogReply{
+					Message: "Logs Chan Closed!",
+				})
+				if err != nil {
+					return err
+				}
+
+				return nil
+			}
+
+			//logrus.Debugf("send log [%s]", l)
+			err := ls.Send(&tio_control_v1.TioLogReply{
+				Message: l,
+			})
+
+			if err != nil {
+				logrus.Errorf("Send log error. %s", err.Error())
+				return err
+			}
+		}
+	}
+
+	return nil
+}
+
+func (s server) getLogFromAgent(address, name string, flowing bool, logs chan string) error {
+	conn, err := grpc.Dial(address, grpc.WithInsecure())
+	if err != nil {
+		logrus.Fatal(fmt.Sprintf("Connect Build Service Error: %s", err.Error()))
+	}
+
+	c := tio_control_v1.NewLogServiceClient(conn)
+	if flowing {
+		reply, err := c.GetLogs(context.Background(), &tio_control_v1.TioLogRequest{
+			Name:    name,
+			Flowing: flowing,
+		})
+		if err != nil {
+			return err
+		}
+
+		go func() {
+			defer func() {
+				conn.Close()
+
+				if r := recover(); r != nil {
+					logrus.Errorf("panic [%s] recover", r)
+				}
+			}()
+
+			for {
+				l, err := reply.Recv()
+				if err != nil {
+					close(logs)
+					return
+				}
+
+				//logrus.Debugf("Reve Log [%s]", l.Message)
+				logs <- l.Message
+			}
+		}()
+	} else {
+		ctx, cancle := context.WithTimeout(context.Background(), 10*time.Second)
+
+		reply, err := c.GetLogs(ctx, &tio_control_v1.TioLogRequest{
+			Name:    name,
+			Flowing: flowing,
+		})
+		if err != nil {
+			return err
+		}
+
+		go func() {
+			defer func() {
+				conn.Close()
+				cancle()
+				if r := recover(); r != nil {
+					logrus.Errorf("panic [%s] recover", r)
+				}
+			}()
+
+			for {
+				l, err := reply.Recv()
+				if err != nil {
+					close(logs)
+					return
+				}
+
+				//logrus.Debugf("Reve Log [%s]", l.Message)
+				logs <- l.Message
+			}
+		}()
+
+	}
+
+	return nil
+}
+
+func (s server) GetAgentMeta(ctx context.Context, in *tio_control_v1.TioAgentRequest) (*tio_control_v1.TioAgentReply, error) {
+	switch strings.ToLower(in.Name) {
+	case "build":
+		return &tio_control_v1.TioAgentReply{
+			Code:    tio_control_v1.CommonRespCode_RespSucc,
+			Address: b.BuildAgent,
+		}, nil
+	case "deploy":
+		return &tio_control_v1.TioAgentReply{
+			Code:    tio_control_v1.CommonRespCode_RespSucc,
+			Address: b.DeployAgent,
+		}, nil
+	default:
+		return &tio_control_v1.TioAgentReply{
+			Code: tio_control_v1.CommonRespCode_RespFaild,
+		}, nil
+	}
+}
+
 func (s server) GetBuildStatus(ctx context.Context, in *tio_control_v1.TioBuildQueryRequest) (*tio_control_v1.TioBuildQueryReply, error) {
 	logrus.Infof("User [%d] Wants Query [%s] Status Limit [%d]", in.Uid, in.Name, in.Limit)
 	ss, err := db.QueryUserAllSrv(s.B, int(in.Uid), int(in.Limit), in.Name)
@@ -60,7 +205,6 @@ func (s server) GetBuildStatus(ctx context.Context, in *tio_control_v1.TioBuildQ
 		Builds: bs,
 	}, nil
 }
-
 
 func (s server) GetToken(ctx context.Context, in *tio_control_v1.TioUserRequest) (*tio_control_v1.TioUserReply, error) {
 	logrus.Debugf("User[%s] Use [%s] Wants Get Upload Token", in.Name, in.Passwd)
@@ -118,10 +262,11 @@ func (s server) UpdateBuildStatus(ctx context.Context, in *tio_control_v1.BuildS
 		}
 
 		ns, _ := db.QuerySrvById(b, int(in.Sid))
-
 		msg <- ns
 	case tio_control_v1.JobStatus_BuildFailed:
 		err = db.UpdateSrvStatus(b, int(in.Sid), model.SrvBuildFailed)
+	case tio_control_v1.JobStatus_BuildIng:
+		err = db.UpdateSrvStatus(b, int(in.Sid), model.SrvBuilding)
 	}
 
 	return &tio_control_v1.BuildReply{
