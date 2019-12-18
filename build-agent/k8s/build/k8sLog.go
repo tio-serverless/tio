@@ -68,13 +68,11 @@ func GetLogs(jobname string, flowing bool, logs chan string) (err error) {
 		for {
 			n, err := podLogs.Read(data)
 			if err != err {
-				//if err == io.EOF {
-				//	logs <- string(data[:n])
-				//	logs <- "Build Output Finish! "
-				//	return
-				//}
 				logrus.Errorf("read %s log error. %s", jobname, err.Error())
 				logs <- string(data[:n])
+				return
+			}
+			if n == 0 {
 				return
 			}
 			logs <- string(data[:n])

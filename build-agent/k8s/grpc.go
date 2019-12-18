@@ -30,7 +30,7 @@ func (s server) GetLogs(in *tio_control_v1.TioLogRequest, ls tio_control_v1.LogS
 		ls.Send(&tio_control_v1.TioLogReply{
 			Message: fmt.Sprintf("Fetch Log Error. %s", err.Error()),
 		})
-		return nil
+		return err
 	}
 
 	for {

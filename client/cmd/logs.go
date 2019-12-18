@@ -57,16 +57,16 @@ var logsCmd = &cobra.Command{
 				os.Exit(-1)
 			}
 
-			l := <-logs
-
-			fmt.Printf("[%s]\n", l)
+			//l := <-logs
 			//
-			//for {
-			//	select {
-			//	case l := <-logs:
-			//		fmt.Println(l)
-			//	}
-			//}
+			//fmt.Printf("[%s]\n", l)
+			//
+			for {
+				select {
+				case l := <-logs:
+					fmt.Println(l)
+				}
+			}
 			os.Exit(0)
 		}
 
