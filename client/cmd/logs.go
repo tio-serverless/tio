@@ -23,7 +23,7 @@ import (
 	"tio/client/rpc"
 )
 
-var logsBuild, logsRunning bool
+var logsBuild, logsRunning, logsFlowing bool
 var logsName string
 
 // logsCmd represents the logs command
@@ -70,8 +70,6 @@ var logsCmd = &cobra.Command{
 
 		}
 
-
-
 	},
 }
 
@@ -80,6 +78,7 @@ func init() {
 
 	logsCmd.PersistentFlags().BoolVarP(&logsBuild, "build", "b", false, "Check Serverless Build Logs")
 	logsCmd.PersistentFlags().BoolVarP(&logsRunning, "running", "r", true, "Check Serverless Running Logs")
+	logsCmd.PersistentFlags().BoolVarP(&logsFlowing, "flowing", "f", false, "Flowing output the log")
 	logsCmd.PersistentFlags().StringVarP(&logsName, "name", "n", "", "Serverless Name")
 }
 
