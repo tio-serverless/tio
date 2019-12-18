@@ -59,23 +59,23 @@ func GetLogs(jobname string, flowing bool, logs chan string) (err error) {
 	}
 
 	defer podLogs.Close()
-
-	for {
-		data := make([]byte, 1024)
-		n, err := podLogs.Read(data)
-		if err != err {
-			if err == io.EOF {
+	go func() {
+		for {
+			data := make([]byte, 1024)
+			n, err := podLogs.Read(data)
+			if err != err {
+				if err == io.EOF {
+					logs <- string(data[:n])
+					logs <- "Build Output Finish! "
+					return
+				}
+				logrus.Errorf("read %s log error. %s", jobname, err.Error())
 				logs <- string(data[:n])
-				logs <- "Build Output Finish! "
-				break
+				return
 			}
-			logrus.Errorf("read %s log error. %s", jobname, err.Error())
 			logs <- string(data[:n])
-			break
 		}
-		//logrus.Debugf("Read Log %s", string(data[:n]))
-		logs <- string(data[:n])
-	}
+	}()
 
 	return
 }
