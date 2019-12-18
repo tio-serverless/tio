@@ -51,7 +51,6 @@ var logsCmd = &cobra.Command{
 
 		if logsBuild {
 			fmt.Printf("----------[%s-Build-Log]----------\n", logsName)
-
 			if err := rpc.GetBuildLogs(fmt.Sprintf("%s:%d", b.TioUrl, b.TioPort), name, "build", logsFlowing, logs); err != nil {
 				fmt.Println(err.Error())
 				os.Exit(-1)
@@ -66,21 +65,28 @@ var logsCmd = &cobra.Command{
 					fmt.Println(l)
 				}
 			}
-			os.Exit(0)
+
 		}
 
 		if logsRunning {
-			//address, err := queryAgentAddress("deploy")
-			//if err != nil {
-			//	fmt.Println(err.Error())
-			//	os.Exit(-1)
-			//}
-			//
-			//fmt.Println(address)
 			fmt.Printf("----------[%s-Running-Log]----------\n", logsName)
+			if err := rpc.GetBuildLogs(fmt.Sprintf("%s:%d", b.TioUrl, b.TioPort), name, "deploy", logsFlowing, logs); err != nil {
+				fmt.Println(err.Error())
+				os.Exit(-1)
+			}
 
+			for {
+				select {
+				case l, ok := <-logs:
+					if !ok {
+						os.Exit(0)
+					}
+					fmt.Println(l)
+				}
+			}
 		}
 
+		os.Exit(0)
 	},
 }
 

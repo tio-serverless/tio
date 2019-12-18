@@ -43,6 +43,7 @@ func startRpc() {
 	gs := &grcpSrv{cli: &sk}
 
 	tio_control_v1.RegisterTioDeployServiceServer(s, gs)
+	tio_control_v1.RegisterLogServiceServer(s, gs)
 	tio_control_v1.RegisterTioDeployCommServiceServer(s, gs)
 	reflection.Register(s)
 
@@ -55,12 +56,7 @@ type grcpSrv struct {
 	cli k8s.MyK8s
 }
 
-func (g grcpSrv) UpdateSrvMeta(ctx context.Context, in *tio_control_v1.SrvMeta) (*tio_control_v1.TioReply, error) {
-	logrus.Debugf("Update [%s] Metadata", in.Name)
-	return nil, nil
-}
-
-func (g grcpSrv) GetLogs(in *tio_control_v1.TioLogRequest, ls tio_control_v1.TioDeployService_GetLogsServer) error {
+func (g grcpSrv) GetLogs(in *tio_control_v1.TioLogRequest, ls tio_control_v1.LogService_GetLogsServer) error {
 	logrus.Debugf("Fetch [%s] Running Log", in.Name)
 	logs := make(chan string, 1000)
 	err := k8s.GetDeploymentLog(g.cli, in.Name, logs)
@@ -89,6 +85,11 @@ func (g grcpSrv) GetLogs(in *tio_control_v1.TioLogRequest, ls tio_control_v1.Tio
 			}
 		}
 	}
+}
+
+func (g grcpSrv) UpdateSrvMeta(ctx context.Context, in *tio_control_v1.SrvMeta) (*tio_control_v1.TioReply, error) {
+	logrus.Debugf("Update [%s] Metadata", in.Name)
+	return nil, nil
 }
 
 func (g grcpSrv) ScalaDeploy(ctx context.Context, in *tio_control_v1.DeployRequest) (*tio_control_v1.TioReply, error) {
