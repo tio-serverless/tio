@@ -61,13 +61,17 @@ func (s server) GetLogs(in *tio_control_v1.TioLogRequest, ls tio_control_v1.Cont
 		select {
 		case l, ok := <-logs:
 			if !ok {
-				ls.Send(&tio_control_v1.TioLogReply{
+				err := ls.Send(&tio_control_v1.TioLogReply{
 					Message: "Logs Chan Closed!",
 				})
+				if err != nil {
+					return err
+				}
+
 				return nil
 			}
 
-			logrus.Debugf("send log [%s]", l)
+			//logrus.Debugf("send log [%s]", l)
 			err := ls.Send(&tio_control_v1.TioLogReply{
 				Message: l,
 			})

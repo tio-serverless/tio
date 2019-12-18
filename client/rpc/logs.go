@@ -40,7 +40,7 @@ func GetBuildLogs(address, name, stype string, flowing bool, logs chan string) e
 				close(logs)
 				return
 			}
-
+			
 			logs <- l.Message
 		}
 	}()
