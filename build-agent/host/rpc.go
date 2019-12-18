@@ -35,10 +35,6 @@ type server struct {
 	B *bus
 }
 
-func (s *server) GetLogs(*tio_build_v1.TioLogRequest, tio_build_v1.BuildService_GetLogsServer) error {
-	panic("implement me")
-}
-
 func (s *server) Build(ctx context.Context, in *tio_build_v1.Request) (*tio_build_v1.Reply, error) {
 
 	fmt.Println(in.Address)
