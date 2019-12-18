@@ -46,6 +46,8 @@ var logsCmd = &cobra.Command{
 			os.Exit(-1)
 		}
 
+		name := fmt.Sprintf("%d-%s-%s", b.Uid, b.Sname, b.Stype)
+
 		if logsBuild {
 			address, err := queryAgentAddress("build")
 			if err != nil {
@@ -54,7 +56,18 @@ var logsCmd = &cobra.Command{
 			}
 
 			fmt.Println(address)
-			fmt.Printf("----------[%s-Build-Log]----------", logsName)
+			fmt.Printf("----------[%s-Build-Log]----------\n", logsName)
+			logs := make(chan string, 1000)
+			if err := rpc.GetBuildLogs(address, name, logsFlowing, logs); err != nil {
+				fmt.Println(err.Error())
+				os.Exit(-1)
+			}
+			for {
+				select {
+				case l := <-logs:
+					fmt.Println(l)
+				}
+			}
 			os.Exit(0)
 		}
 
@@ -66,7 +79,7 @@ var logsCmd = &cobra.Command{
 			}
 
 			fmt.Println(address)
-			fmt.Printf("----------[%s-Running-Log]----------", logsName)
+			fmt.Printf("----------[%s-Running-Log]----------\n", logsName)
 
 		}
 

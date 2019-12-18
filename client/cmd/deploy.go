@@ -26,11 +26,9 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/BurntSushi/toml"
 	"github.com/qiniu/api.v7/v7/auth/qbox"
 	"github.com/qiniu/api.v7/v7/storage"
 	"github.com/spf13/cobra"
-	"tio/client/model"
 	"tio/client/rpc"
 )
 
@@ -230,48 +228,3 @@ func RecursiveZip(pathToZip, destinationPath string) error {
 	return nil
 }
 
-func getMetaData(path string) (m model.MetaData, err error) {
-	m = model.MetaData{}
-
-	if _, err := os.Stat(fmt.Sprintf("%s/.tio.toml", path)); os.IsNotExist(err) {
-		err = errors.New(fmt.Sprintf("Can not find .tio.toml in %s", path))
-		return m, err
-	}
-
-	_, err = toml.DecodeFile(fmt.Sprintf("%s/.tio.toml", path), &m)
-	if err != nil {
-		return
-	}
-
-	return m, nil
-}
-
-func getServerlessName(path string) (name string, err error) {
-	m, err := getMetaData(path)
-	if err != nil {
-		return "", err
-	}
-
-	return m.BuildInfo.Name, nil
-}
-
-func getServerlessType(path string) (stype string, err error) {
-	m, err := getMetaData(path)
-	if err != nil {
-		return stype, err
-	}
-
-	return m.BuildInfo.Stype, nil
-}
-func getServrelessVersion(path string) (version string, err error) {
-	m, err := getMetaData(path)
-	if err != nil {
-		return "", err
-	}
-
-	return m.BuildInfo.Version, nil
-}
-
-func getUserID() (id int, err error) {
-	return b.Uid, nil
-}

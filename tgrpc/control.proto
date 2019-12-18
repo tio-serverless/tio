@@ -49,4 +49,7 @@ service ControlService {
     //    GetAgentMeta 获取其它Agents元数据
     rpc GetAgentMeta (TioAgentRequest) returns (TioAgentReply) {
     }
+
+    rpc GetLogs (TioLogRequest) returns (stream TioLogReply) {
+    }
 }

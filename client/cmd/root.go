@@ -16,9 +16,11 @@ limitations under the License.
 package cmd
 
 import (
+	"errors"
 	"fmt"
 	"os"
 
+	"github.com/BurntSushi/toml"
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -103,6 +105,53 @@ func initBus() {
 	b.UserName = c.User.Name
 	b.Uid = c.User.Uid
 	b.Passwd = c.User.Passwd
-
+	b.Sname, _ = getServerlessName(os.Getenv("PWD"))
+	b.Stype, _ = getServerlessType(os.Getenv("PWD"))
 	return
+}
+
+func getMetaData(path string) (m model.MetaData, err error) {
+	m = model.MetaData{}
+
+	if _, err := os.Stat(fmt.Sprintf("%s/.tio.toml", path)); os.IsNotExist(err) {
+		err = errors.New(fmt.Sprintf("Can not find .tio.toml in %s", path))
+		return m, err
+	}
+
+	_, err = toml.DecodeFile(fmt.Sprintf("%s/.tio.toml", path), &m)
+	if err != nil {
+		return
+	}
+
+	return m, nil
+}
+
+func getServerlessName(path string) (name string, err error) {
+	m, err := getMetaData(path)
+	if err != nil {
+		return "", err
+	}
+
+	return m.BuildInfo.Name, nil
+}
+
+func getServerlessType(path string) (stype string, err error) {
+	m, err := getMetaData(path)
+	if err != nil {
+		return stype, err
+	}
+
+	return m.BuildInfo.Stype, nil
+}
+func getServrelessVersion(path string) (version string, err error) {
+	m, err := getMetaData(path)
+	if err != nil {
+		return "", err
+	}
+
+	return m.BuildInfo.Version, nil
+}
+
+func getUserID() (id int, err error) {
+	return b.Uid, nil
 }

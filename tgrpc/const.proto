@@ -56,8 +56,16 @@ message TioAgentReply {
 message TioLogRequest {
     string name = 1;
     bool flowing = 2;
+    string stype = 3;
 }
 
 message TioLogReply {
     string message = 1;
+}
+
+
+service LogService {
+    //    GetLogs 代理客户端读取其它服务的日志
+    rpc GetLogs (TioLogRequest) returns (stream TioLogReply) {
+    }
 }
