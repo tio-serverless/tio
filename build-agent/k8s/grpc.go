@@ -22,8 +22,9 @@ func (s server) GetLogs(in *tio_control_v1.TioLogRequest, ls tio_control_v1.LogS
 	ls.Send(&tio_control_v1.TioLogReply{
 		Message: fmt.Sprintf("%s - Log", in.Name),
 	})
-	
+
 	logs := make(chan string, 1000)
+
 	err := deploy.GetLogs(in.Name, in.Flowing, logs)
 	if err != nil {
 		ls.Send(&tio_control_v1.TioLogReply{
@@ -34,7 +35,11 @@ func (s server) GetLogs(in *tio_control_v1.TioLogRequest, ls tio_control_v1.LogS
 
 	for {
 		select {
-		case s := <-logs:
+		case s, ok := <-logs:
+			if !ok {
+				return nil
+			}
+
 			if ls.Send(&tio_control_v1.TioLogReply{
 				Message: s,
 			}) != nil {

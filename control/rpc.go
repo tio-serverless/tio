@@ -39,30 +39,38 @@ func (s server) GetLogs(in *tio_control_v1.TioLogRequest, ls tio_control_v1.Cont
 	logrus.Debugf("Fetch [%s] [%s] Logs", in.Name, in.Stype)
 
 	logs := make(chan string, 1000)
+
 	switch strings.ToLower(in.Stype) {
 	case "build":
 		if err := s.getLogFromAgent(b.BuildAgent, in.Name, in.Flowing, logs); err != nil {
 			logrus.Errorf("Fetch [%s] logs error. %s", in.Name, err.Error())
 			return err
 		}
-		for {
-			select {
-			case l, ok := <-logs:
-				if !ok {
-					ls.Send(&tio_control_v1.TioLogReply{
-						Message: "Logs Finish!",
-					})
-					return nil
-				}
 
-				ls.Send(&tio_control_v1.TioLogReply{
-					Message: l,
-				})
-			}
-		}
 	case "deploy":
+		if err := s.getLogFromAgent(b.DeployAgent, in.Name, in.Flowing, logs); err != nil {
+			logrus.Errorf("Fetch [%s] logs error. %s", in.Name, err.Error())
+			return err
+		}
+
 	default:
 		return nil
+	}
+
+	for {
+		select {
+		case l, ok := <-logs:
+			if !ok {
+				ls.Send(&tio_control_v1.TioLogReply{
+					Message: "Logs Chan Closed!",
+				})
+				return nil
+			}
+
+			ls.Send(&tio_control_v1.TioLogReply{
+				Message: l,
+			})
+		}
 	}
 
 	return nil
@@ -90,15 +98,20 @@ func (s server) getLogFromAgent(address, name string, flowing bool, logs chan st
 		return err
 	}
 
-	for {
-		l, err := reply.Recv()
-		if err != nil {
-			close(logs)
-			return err
-		}
+	go func() {
+		for {
+			l, err := reply.Recv()
+			if err != nil {
+				close(logs)
+				return
+			}
 
-		logs <- l.Message
-	}
+			logrus.Debugf("Reve Log [%s]", l.Message)
+			logs <- l.Message
+		}
+	}()
+
+	return nil
 }
 
 func (s server) GetAgentMeta(ctx context.Context, in *tio_control_v1.TioAgentRequest) (*tio_control_v1.TioAgentReply, error) {

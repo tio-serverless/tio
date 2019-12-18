@@ -47,14 +47,16 @@ var logsCmd = &cobra.Command{
 		}
 
 		name := fmt.Sprintf("%d-%s-%s", b.Uid, b.Sname, b.Stype)
+		logs := make(chan string, 1000)
 
 		if logsBuild {
 			fmt.Printf("----------[%s-Build-Log]----------\n", logsName)
-			logs := make(chan string, 1000)
+
 			if err := rpc.GetBuildLogs(fmt.Sprintf("%s:%d", b.TioUrl, b.TioPort), name, "build", logsFlowing, logs); err != nil {
 				fmt.Println(err.Error())
 				os.Exit(-1)
 			}
+
 			fmt.Println("---------")
 			for {
 				select {

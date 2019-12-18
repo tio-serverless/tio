@@ -3,6 +3,7 @@ package deploy
 import (
 	"errors"
 	"fmt"
+	"io"
 
 	"github.com/sirupsen/logrus"
 	apiv1 "k8s.io/api/core/v1"
@@ -62,12 +63,17 @@ func GetLogs(jobname string, flowing bool, logs chan string) (err error) {
 	for {
 		data := make([]byte, 1024)
 		n, err := podLogs.Read(data)
-		if err != nil {
+		if err != err {
+			if err == io.EOF {
+				logs <- string(data[:n])
+				logs <- "Build Output Finish! "
+				break
+			}
 			logrus.Errorf("read %s log error. %s", jobname, err.Error())
 			logs <- string(data[:n])
 			break
 		}
-		logrus.Debugf("Read Log %s", string(data[:n]))
+		//logrus.Debugf("Read Log %s", string(data[:n]))
 		logs <- string(data[:n])
 	}
 

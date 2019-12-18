@@ -7,10 +7,11 @@ import "const.proto";
 
 message SrvMeta {
     string name = 1;
-    map<string, string> env = 2;
+    string image = 2;
+    map<string, string> env = 3;
 }
 
-service TioDeployCommService{
+service TioDeployCommService {
     rpc UpdateSrvMeta (SrvMeta) returns (TioReply) {
     }
 }

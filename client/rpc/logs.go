@@ -31,13 +31,17 @@ func GetBuildLogs(address, name, stype string, flowing bool, logs chan string) e
 		return err
 	}
 
-	for {
-		l, err := r.Recv()
-		if err != nil {
-			close(logs)
-			return err
-		}
+	go func() {
+		for {
+			l, err := r.Recv()
+			if err != nil {
+				close(logs)
+				return
+			}
 
-		logs <- l.Message
-	}
+			logs <- l.Message
+		}
+	}()
+
+	return nil
 }
