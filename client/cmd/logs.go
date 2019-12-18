@@ -60,7 +60,7 @@ var logsCmd = &cobra.Command{
 			l := <-logs
 
 			fmt.Printf("[%s]\n", l)
-
+			//
 			//for {
 			//	select {
 			//	case l := <-logs:

@@ -45,16 +45,13 @@ func (s server) GetLogs(in *tio_control_v1.TioLogRequest, ls tio_control_v1.LogS
 			})
 
 			if err != nil {
+				close(logs)
 				logrus.Errorf("Send log to [%s] error %s. Closed Chan", in.Name, err.Error())
 				return err
 			}
 		}
 	}
 }
-
-//func (s server) GetLogs(in *tio_control_v1.TioLogRequest, ls tio_control_v1.BuildService_GetLogsServer) error {
-
-//}
 
 func (s server) Build(ctx context.Context, in *tio_control_v1.Request) (*tio_control_v1.Reply, error) {
 	logrus.Debugf("New Build Request. Name: [%s] Type: [%s] Sid: [%d] Address: [%s]", in.Name, in.BuildType, in.Sid, in.Address)

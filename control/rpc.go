@@ -67,9 +67,15 @@ func (s server) GetLogs(in *tio_control_v1.TioLogRequest, ls tio_control_v1.Cont
 				return nil
 			}
 
-			ls.Send(&tio_control_v1.TioLogReply{
+			logrus.Debugf("send log [%s]", l)
+			err := ls.Send(&tio_control_v1.TioLogReply{
 				Message: l,
 			})
+
+			if err != nil {
+				logrus.Errorf("Send log error. %s", err.Error())
+				return err
+			}
 		}
 	}
 
@@ -81,7 +87,7 @@ func (s server) getLogFromAgent(address, name string, flowing bool, logs chan st
 	if err != nil {
 		logrus.Fatal(fmt.Sprintf("Connect Build Service Error: %s", err.Error()))
 	}
-	
+
 	c := tio_control_v1.NewLogServiceClient(conn)
 	ctx, cancle := context.WithTimeout(context.Background(), 10*time.Second)
 
@@ -95,8 +101,14 @@ func (s server) getLogFromAgent(address, name string, flowing bool, logs chan st
 	}
 
 	go func() {
-		defer conn.Close()
-		defer cancle()
+		defer func() {
+			conn.Close()
+			cancle()
+			if r := recover(); r != nil {
+				logrus.Errorf("panic [%s] recover", r)
+			}
+		}()
+
 		for {
 			l, err := reply.Recv()
 			if err != nil {
@@ -104,7 +116,7 @@ func (s server) getLogFromAgent(address, name string, flowing bool, logs chan st
 				return
 			}
 
-			logrus.Debugf("Reve Log [%s]", l.Message)
+			//logrus.Debugf("Reve Log [%s]", l.Message)
 			logs <- l.Message
 		}
 	}()
