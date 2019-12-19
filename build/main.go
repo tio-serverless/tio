@@ -99,6 +99,7 @@ func main() {
 		logrus.Fatalln(err)
 	}
 
+	logrus.Println("=======Build Finish=======")
 }
 
 func createJob() {

@@ -23,13 +23,6 @@ func main() {
 	}
 	log.Fatal(http.Serve(l, r))
 
-	//srv := &http.Server{
-	//
-	//	WriteTimeout: 15 * time.Second,
-	//	ReadTimeout:  15 * time.Second,
-	//}
-	//
-	//log.Fatal(srv.ListenAndServe())
 }
 
 func handler(writer http.ResponseWriter, request *http.Request) {

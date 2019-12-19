@@ -17,7 +17,8 @@ func build(name string) error {
 
 	cmd := exec.Command("go", "env")
 	cmd.Env = append(os.Environ(),
-		"GOPROXY=https://goproxy.cn,direct")
+		"GOPROXY=https://goproxy.cn,direct",
+		"GO111MODULE=off")
 
 	var stdout, stderr bytes.Buffer
 	cmd.Stdout = &stdout
@@ -40,7 +41,8 @@ func build(name string) error {
 	cmd = exec.Command("go", "mod", "tidy")
 	cmd.Dir = fmt.Sprintf("%s/tio", b.Root)
 	cmd.Env = append(os.Environ(),
-		"GOPROXY=https://goproxy.cn,direct")
+		"GOPROXY=https://goproxy.cn,direct",
+		"GO111MODULE=off")
 
 	cmd.Stdout = &stdout
 	cmd.Stderr = &stderr
@@ -60,7 +62,8 @@ func build(name string) error {
 	cmd = exec.Command("go", "mod", "vendor")
 	cmd.Dir = fmt.Sprintf("%s/tio", b.Root)
 	cmd.Env = append(os.Environ(),
-		"GOPROXY=https://goproxy.cn,direct")
+		"GOPROXY=https://goproxy.cn,direct",
+		"GO111MODULE=off")
 
 	cmd.Stdout = &stdout
 	cmd.Stderr = &stderr
@@ -80,7 +83,8 @@ func build(name string) error {
 	cmd = exec.Command("go", "build", "-mod=vendor", "-o", fmt.Sprintf("bin/%s", name))
 	cmd.Dir = fmt.Sprintf("%s/tio", b.Root)
 	cmd.Env = append(os.Environ(),
-		"GOPROXY=https://goproxy.cn,direct")
+		"GOPROXY=https://goproxy.cn,direct",
+		"GO111MODULE=off")
 
 	cmd.Stdout = &stdout
 	cmd.Stderr = &stderr
