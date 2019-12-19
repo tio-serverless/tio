@@ -39,6 +39,7 @@ func (s server) UpdateServerMetadata(ctx context.Context, in *tio_control_v1.Srv
 	logrus.Debugf("[%s] Wants Update Running Parameteres [%v]", in.Name, in.Env)
 
 	conn, err := grpc.Dial(b.DeployAgent, grpc.WithInsecure())
+	defer conn.Close()
 	if err != nil {
 		logrus.Errorf("Dial DeployAgent Error. %s", err.Error())
 		return nil, err
