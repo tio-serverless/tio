@@ -18,7 +18,8 @@ func build(name string) error {
 	cmd := exec.Command("go", "env")
 	cmd.Env = append(os.Environ(),
 		"GOPROXY=https://goproxy.cn,direct",
-		"GO111MODULE=off")
+		"GO111MODULE=auto",
+		"GOPATH=/")
 
 	var stdout, stderr bytes.Buffer
 	cmd.Stdout = &stdout
@@ -42,7 +43,8 @@ func build(name string) error {
 	cmd.Dir = fmt.Sprintf("%s/tio", b.Root)
 	cmd.Env = append(os.Environ(),
 		"GOPROXY=https://goproxy.cn,direct",
-		"GO111MODULE=off")
+		"GO111MODULE=auto",
+		"GOPATH=/")
 
 	cmd.Stdout = &stdout
 	cmd.Stderr = &stderr
@@ -63,7 +65,8 @@ func build(name string) error {
 	cmd.Dir = fmt.Sprintf("%s/tio", b.Root)
 	cmd.Env = append(os.Environ(),
 		"GOPROXY=https://goproxy.cn,direct",
-		"GO111MODULE=off")
+		"GO111MODULE=auto",
+		"GOPATH=/")
 
 	cmd.Stdout = &stdout
 	cmd.Stderr = &stderr
@@ -84,7 +87,8 @@ func build(name string) error {
 	cmd.Dir = fmt.Sprintf("%s/tio", b.Root)
 	cmd.Env = append(os.Environ(),
 		"GOPROXY=https://goproxy.cn,direct",
-		"GO111MODULE=off")
+		"GO111MODULE=auto",
+		"GOPATH=/")
 
 	cmd.Stdout = &stdout
 	cmd.Stderr = &stderr
@@ -96,6 +100,8 @@ func build(name string) error {
 		logrus.Infof(errStr)
 		return err
 	}
+
+	logrus.Infof("%s Build Success!", name)
 
 	outStr, errStr = string(stdout.Bytes()), string(stderr.Bytes())
 	logrus.Info(outStr)
@@ -124,7 +130,7 @@ func build(name string) error {
 	if err != nil {
 		return err
 	}
-
+	logrus.Infof("%s Image Build Success!", name)
 	return push(fmt.Sprintf("%s-%s", name, version))
 }
 
