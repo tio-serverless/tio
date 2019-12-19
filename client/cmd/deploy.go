@@ -25,6 +25,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/qiniu/api.v7/v7/auth/qbox"
 	"github.com/qiniu/api.v7/v7/storage"
@@ -152,7 +153,7 @@ func zipDir(path string) (zipDirName, zipFileName string, err error) {
 		return
 	}
 
-	zipFileName = fmt.Sprintf("%d-%s-%s.zip", uid, name, stype)
+	zipFileName = fmt.Sprintf("%d-%s-%s-%d.zip", uid, name, stype, time.Now().Unix())
 	err = RecursiveZip(zipDirName, zipFileName)
 	if err != nil {
 		fmt.Errorf("Zip Error. %s", err.Error())
@@ -201,7 +202,7 @@ func RecursiveZip(pathToZip, destinationPath string) error {
 		if err != nil {
 			return err
 		}
-		if strings.Contains(filePath,"/vendor/"){
+		if strings.Contains(filePath, "/vendor/") {
 			return nil
 		}
 

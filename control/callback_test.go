@@ -24,7 +24,7 @@ func TestSplitUidAndSrvName(t *testing.T) {
 			}{id: 0, name: "", stype: ""},
 		},
 		{
-			fileName: "1234-firstname-grpc.zip",
+			fileName: "1234-firstname-grpc-1234.zip",
 			expect: struct {
 				id    int
 				name  string

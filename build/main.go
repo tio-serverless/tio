@@ -6,7 +6,6 @@ import (
 	"io"
 	"net/http"
 	"os"
-	"time"
 
 	"github.com/sirupsen/logrus"
 )
@@ -63,8 +62,8 @@ func main() {
 	initBus()
 
 	// CDN更新缓存需要时间,这里暂停1分钟等待缓存更新
-	logrus.Info("Waiting CDN update, pause 1 min")
-	time.Sleep(1 * time.Minute)
+	//logrus.Info("Waiting CDN update, pause 1 min")
+	//time.Sleep(1 * time.Minute)
 
 	var err error
 
