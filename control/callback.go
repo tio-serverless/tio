@@ -117,7 +117,7 @@ func callBuildAgent(key, request string) error {
 	defer cancel()
 
 	reply, err := c.Build(ctx, &tio_build_v1.Request{
-		Name:      strings.Split(key, ".")[0],
+		Name:      trimTimestamp(key),
 		Address:   request,
 		Sid:       int32(sid),
 		BuildType: stype,
@@ -135,7 +135,7 @@ func callBuildAgent(key, request string) error {
 }
 
 // splitUidAndSrvName 从文件名中获取用户ID、服务名称和服务类型
-// 文件名按照  id-name-type.zip 规则拼装
+// 文件名按照  id-name-type-timestamp.zip 规则拼装
 func splitUidAndSrvName(fileName string) (int, string, string) {
 	var uid int
 	var name string
@@ -148,7 +148,7 @@ func splitUidAndSrvName(fileName string) (int, string, string) {
 	fileName = strings.Split(fileName, ".")[0]
 
 	fs := strings.Split(fileName, "-")
-	if len(fs) != 3 {
+	if len(fs) != 4 {
 		return uid, name, stype
 	}
 
@@ -160,4 +160,11 @@ func splitUidAndSrvName(fileName string) (int, string, string) {
 	name = fs[1]
 	stype = fs[2]
 	return uid, name, stype
+}
+
+func trimTimestamp(filename string) string {
+	preName := strings.Split(filename, ".")[0]
+	buildName := strings.Split(preName, "-")
+
+	return strings.Join(buildName[:len(buildName)-1], "-")
 }
