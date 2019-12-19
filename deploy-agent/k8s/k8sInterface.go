@@ -13,4 +13,5 @@ type MyK8s interface {
 	IsHasDeploy(id string) (bool, error)
 	ReplaceDeploy(d deploy) error
 	GetLog(d deploy, log chan string)error
+	Update(d deploy) error
 }

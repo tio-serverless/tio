@@ -32,7 +32,8 @@ type Repostry struct {
 }
 
 type MetaData struct {
-	BuildInfo buildInfo `toml:"build"`
+	BuildInfo  buildInfo  `toml:"build"`
+	DeployInfo deployInfo `toml:"deploy"`
 }
 
 type buildInfo struct {
@@ -41,6 +42,11 @@ type buildInfo struct {
 	API     string `toml:"api"`
 	Rate    int32  `toml:"rate"`
 	Stype   string `toml:"type"`
+}
+
+type deployInfo struct {
+	Url string            `toml:"url"`
+	Env map[string]string `toml:"env"`
 }
 
 func ReadConf(path string) (c Config, err error) {
