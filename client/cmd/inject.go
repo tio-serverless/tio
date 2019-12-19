@@ -137,7 +137,7 @@ func main() {
 		method := reflect.TypeOf(srv).Method(i)
 		if method.Name == "ServerInit" && method.Type.NumIn() == 1 {
 			method.Func.Call([]reflect.Value{
-				reflect.ValueOf(s),
+				reflect.ValueOf(srv),
 			})
 		}
 	}
