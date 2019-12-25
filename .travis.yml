@@ -33,19 +33,19 @@ install:
 
 
 after_script:
-  - docker build -t ${TIO_BUILD_NAME}:http-${TIO_VERSION}-${TRAVIS_BRANCH} -f Dockerfile.build-http .
+  - docker build -t ${TIO_BUILD_NAME}:http-${TIO_VERSION}-${TRAVIS_BRANCH} -f Dockerfile.build-http Dockerfile
   - docker push ${TIO_BUILD_NAME}:http-${TIO_VERSION}-${TRAVIS_BRANCH}
-  - docker build -t ${TIO_BUILD_NAME}:grpc-${TIO_VERSION}-${TRAVIS_BRANCH} -f Dockerfile.build-grpc .
+  - docker build -t ${TIO_BUILD_NAME}:grpc-${TIO_VERSION}-${TRAVIS_BRANCH} -f Dockerfile.build-grpc Dockerfile
   - docker push ${TIO_BUILD_NAME}:grpc-${TIO_VERSION}-${TRAVIS_BRANCH}
-  - docker build -t ${TIO_CONTROL_NAME}:${TIO_VERSION}-${TRAVIS_BRANCH} -f Dockerfile.control .
+  - docker build -t ${TIO_CONTROL_NAME}:${TIO_VERSION}-${TRAVIS_BRANCH} -f Dockerfile.control Dockerfile
   - docker push ${TIO_CONTROL_NAME}:${TIO_VERSION}-${TRAVIS_BRANCH}
-  - docker build -t ${TIO_BUILD_AGENT_HOST_NAME}:${TIO_VERSION}-${TRAVIS_BRANCH} -f Dockerfile.build-agent-host .
+  - docker build -t ${TIO_BUILD_AGENT_HOST_NAME}:${TIO_VERSION}-${TRAVIS_BRANCH} -f Dockerfile.build-agent-host Dockerfile
   - docker push  ${TIO_BUILD_AGENT_HOST_NAME}:${TIO_VERSION}-${TRAVIS_BRANCH}
-  - docker build -t ${TIO_BUILD_AGENT_K8S_NAME}:${TIO_VERSION}-${TRAVIS_BRANCH} -f Dockerfile.build-agent-k8s .
+  - docker build -t ${TIO_BUILD_AGENT_K8S_NAME}:${TIO_VERSION}-${TRAVIS_BRANCH} -f Dockerfile.build-agent-k8s Dockerfile
   - docker push  ${TIO_BUILD_AGENT_K8S_NAME}:${TIO_VERSION}-${TRAVIS_BRANCH}
-  - docker build -t ${TIO_CONSUL_AGENT}:${TIO_VERSION}-${TRAVIS_BRANCH} -f Dockerfile.consul-sidecar .
+  - docker build -t ${TIO_CONSUL_AGENT}:${TIO_VERSION}-${TRAVIS_BRANCH} -f Dockerfile.consul-sidecar Dockerfile
   - docker push ${TIO_CONSUL_AGENT}:${TIO_VERSION}-${TRAVIS_BRANCH}
-  - docker build -t ${TIO_DEPLOY_AGENT}:${TIO_VERSION}-${TRAVIS_BRANCH} -f Dockerfile.deploy-agent .
+  - docker build -t ${TIO_DEPLOY_AGENT}:${TIO_VERSION}-${TRAVIS_BRANCH} -f Dockerfile.deploy-agent Dockerfile
   - docker push ${TIO_DEPLOY_AGENT}:${TIO_VERSION}-${TRAVIS_BRANCH}
-  - docker build -t ${TIO_CONSUL_WATCH}:${TIO_VERSION}-${TRAVIS_BRANCH} -f Dockerfile.consul-watch .
+  - docker build -t ${TIO_CONSUL_WATCH}:${TIO_VERSION}-${TRAVIS_BRANCH} -f Dockerfile.consul-watch Dockerfile
   - docker push ${TIO_CONSUL_WATCH}:${TIO_VERSION}-${TRAVIS_BRANCH}
