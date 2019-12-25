@@ -24,7 +24,7 @@ func TestSplitUidAndSrvName(t *testing.T) {
 			}{id: 0, name: "", stype: ""},
 		},
 		{
-			fileName: "1234-firstname-grpc.zip",
+			fileName: "1234-firstname-grpc-1234.zip",
 			expect: struct {
 				id    int
 				name  string
@@ -70,5 +70,26 @@ func TestSplitUidAndSrvName(t *testing.T) {
 		assert.EqualValues(t, c.expect.id, uid)
 		assert.EqualValues(t, c.expect.name, name)
 		assert.EqualValues(t, c.expect.stype, stype)
+	}
+}
+
+func TestTrimTimestamp(t *testing.T) {
+	cases := []struct {
+		fileName string
+		expect   string
+	}{
+		{
+			fileName: "2-xt-grpc-123456.zip",
+			expect:   "2-xt-grpc",
+		},
+		{
+			fileName: "2-xt-grpc-123456",
+			expect:   "2-xt-grpc",
+		},
+	}
+
+	for _, c := range cases {
+		actual := trimTimestamp(c.fileName)
+		assert.EqualValuesf(t, c.expect, actual, actual)
 	}
 }

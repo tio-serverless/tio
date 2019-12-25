@@ -59,3 +59,10 @@ func GetDeploymentLog(k MyK8s, name string, logs chan string) error {
 		Name: name,
 	}, logs)
 }
+
+func UpdateDeployment(k MyK8s, name string, env map[string]string) error {
+	return k.Update(deploy{
+		Name: name,
+		Env:  env,
+	})
+}

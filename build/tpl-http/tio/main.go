@@ -8,9 +8,15 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
+	"github.com/sirupsen/logrus"
 )
 
 func main() {
+	defer func() {
+		if r := recover(); r != nil {
+			logrus.Println(r)
+		}
+	}()
 	r := mux.NewRouter()
 	r.HandleFunc("/", handler)
 	r.HandleFunc("/_ping", func(writer http.ResponseWriter, request *http.Request) {
@@ -23,13 +29,6 @@ func main() {
 	}
 	log.Fatal(http.Serve(l, r))
 
-	//srv := &http.Server{
-	//
-	//	WriteTimeout: 15 * time.Second,
-	//	ReadTimeout:  15 * time.Second,
-	//}
-	//
-	//log.Fatal(srv.ListenAndServe())
 }
 
 func handler(writer http.ResponseWriter, request *http.Request) {

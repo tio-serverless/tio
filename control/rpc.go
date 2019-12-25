@@ -35,6 +35,24 @@ type server struct {
 	B *data.B
 }
 
+func (s server) UpdateServerMetadata(ctx context.Context, in *tio_control_v1.SrvMeta) (*tio_control_v1.TioReply, error) {
+	logrus.Debugf("[%s] Wants Update Running Parameteres [%v]", in.Name, in.Env)
+
+	conn, err := grpc.Dial(b.DeployAgent, grpc.WithInsecure())
+	defer conn.Close()
+	if err != nil {
+		logrus.Errorf("Dial DeployAgent Error. %s", err.Error())
+		return nil, err
+	}
+
+	c := tio_control_v1.NewTioDeployCommServiceClient(conn)
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+
+	defer cancel()
+
+	return c.UpdateSrvMeta(ctx, in)
+}
+
 func (s server) GetLogs(in *tio_control_v1.TioLogRequest, ls tio_control_v1.ControlService_GetLogsServer) error {
 	logrus.Debugf("Fetch [%s] [%s] Logs", in.Name, in.Stype)
 

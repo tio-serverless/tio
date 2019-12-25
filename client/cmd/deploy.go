@@ -25,6 +25,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/qiniu/api.v7/v7/auth/qbox"
 	"github.com/qiniu/api.v7/v7/storage"
@@ -57,7 +58,8 @@ var deployCmd = &cobra.Command{
 			fmt.Printf("Zip Error. %s", err)
 			os.Exit(-1)
 		}
-		
+
+		//fmt.Println(ak, sk, bk, cbu, dir, name)
 		err = upload(ak, sk, bk, cbu, dir, name)
 		if err != nil {
 			fmt.Printf("Upload Code Error. %s", err)
@@ -151,7 +153,7 @@ func zipDir(path string) (zipDirName, zipFileName string, err error) {
 		return
 	}
 
-	zipFileName = fmt.Sprintf("%d-%s-%s.zip", uid, name, stype)
+	zipFileName = fmt.Sprintf("%d-%s-%s-%d.zip", uid, name, stype, time.Now().Unix())
 	err = RecursiveZip(zipDirName, zipFileName)
 	if err != nil {
 		fmt.Errorf("Zip Error. %s", err.Error())
@@ -200,7 +202,15 @@ func RecursiveZip(pathToZip, destinationPath string) error {
 		if err != nil {
 			return err
 		}
+		if strings.Contains(filePath, "/vendor/") {
+			return nil
+		}
+
 		if strings.HasSuffix(info.Name(), ".zip") {
+			return nil
+		}
+
+		if info.Name() == "go.sum" {
 			return nil
 		}
 		relPath := strings.TrimPrefix(filePath, pathToZip)
@@ -227,4 +237,3 @@ func RecursiveZip(pathToZip, destinationPath string) error {
 	}
 	return nil
 }
-

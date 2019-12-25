@@ -178,37 +178,63 @@ func (k *SimpleK8s) ReplaceDeploy(d deploy) error {
 	}
 
 	for i, c := range oldDeployment.Spec.Template.Spec.Containers {
-		if c.Name != "coonsul-sidecar" {
-			oldDeployment.Spec.Template.Spec.Containers[i].Image = d.Image
-			for n, e := range oldDeployment.Spec.Template.Spec.Containers[i].Env {
-				if v, ok := d.Env[e.Name]; ok {
-					oldDeployment.Spec.Template.Spec.Containers[i].Env[n] = apiv1.EnvVar{
-						Name:  e.Name,
-						Value: v,
-					}
-				}
+		if c.Name != "consul-sidecar" {
+			if d.Image != "" {
+				oldDeployment.Spec.Template.Spec.Containers[i].Image = d.Image
 			}
+			oldDeployment.Spec.Template.Spec.Containers[i].Env = envMerge(oldDeployment.Spec.Template.Spec.Containers[i].Env, d.Env)
 			continue
 		}
-		if c.Name == "coonsul-sidecar" {
-			for n, e := range oldDeployment.Spec.Template.Spec.Containers[i].Env {
-				if v, ok := d.Env[e.Name]; ok {
-					oldDeployment.Spec.Template.Spec.Containers[i].Env[n] = apiv1.EnvVar{
-						Name:  e.Name,
-						Value: v,
-					}
-				}
-			}
+
+		if c.Name == "consul-sidecar" {
+			oldDeployment.Spec.Template.Spec.Containers[i].Env = envMerge(oldDeployment.Spec.Template.Spec.Containers[i].Env, d.Env)
 		}
 	}
 
-	logrus.Debugf("Replace New Deployment [%v]", oldDeployment)
+	//logrus.Debugf("Update New Deployment [%v]", oldDeployment)
 	_, err = deployClient.Update(oldDeployment)
 	return nil
 }
 
+//  envMerge 使用env2更新env1，同时将env2中新增的key添加到env1中
+func envMerge(env1 []apiv1.EnvVar, env2 map[string]string) []apiv1.EnvVar {
+	if len(env2) == 0 {
+		return env1
+	}
+
+	var newEnv []apiv1.EnvVar
+
+	existKey := make(map[string]bool)
+	for _, e := range env1 {
+		if v, ok := env2[e.Name]; ok {
+			newEnv = append(newEnv, apiv1.EnvVar{
+				Name:  e.Name,
+				Value: v,
+			})
+			existKey[e.Name] = true
+		} else {
+			newEnv = append(newEnv, e)
+		}
+	}
+
+	for key, val := range env2 {
+		if _, ok := existKey[key]; !ok {
+			newEnv = append(newEnv, apiv1.EnvVar{
+				Name:  key,
+				Value: val,
+			})
+		}
+	}
+
+	return newEnv
+}
+
 func (k *SimpleK8s) GetLog(d deploy, log chan string) error {
 	return k.GetDeploymentLog(d.Name, true, log)
+}
+
+func (k *SimpleK8s) Update(d deploy) error {
+	return k.ReplaceDeploy(d)
 }
 
 func int32Ptr(i int) *int32 {

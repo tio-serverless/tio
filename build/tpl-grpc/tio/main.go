@@ -27,6 +27,7 @@ func main() {
 	}
 	s := grpc.NewServer()
 	hs := health.NewServer()
+	// If you see this comment,  Inject command has executed. Grpc service must have a health check, so the bellowing code can not remove.
 	hs.SetServingStatus("Tio-GRPC-Service", grpc_health_v1.HealthCheckResponse_SERVING)
 	grpc_health_v1.RegisterHealthServer(s, hs)
 
@@ -37,7 +38,7 @@ func main() {
 		method := reflect.TypeOf(srv).Method(i)
 		if method.Name == "ServerInit" && method.Type.NumIn() == 1 {
 			method.Func.Call([]reflect.Value{
-				reflect.ValueOf(s),
+				reflect.ValueOf(srv),
 			})
 		}
 	}

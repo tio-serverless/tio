@@ -3,6 +3,7 @@ syntax = "proto3";
 option go_package = "tio.control.v1";
 
 import "const.proto";
+import "common.proto";
 
 message BuildStatus {
     string user = 1;
@@ -51,5 +52,10 @@ service ControlService {
     }
 
     rpc GetLogs (TioLogRequest) returns (stream TioLogReply) {
+    }
+
+    //    UpdateServerMetadata 更新服务运行参数
+    rpc UpdateServerMetadata (SrvMeta) returns (TioReply) {
+
     }
 }

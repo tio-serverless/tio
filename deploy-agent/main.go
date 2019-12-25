@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net"
 	"os"
+	"strings"
 
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
@@ -89,8 +90,26 @@ func (g grcpSrv) GetLogs(in *tio_control_v1.TioLogRequest, ls tio_control_v1.Log
 }
 
 func (g grcpSrv) UpdateSrvMeta(ctx context.Context, in *tio_control_v1.SrvMeta) (*tio_control_v1.TioReply, error) {
-	logrus.Debugf("Update [%s] Metadata", in.Name)
-	return nil, nil
+	logrus.Debugf("Update [%s] Metadata [%v]", in.Name, in.Env)
+	names := strings.Split(in.Name, "-")
+	if len(names) != 3 {
+		return &tio_control_v1.TioReply{
+			Code: tio_control_v1.CommonRespCode_RespFaild,
+			Msg:  fmt.Sprintf("Name [%s] formate error. Should xxx-xxx-xxx. ", in.Name),
+		}, nil
+	}
+
+	err := k8s.UpdateDeployment(g.cli, names[1], in.Env)
+	if err != nil {
+		return &tio_control_v1.TioReply{
+			Code: tio_control_v1.CommonRespCode_RespFaild,
+			Msg:  fmt.Sprintf("Update Name [%s]  error. %s ", in.Name, err.Error()),
+		}, nil
+	}
+	return &tio_control_v1.TioReply{
+		Code: tio_control_v1.CommonRespCode_RespSucc,
+		Msg:  "OK",
+	}, nil
 }
 
 func (g grcpSrv) ScalaDeploy(ctx context.Context, in *tio_control_v1.DeployRequest) (*tio_control_v1.TioReply, error) {

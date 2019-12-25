@@ -61,6 +61,10 @@ func main() {
 	flag.Parse()
 	initBus()
 
+	// CDN更新缓存需要时间,这里暂停1分钟等待缓存更新
+	//logrus.Info("Waiting CDN update, pause 1 min")
+	//time.Sleep(1 * time.Minute)
+
 	var err error
 
 	defer func() {
@@ -99,6 +103,7 @@ func main() {
 		logrus.Fatalln(err)
 	}
 
+	logrus.Println("=======Build Finish=======")
 }
 
 func createJob() {
