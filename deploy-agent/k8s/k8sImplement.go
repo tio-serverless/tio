@@ -54,7 +54,7 @@ func (k *SimpleK8s) enableMonitor() {
 			}(m)
 
 		}
-	}
+	} 
 }
 
 func (k *SimpleK8s) deploymentIsReady(name string) (stype, endpoint string, err error) {
