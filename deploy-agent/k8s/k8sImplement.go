@@ -46,22 +46,26 @@ func (k *SimpleK8s) enableMonitor() {
 				logrus.Infof("Get Deployment One Endpoint %s Type %s", endpoint, stype)
 				switch stype {
 				case data.GRPC:
-					k.B.GetInjectChan() <- endpoint
+					k.B.GetInjectGrpcChan() <- endpoint
 				case data.HTTP:
+					k.B.GetInjectHttpChan() <- data.HttpArch{
+						Name: m,
+						Url:  endpoint,
+					}
 				case data.TCP:
 				}
 
 			}(m)
 
 		}
-	} 
+	}
 }
 
-func (k *SimpleK8s) deploymentIsReady(name string) (stype, endpoint string, err error) {
+func (k *SimpleK8s) deploymentIsReady(name string) (stype, result string, err error) {
 	for i := 0; i < 10; i++ {
 		d, err := k.client.AppsV1().Deployments(k.B.K.Namespace).Get(name, metav1.GetOptions{})
 		if err != nil {
-			return stype, endpoint, err
+			return stype, result, err
 		}
 
 		time.Sleep(time.Duration(10*i) * time.Second)
@@ -72,19 +76,35 @@ func (k *SimpleK8s) deploymentIsReady(name string) (stype, endpoint string, err 
 				Limit:         1,
 			})
 			if err != nil {
-				return stype, endpoint, err
+				return stype, result, err
 			}
 
 			if len(p.Items) == 0 {
-				return stype, endpoint, errors.New("Pod has zero instances")
+				return stype, result, errors.New("Pod has zero instances")
 			}
 			for _, e := range p.Items[0].Spec.Containers[0].Env {
 				if e.Name == "MY_SERVICE_TYPE" {
 					stype = e.Value
+					break
 				}
 			}
 
-			return stype, p.Items[0].Status.PodIP, nil
+			switch stype {
+			case data.GRPC:
+				return stype, p.Items[0].Status.PodIP, nil
+			case data.HTTP:
+				for _, e := range p.Items[0].Spec.Containers[0].Env {
+					if e.Name == "MY_SERVICE_URL" {
+						result = e.Value
+						break
+					}
+				}
+
+				return stype, result, nil
+			default:
+				return stype, result, fmt.Errorf("Wrong Service Type [%s]", stype)
+			}
+
 		}
 	}
 

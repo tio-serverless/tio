@@ -11,8 +11,8 @@ import (
 	tio_build_v1 "tio/tgrpc"
 )
 
-func sendInjectMsg(endpoint string) error {
-	conn, err := grpc.Dial(b.Inject, grpc.WithInsecure())
+func sendInjectMsg(endpoint, name, injectTYpe string) error {
+	conn, err := grpc.Dial(b.Inject[injectTYpe], grpc.WithInsecure())
 	if err != nil {
 		log.Fatal(fmt.Sprintf("Connect Build Service Error: %s", err.Error()))
 	}
@@ -26,6 +26,7 @@ func sendInjectMsg(endpoint string) error {
 
 	reply, err := c.NewGrpcSrv(ctx, &tio_build_v1.InjectRequest{
 		Address: endpoint,
+		Name:    name,
 	})
 
 	if err != nil {

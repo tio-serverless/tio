@@ -61,10 +61,14 @@ func startRpc() {
 func enableInject() {
 	for {
 		select {
-		case i := <-b.GetInjectChan():
+		case i := <-b.GetInjectGrpcChan():
 			i = fmt.Sprintf("%s:80", i)
-			if err := sendInjectMsg(i); err != nil {
-				logrus.Errorf("Send Inject Error %s", err.Error())
+			if err := sendInjectMsg(i, "", "grpc"); err != nil {
+				logrus.Errorf("Send GRPC Inject Error %s", err.Error())
+			}
+		case h := <-b.GetInjectHttpChan():
+			if err := sendInjectMsg(h.Url, h.Name, "http"); err != nil {
+				logrus.Errorf("Send HTTP Inject Error %s", err.Error())
 			}
 		}
 	}
