@@ -29,12 +29,12 @@ func TestInject(t *testing.T) {
 		"EchoService",
 	}, nil)
 	gi.EXPECT().FetchMethods(add, "HelloService").Return([]string{
-		"Hello",
-		"Say",
+		"HelloService.Hello",
+		"HelloService.Say",
 	}, nil)
 	gi.EXPECT().FetchMethods(add, "EchoService").Return([]string{
-		"Echo",
-		"SayEcho",
+		"EchoService.Echo",
+		"EchoService.SayEcho",
 	}, nil)
 
 	gi.EXPECT().Store("HelloService", []string{

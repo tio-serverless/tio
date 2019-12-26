@@ -8,9 +8,12 @@ import (
 )
 
 type B struct {
-	Log  string `toml:"log"`
-	Port int    `toml:"port"`
-	K    k8s    `toml:"k8s"`
+	Log            string            `toml:"log"`
+	Port           int               `toml:"port"`
+	Inject         map[string]string `toml:"inject"`
+	K              k8s               `toml:"k8s"`
+	injectGrpcChan chan string
+	injectHttpChan chan HttpArch
 }
 
 type k8s struct {
@@ -29,6 +32,17 @@ type DeployMeta struct {
 	Url string `toml:"url"`
 }
 
+type HttpArch struct {
+	Name string
+	Url  string
+}
+
+const (
+	GRPC = "0"
+	HTTP = "1"
+	TCP  = "2"
+)
+
 func InitBus(file string) (*B, error) {
 	b := new(B)
 
@@ -39,6 +53,9 @@ func InitBus(file string) (*B, error) {
 	if err = isValid(b); err != nil {
 		return nil, err
 	}
+
+	b.injectGrpcChan = make(chan string, 100)
+	b.injectHttpChan = make(chan HttpArch, 1000)
 
 	enableLog(b)
 
@@ -62,6 +79,10 @@ func output(b *B) {
 	logrus.Println("--------------------")
 	logrus.Printf("Log: %s", b.Log)
 	logrus.Printf("Port: %d", b.Port)
+	logrus.Println("Inject: ")
+	logrus.Printf("    GRPC: %s", b.Inject["grpc"])
+	logrus.Printf("    HTTP: %s", b.Inject["http"])
+
 	logrus.Println("K8s: ")
 	logrus.Printf("    Config: %s", b.K.Config)
 	logrus.Printf("    Namespace: %s", b.K.Namespace)
@@ -88,4 +109,12 @@ func isValid(b *B) error {
 	}
 
 	return nil
+}
+
+func (b *B) GetInjectGrpcChan() chan string {
+	return b.injectGrpcChan
+}
+
+func (b *B) GetInjectHttpChan() chan HttpArch {
+	return b.injectHttpChan
 }

@@ -1,6 +1,10 @@
 package k8s
 
 import (
+	"errors"
+	"fmt"
+	"time"
+
 	"github.com/sirupsen/logrus"
 	v1 "k8s.io/api/apps/v1"
 	apiv1 "k8s.io/api/core/v1"
@@ -12,8 +16,99 @@ import (
 )
 
 type SimpleK8s struct {
-	B      *data.B
-	client *kubernetes.Clientset
+	B           *data.B
+	client      *kubernetes.Clientset
+	monitorChan chan string
+}
+
+func NewSimpleK8s() *SimpleK8s {
+	sk := &SimpleK8s{
+		monitorChan: make(chan string, 100),
+	}
+
+	go sk.enableMonitor()
+
+	return sk
+}
+
+func (k *SimpleK8s) enableMonitor() {
+	for {
+		select {
+		case m := <-k.monitorChan:
+			go func(m string) {
+				logrus.Infof("Start Monitor %s ", m)
+				stype, endpoint, err := k.deploymentIsReady(m)
+				if err != nil {
+					logrus.Errorf("Monitor %s Error. %s", m, err.Error())
+					return
+				}
+
+				logrus.Infof("Get Deployment One Endpoint %s Type %s", endpoint, stype)
+				switch stype {
+				case data.GRPC:
+					k.B.GetInjectGrpcChan() <- endpoint
+				case data.HTTP:
+					k.B.GetInjectHttpChan() <- data.HttpArch{
+						Name: m,
+						Url:  endpoint,
+					}
+				case data.TCP:
+				}
+
+			}(m)
+
+		}
+	}
+}
+
+func (k *SimpleK8s) deploymentIsReady(name string) (stype, result string, err error) {
+	for i := 0; i < 10; i++ {
+		d, err := k.client.AppsV1().Deployments(k.B.K.Namespace).Get(name, metav1.GetOptions{})
+		if err != nil {
+			return stype, result, err
+		}
+
+		time.Sleep(time.Duration(10*i) * time.Second)
+		fmt.Printf("now %d ready %d expect %d \n", *d.Spec.Replicas, d.Status.ReadyReplicas, *d.Spec.Replicas)
+		if d.Status.ReadyReplicas == *d.Spec.Replicas && *d.Spec.Replicas == *d.Spec.Replicas {
+			p, err := k.client.CoreV1().Pods(k.B.K.Namespace).List(metav1.ListOptions{
+				LabelSelector: fmt.Sprintf("tio-app=%s", name),
+				Limit:         1,
+			})
+			if err != nil {
+				return stype, result, err
+			}
+
+			if len(p.Items) == 0 {
+				return stype, result, errors.New("Pod has zero instances")
+			}
+			for _, e := range p.Items[0].Spec.Containers[0].Env {
+				if e.Name == "MY_SERVICE_TYPE" {
+					stype = e.Value
+					break
+				}
+			}
+
+			switch stype {
+			case data.GRPC:
+				return stype, p.Items[0].Status.PodIP, nil
+			case data.HTTP:
+				for _, e := range p.Items[0].Spec.Containers[0].Env {
+					if e.Name == "MY_SERVICE_URL" {
+						result = e.Value
+						break
+					}
+				}
+
+				return stype, result, nil
+			default:
+				return stype, result, fmt.Errorf("Wrong Service Type [%s]", stype)
+			}
+
+		}
+	}
+
+	return
 }
 
 func (k *SimpleK8s) NewDeploy(d deploy) (string, error) {
@@ -110,6 +205,9 @@ func (k *SimpleK8s) NewDeploy(d deploy) (string, error) {
 	if err != nil {
 		return "", err
 	}
+
+	k.monitorChan <- deployment.Name
+
 	return deployment.Name, nil
 }
 
@@ -193,6 +291,7 @@ func (k *SimpleK8s) ReplaceDeploy(d deploy) error {
 
 	//logrus.Debugf("Update New Deployment [%v]", oldDeployment)
 	_, err = deployClient.Update(oldDeployment)
+	k.monitorChan <- oldDeployment.Name
 	return nil
 }
 
