@@ -47,14 +47,14 @@ func (g *gInject) Store(name string, methods []string) error {
 	return nil
 }
 
-func NewInject(add, passwd string) (*gInject, error) {
+func NewInject(add, passwd string, db int) (*gInject, error) {
 
 	gi := &gInject{}
 
 	gi.redCli = redis.NewClient(&redis.Options{
 		Addr:     add,
 		Password: passwd,
-		DB:       0,
+		DB:       db,
 	})
 
 	_, err := gi.redCli.Ping().Result()

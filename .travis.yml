@@ -25,6 +25,7 @@ before_install:
 
 install:
   - go generate ./inject/grpc
+  - go generate ./inject/http
   - go test ./...
   - go build -mod=vendor -ldflags "-X main._VERSION_=$TIO_VERSION -X main._BRANCH_=$TRAVIS_BRANCH" -o bin/tio-build build/*.go
   - go build -mod=vendor -ldflags "-X main._VERSION_=$TIO_VERSION -X main._BRANCH_=$TRAVIS_BRANCH" -o bin/tio-control control/*.go
@@ -35,6 +36,7 @@ install:
   - go build -mod=vendor -ldflags "-X main._VERSION_=$TIO_VERSION -X main._BRANCH_=$TRAVIS_BRANCH" -o bin/tio-consul-watch consul/watch/*.go
   - go build -mod=vendor -ldflags "-X tio/client/cmd._VERSION_=$TIO_VERSION -X tio/client/cmd._BRANCH_=$TRAVIS_BRANCH" -o bin/tio-cli client/*.go
   - go build -mod=vendor -ldflags "-X main._VERSION_=$TIO_VERSION -X main._BRANCH_=$TRAVIS_BRANCH" -o bin/tio-inject-grpc inject/grpc/*.go
+  - go build -mod=vendor -ldflags "-X main._VERSION_=$TIO_VERSION -X main._BRANCH_=$TRAVIS_BRANCH" -o bin/tio-inject-http inject/http/*.go
 
 
 after_script:
@@ -56,3 +58,5 @@ after_script:
   - docker push ${TIO_CONSUL_WATCH}:${TIO_VERSION}-${TRAVIS_BRANCH}
   - docker build -t ${TIO_INJECT_AGENT}:grpc-${TIO_VERSION}-${TRAVIS_BRANCH} -f Dockerfile/Dockerfile.inject-grpc .
   - docker push ${TIO_INJECT_AGENT}:grpc-${TIO_VERSION}-${TRAVIS_BRANCH}
+  - docker build -t ${TIO_INJECT_AGENT}:http-${TIO_VERSION}-${TRAVIS_BRANCH} -f Dockerfile/Dockerfile.inject-http .
+  - docker push ${TIO_INJECT_AGENT}:http-${TIO_VERSION}-${TRAVIS_BRANCH}

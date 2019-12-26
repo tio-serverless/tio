@@ -2,6 +2,7 @@ package main
 
 import (
 	"os"
+	"strconv"
 	"strings"
 
 	"github.com/sirupsen/logrus"
@@ -12,7 +13,8 @@ var injectChan chan string
 func main() {
 	injectChan = make(chan string, 100)
 
-	g, err := NewInject(os.Getenv("TIO_INJECT_REDIS_ADDR"), os.Getenv("TIO_INJECT_REDIS_PASSWD"))
+	db, _ := strconv.Atoi(os.Getenv("TIO_INJECT_REDIS_DB"))
+	g, err := NewInject(os.Getenv("TIO_INJECT_REDIS_ADDR"), os.Getenv("TIO_INJECT_REDIS_PASSWD"), db)
 	if err != nil {
 		logrus.Fatalf("Get Grpc Inject Error %s", err.Error())
 	}
