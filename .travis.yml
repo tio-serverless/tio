@@ -5,7 +5,6 @@ go:
 
 env:
   global:
-    - GO111MODULE=off
     - TIO_VERSION=v0.1.0
     - TIO_BUILD_NAME=tioserverless/build
     - TIO_CONTROL_NAME=tioserverless/control
