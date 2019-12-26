@@ -1,6 +1,9 @@
 package main
 
 import (
+	"os"
+	"strings"
+
 	"github.com/sirupsen/logrus"
 )
 
@@ -9,7 +12,7 @@ var injectChan chan string
 func main() {
 	injectChan = make(chan string, 100)
 
-	g, err := NewInject()
+	g, err := NewInject(os.Getenv("TIO_INJECT_REDIS_ADDR"), os.Getenv("TIO_INJECT_REDIS_PASSWD"))
 	if err != nil {
 		logrus.Fatalf("Get Grpc Inject Error %s", err.Error())
 	}
@@ -42,7 +45,18 @@ func inject(i injectGrpc, add string) error {
 			continue
 		}
 
-		err = i.Store(s, m)
+		methods := make([]string, len(m))
+
+		for i := range m {
+			name := strings.Split(m[i], s)
+			if len(name) < 2 {
+				methods[i] = ""
+			} else {
+				methods[i] = name[1][1:]
+			}
+		}
+
+		err = i.Store(s, methods)
 		if err != nil {
 			logrus.Errorf("Store Method Of %s Error. %s", s, err.Error())
 			continue

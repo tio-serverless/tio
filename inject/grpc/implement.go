@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 
 	"github.com/fullstorydev/grpcurl"
 	"github.com/go-redis/redis"
@@ -40,9 +41,26 @@ func (g *gInject) FetchMethods(add, s string) ([]string, error) {
 }
 
 func (g *gInject) Store(name string, methods []string) error {
+
+	data, _ := json.Marshal(methods)
+	g.redCli.Set(name, data, 0)
 	return nil
 }
 
-func NewInject() (*gInject, error) {
-	return nil, nil
+func NewInject(add, passwd string) (*gInject, error) {
+
+	gi := &gInject{}
+
+	gi.redCli = redis.NewClient(&redis.Options{
+		Addr:     add,
+		Password: passwd,
+		DB:       0,
+	})
+
+	_, err := gi.redCli.Ping().Result()
+	if err != nil {
+		return nil, err
+	}
+
+	return gi, nil
 }
