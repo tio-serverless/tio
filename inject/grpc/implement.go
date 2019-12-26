@@ -16,7 +16,7 @@ type gInject struct {
 
 func (g *gInject) FetchServices(add string) ([]string, error) {
 	ctx := context.Background()
-	cc, err := grpcurl.BlockingDial(ctx, "tcp", "172.19.64.213:80", nil, grpc.WithInsecure())
+	cc, err := grpcurl.BlockingDial(ctx, "tcp", add, nil, grpc.WithInsecure())
 	if err != nil {
 		panic(err)
 	}
@@ -27,9 +27,9 @@ func (g *gInject) FetchServices(add string) ([]string, error) {
 	return grpcurl.ListServices(descSource)
 }
 
-func (g *gInject) FetchMethods(s string) ([]string, error) {
+func (g *gInject) FetchMethods(add, s string) ([]string, error) {
 	ctx := context.Background()
-	cc, err := grpcurl.BlockingDial(ctx, "tcp", "172.19.64.213:80", nil, grpc.WithInsecure())
+	cc, err := grpcurl.BlockingDial(ctx, "tcp", add, nil, grpc.WithInsecure())
 	if err != nil {
 		panic(err)
 	}

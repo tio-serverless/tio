@@ -23,15 +23,16 @@ func TestInject(t *testing.T) {
 
 	gi := mock.NewMockinjectGrpc(mockCtl)
 
-	gi.EXPECT().FetchServices("127.0.0.1:80").Return([]string{
+	add := "127.0.0.1:80"
+	gi.EXPECT().FetchServices(add).Return([]string{
 		"HelloService",
 		"EchoService",
 	}, nil)
-	gi.EXPECT().FetchMethods("HelloService").Return([]string{
+	gi.EXPECT().FetchMethods(add, "HelloService").Return([]string{
 		"Hello",
 		"Say",
 	}, nil)
-	gi.EXPECT().FetchMethods("EchoService").Return([]string{
+	gi.EXPECT().FetchMethods(add, "EchoService").Return([]string{
 		"Echo",
 		"SayEcho",
 	}, nil)

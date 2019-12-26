@@ -48,18 +48,18 @@ func (mr *MockinjectGrpcMockRecorder) FetchServices(arg0 interface{}) *gomock.Ca
 }
 
 // FetchMethods mocks base method
-func (m *MockinjectGrpc) FetchMethods(arg0 string) ([]string, error) {
+func (m *MockinjectGrpc) FetchMethods(arg0, arg1 string) ([]string, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FetchMethods", arg0)
+	ret := m.ctrl.Call(m, "FetchMethods", arg0, arg1)
 	ret0, _ := ret[0].([]string)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // FetchMethods indicates an expected call of FetchMethods
-func (mr *MockinjectGrpcMockRecorder) FetchMethods(arg0 interface{}) *gomock.Call {
+func (mr *MockinjectGrpcMockRecorder) FetchMethods(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FetchMethods", reflect.TypeOf((*MockinjectGrpc)(nil).FetchMethods), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FetchMethods", reflect.TypeOf((*MockinjectGrpc)(nil).FetchMethods), arg0, arg1)
 }
 
 // Store mocks base method

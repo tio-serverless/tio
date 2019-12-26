@@ -36,7 +36,7 @@ func inject(i injectGrpc, add string) error {
 	}
 
 	for _, s := range services {
-		m, err := i.FetchMethods(s)
+		m, err := i.FetchMethods(add, s)
 		if err != nil {
 			logrus.Errorf("Fetch Method Of %s Error. %s", s, err.Error())
 			continue
