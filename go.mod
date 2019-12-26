@@ -6,16 +6,22 @@ require (
 	github.com/BurntSushi/toml v0.3.1
 	github.com/envoyproxy/go-control-plane v0.9.0
 	github.com/fsouza/go-dockerclient v1.6.0
+	github.com/fullstorydev/grpcurl v1.4.0
+	github.com/go-redis/redis v6.15.6+incompatible
+	github.com/golang/mock v1.3.1
 	github.com/golang/protobuf v1.3.2
 	github.com/googleapis/gnostic v0.3.1 // indirect
 	github.com/gorilla/mux v1.7.3
 	github.com/gregjones/httpcache v0.0.0-20190611155906-901d90724c79 // indirect
 	github.com/hashicorp/consul/api v1.3.0
 	github.com/imdario/mergo v0.3.8 // indirect
+	github.com/jhump/protoreflect v1.5.0
 	github.com/json-iterator/go v1.1.8 // indirect
 	github.com/lib/pq v1.2.0
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/modern-go/reflect2 v1.0.1 // indirect
+	github.com/onsi/ginkgo v1.11.0 // indirect
+	github.com/onsi/gomega v1.8.1 // indirect
 	github.com/peterbourgon/diskv v2.0.1+incompatible // indirect
 	github.com/qiniu/api.v7/v7 v7.4.0
 	github.com/sirupsen/logrus v1.4.2

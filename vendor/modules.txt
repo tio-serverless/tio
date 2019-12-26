@@ -65,12 +65,26 @@ github.com/envoyproxy/protoc-gen-validate/validate
 github.com/fsnotify/fsnotify
 # github.com/fsouza/go-dockerclient v1.6.0
 github.com/fsouza/go-dockerclient
+# github.com/fullstorydev/grpcurl v1.4.0
+github.com/fullstorydev/grpcurl
+# github.com/go-redis/redis v6.15.6+incompatible
+github.com/go-redis/redis
+github.com/go-redis/redis/internal
+github.com/go-redis/redis/internal/consistenthash
+github.com/go-redis/redis/internal/hashtag
+github.com/go-redis/redis/internal/pool
+github.com/go-redis/redis/internal/proto
+github.com/go-redis/redis/internal/util
 # github.com/gogo/protobuf v1.2.1
 github.com/gogo/protobuf/proto
 github.com/gogo/protobuf/sortkeys
+# github.com/golang/mock v1.3.1
+github.com/golang/mock/gomock
 # github.com/golang/protobuf v1.3.2
+github.com/golang/protobuf/jsonpb
 github.com/golang/protobuf/proto
 github.com/golang/protobuf/protoc-gen-go/descriptor
+github.com/golang/protobuf/protoc-gen-go/plugin
 github.com/golang/protobuf/ptypes
 github.com/golang/protobuf/ptypes/any
 github.com/golang/protobuf/ptypes/duration
@@ -119,6 +133,16 @@ github.com/hashicorp/serf/coordinate
 github.com/imdario/mergo
 # github.com/inconshreveable/mousetrap v1.0.0
 github.com/inconshreveable/mousetrap
+# github.com/jhump/protoreflect v1.5.0
+github.com/jhump/protoreflect/codec
+github.com/jhump/protoreflect/desc
+github.com/jhump/protoreflect/desc/internal
+github.com/jhump/protoreflect/desc/protoparse
+github.com/jhump/protoreflect/desc/protoprint
+github.com/jhump/protoreflect/dynamic
+github.com/jhump/protoreflect/dynamic/grpcdynamic
+github.com/jhump/protoreflect/grpcreflect
+github.com/jhump/protoreflect/internal
 # github.com/json-iterator/go v1.1.8
 github.com/json-iterator/go
 # github.com/konsorten/go-windows-terminal-sequences v1.0.1
@@ -218,6 +242,10 @@ google.golang.org/appengine/urlfetch
 # google.golang.org/genproto v0.0.0-20190819201941-24fa4b261c55
 google.golang.org/genproto/googleapis/api/annotations
 google.golang.org/genproto/googleapis/rpc/status
+google.golang.org/genproto/protobuf/api
+google.golang.org/genproto/protobuf/field_mask
+google.golang.org/genproto/protobuf/ptype
+google.golang.org/genproto/protobuf/source_context
 # google.golang.org/grpc v1.25.1
 google.golang.org/grpc
 google.golang.org/grpc/backoff
@@ -258,7 +286,7 @@ google.golang.org/grpc/status
 google.golang.org/grpc/tap
 # gopkg.in/inf.v0 v0.9.1
 gopkg.in/inf.v0
-# gopkg.in/yaml.v2 v2.2.2
+# gopkg.in/yaml.v2 v2.2.4
 gopkg.in/yaml.v2
 # k8s.io/api v0.0.0-20181204000039-89a74a8d264d
 k8s.io/api/admissionregistration/v1alpha1

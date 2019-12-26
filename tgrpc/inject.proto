@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+option go_package = "tio.inject.v1";
+import "const.proto";
+
+message InjectRequest {
+    string address = 1;
+}
+
+service InjectService {
+    rpc NewGrpcSrv (InjectRequest) returns (TioReply) {
+    }
+}

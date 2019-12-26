@@ -21,7 +21,8 @@ before_install:
   - echo "$DOCKER_PASSWD" | docker login -u "$DOCKER_USER" --password-stdin
 
 install:
-  - go test -v ./...
+  - go generate ./inject/grpc
+  - go test ./...
   - go build -mod=vendor -ldflags "-X main._VERSION_=$TIO_VERSION -X main._BRANCH_=$TRAVIS_BRANCH" -o bin/tio-build build/*.go
   - go build -mod=vendor -ldflags "-X main._VERSION_=$TIO_VERSION -X main._BRANCH_=$TRAVIS_BRANCH" -o bin/tio-control control/*.go
   - go build -mod=vendor -ldflags "-X main._VERSION_=$TIO_VERSION -X main._BRANCH_=$TRAVIS_BRANCH" -o bin/tio-build-agent-host build-agent/host/*.go
