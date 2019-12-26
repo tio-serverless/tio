@@ -37,24 +37,30 @@ func (k *SimpleK8s) enableMonitor() {
 		case m := <-k.monitorChan:
 			go func(m string) {
 				logrus.Infof("Start Monitor %s ", m)
-				endpoint, err := k.deploymentIsReady(m)
+				stype, endpoint, err := k.deploymentIsReady(m)
 				if err != nil {
 					logrus.Errorf("Monitor %s Error. %s", m, err.Error())
 					return
 				}
 
-				k.B.GetInjectChan() <- endpoint
+				switch stype {
+				case data.GRPC:
+					k.B.GetInjectChan() <- endpoint
+				case data.HTTP:
+				case data.TCP:
+				}
+
 			}(m)
 
 		}
 	}
 }
 
-func (k *SimpleK8s) deploymentIsReady(name string) (endpoint string, err error) {
+func (k *SimpleK8s) deploymentIsReady(name string) (stype, endpoint string, err error) {
 	for i := 0; i < 10; i++ {
 		d, err := k.client.AppsV1().Deployments(k.B.K.Namespace).Get(name, metav1.GetOptions{})
 		if err != nil {
-			return endpoint, err
+			return stype, endpoint, err
 		}
 
 		time.Sleep(time.Duration(10*i) * time.Second)
@@ -65,14 +71,19 @@ func (k *SimpleK8s) deploymentIsReady(name string) (endpoint string, err error) 
 				Limit:         1,
 			})
 			if err != nil {
-				return endpoint, err
+				return stype, endpoint, err
 			}
 
 			if len(p.Items) == 0 {
-				return endpoint, errors.New("Pod has zero instances")
+				return stype, endpoint, errors.New("Pod has zero instances")
+			}
+			for _, e := range p.Items[0].Spec.Containers[0].Env {
+				if e.Name == "MY_SERVICE_TYPE" {
+					stype = e.Value
+				}
 			}
 
-			return p.Items[0].Status.PodIP, nil
+			return stype, p.Items[0].Status.PodIP, nil
 		}
 	}
 

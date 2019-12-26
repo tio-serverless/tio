@@ -31,6 +31,12 @@ type DeployMeta struct {
 	Url string `toml:"url"`
 }
 
+const (
+	GRPC = "0"
+	HTTP = "1"
+	TCP  = "2"
+)
+
 func InitBus(file string) (*B, error) {
 	b := new(B)
 
