@@ -26,6 +26,8 @@ func main() {
 		logrus.Fatalf("Bus Init Error. %s", err.Error())
 	}
 
+	go enableInject()
+
 	startRpc()
 }
 
@@ -36,12 +38,14 @@ func startRpc() {
 	}
 	s := grpc.NewServer()
 
-	sk := k8s.SimpleK8s{B: b}
+	sk := k8s.NewSimpleK8s()
+	sk.B = b
+	//sk := k8s.SimpleK8s{B: b}
 	if err = sk.InitClient(); err != nil {
 		logrus.Fatalf("K8s Client Init Failed. [%s]", err.Error())
 	}
 
-	gs := &grcpSrv{cli: &sk}
+	gs := &grcpSrv{cli: sk}
 
 	tio_control_v1.RegisterTioDeployServiceServer(s, gs)
 	tio_control_v1.RegisterLogServiceServer(s, gs)
@@ -50,6 +54,18 @@ func startRpc() {
 
 	if err := s.Serve(lis); err != nil {
 		logrus.Fatalf("failed to serve: %v", err)
+	}
+}
+
+// enableInject 将已经部署就绪的服务Endpoint发给Inject GRPC Service
+func enableInject() {
+	for {
+		select {
+		case i := <-b.GetInjectChan():
+			if err := sendInjectMsg(i); err != nil {
+				logrus.Errorf("Send Inject Error %s", err.Error())
+			}
+		}
 	}
 }
 

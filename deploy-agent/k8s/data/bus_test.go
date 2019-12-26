@@ -14,6 +14,7 @@ func TestInitBus(t *testing.T) {
 
 	_, err = f.WriteString(`log="debug"
 port=80
+inject="127.0.0.1:80"
 [k8s]
 	config="/config"
 	consul="xxxx"
@@ -28,6 +29,7 @@ port=80
 
 	assert.EqualValues(t, "debug", b.Log)
 	assert.EqualValues(t, 80, b.Port)
+	assert.EqualValues(t, "127.0.0.1:80", b.Inject)
 	assert.EqualValues(t, "/config", b.K.Config)
 	assert.EqualValues(t, "xxxx", b.K.Consul)
 	assert.EqualValues(t, "default", b.K.Namespace)

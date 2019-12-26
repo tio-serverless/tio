@@ -8,9 +8,11 @@ import (
 )
 
 type B struct {
-	Log  string `toml:"log"`
-	Port int    `toml:"port"`
-	K    k8s    `toml:"k8s"`
+	Log        string `toml:"log"`
+	Port       int    `toml:"port"`
+	Inject     string `toml:"inject"`
+	K          k8s    `toml:"k8s"`
+	injectChan chan string
 }
 
 type k8s struct {
@@ -40,6 +42,8 @@ func InitBus(file string) (*B, error) {
 		return nil, err
 	}
 
+	b.injectChan = make(chan string, 100)
+
 	enableLog(b)
 
 	output(b)
@@ -62,6 +66,7 @@ func output(b *B) {
 	logrus.Println("--------------------")
 	logrus.Printf("Log: %s", b.Log)
 	logrus.Printf("Port: %d", b.Port)
+	logrus.Printf("Inject: %s", b.Inject)
 	logrus.Println("K8s: ")
 	logrus.Printf("    Config: %s", b.K.Config)
 	logrus.Printf("    Namespace: %s", b.K.Namespace)
@@ -88,4 +93,8 @@ func isValid(b *B) error {
 	}
 
 	return nil
+}
+
+func (b *B) GetInjectChan() chan string {
+	return b.injectChan
 }

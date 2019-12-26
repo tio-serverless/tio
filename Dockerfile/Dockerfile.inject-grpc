@@ -1,0 +1,3 @@
+FROM golang:stretch
+COPY bin/tio-inject-grpc /tio-inject-grpc
+ENTRYPOINT ["/tio-inject-grpc"]
