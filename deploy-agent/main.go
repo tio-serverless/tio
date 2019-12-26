@@ -62,6 +62,7 @@ func enableInject() {
 	for {
 		select {
 		case i := <-b.GetInjectChan():
+			i = fmt.Sprintf("%s:80", i)
 			if err := sendInjectMsg(i); err != nil {
 				logrus.Errorf("Send Inject Error %s", err.Error())
 			}

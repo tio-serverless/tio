@@ -43,6 +43,7 @@ func (k *SimpleK8s) enableMonitor() {
 					return
 				}
 
+				logrus.Infof("Get Deployment One Endpoint %s Type %s", endpoint, stype)
 				switch stype {
 				case data.GRPC:
 					k.B.GetInjectChan() <- endpoint
