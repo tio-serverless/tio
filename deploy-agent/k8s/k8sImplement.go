@@ -39,7 +39,7 @@ func (k *SimpleK8s) enableMonitor() {
 				logrus.Infof("Start Monitor %s ", m)
 				endpoint, err := k.deploymentIsReady(m)
 				if err != nil {
-					logrus.Errorf("Monitor %s Error. %s", err.Error())
+					logrus.Errorf("Monitor %s Error. %s", m, err.Error())
 					return
 				}
 
