@@ -78,7 +78,7 @@ func (k *SimpleK8s) GetDeploymentLog(name string, flowing bool, logs chan string
 
 		for {
 			n, err := podLogs.Read(data)
-			if err != err {
+			if err != nil {
 				logrus.Errorf("read %s log error. %s", name, err.Error())
 				logs <- string(data[:n])
 				return
