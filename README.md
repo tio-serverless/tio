@@ -9,7 +9,7 @@ Golang Serverless Framework
 Tio是一个支持golang的Serverless平台，目前支持也仅支持golang。 下面是TIO 全景图
 
 
-![](https://tva1.sinaimg.cn/large/006tNbRwly1ga9vm4zk4oj30ry0lct9q.jpg) 
+![](landscape.svg) 
 
 ## Tio支持哪些运行模式?
 
