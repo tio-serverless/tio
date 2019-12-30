@@ -69,8 +69,8 @@ func (k *SimpleK8s) deploymentIsReady(name string) (stype, result string, err er
 		}
 
 		time.Sleep(time.Duration(10*i) * time.Second)
-		fmt.Printf("now %d ready %d expect %d \n", *d.Spec.Replicas, d.Status.ReadyReplicas, *d.Spec.Replicas)
-		if d.Status.ReadyReplicas == *d.Spec.Replicas && *d.Spec.Replicas == *d.Spec.Replicas {
+		fmt.Printf("now %d ready %d expect %d \n", d.Status.Replicas, d.Status.ReadyReplicas, *d.Spec.Replicas)
+		if d.Status.ReadyReplicas == *d.Spec.Replicas && d.Status.Replicas == *d.Spec.Replicas {
 			p, err := k.client.CoreV1().Pods(k.B.K.Namespace).List(metav1.ListOptions{
 				LabelSelector: fmt.Sprintf("tio-app=%s", name),
 				Limit:         1,
