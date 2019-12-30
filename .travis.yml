@@ -14,6 +14,7 @@ env:
     - TIO_DEPLOY_AGENT=tioserverless/deploy-agent
     - TIO_BUILD_AGENT_K8S_NAME=tioserverless/build-agent-k8s
     - TIO_INJECT_AGENT=tioserverless/inject-agent
+    - TIO_PROXY_AGENT=tioserverless/prxoy-agent
 
 services:
   - docker
@@ -37,6 +38,7 @@ install:
   - go build -mod=vendor -ldflags "-X tio/client/cmd._VERSION_=$TIO_VERSION -X tio/client/cmd._BRANCH_=$TRAVIS_BRANCH" -o bin/tio-cli client/*.go
   - go build -mod=vendor -ldflags "-X main._VERSION_=$TIO_VERSION -X main._BRANCH_=$TRAVIS_BRANCH" -o bin/tio-inject-grpc inject/grpc/*.go
   - go build -mod=vendor -ldflags "-X main._VERSION_=$TIO_VERSION -X main._BRANCH_=$TRAVIS_BRANCH" -o bin/tio-inject-http inject/http/*.go
+  - go build -mod=vendor -ldflags "-X main._VERSION_=$TIO_VERSION -X main._BRANCH_=$TRAVIS_BRANCH" -o bin/tio-proxy-http proxy/http/*.go
 
 
 after_script:
@@ -60,3 +62,5 @@ after_script:
   - docker push ${TIO_INJECT_AGENT}:grpc-${TIO_VERSION}-${TRAVIS_BRANCH}
   - docker build -t ${TIO_INJECT_AGENT}:http-${TIO_VERSION}-${TRAVIS_BRANCH} -f Dockerfile/Dockerfile.inject-http .
   - docker push ${TIO_INJECT_AGENT}:http-${TIO_VERSION}-${TRAVIS_BRANCH}
+  - docker build -t ${TIO_PROXY_AGENT}:http-${TIO_VERSION}-${TRAVIS_BRANCH} -f Dockerfile/Dockerfile.proxy-http .
+  - docker push ${TIO_PROXY_AGENT}:http-${TIO_VERSION}-${TRAVIS_BRANCH}

@@ -17,6 +17,4 @@ message Reply {
 service BuildService {
     rpc Build (Request) returns (Reply) {
     }
-//    rpc GetLogs (TioLogRequest) returns (stream TioLogReply) {
-//    }
 }

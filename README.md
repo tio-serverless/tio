@@ -72,3 +72,5 @@ Tio当前支持以下三种运行模式:
     执行`tio-cli deploy -d .` 就会将当前您所编写的代码打包上传，进行实例部署。
     
 ## Tio细节
+
++ [Reverse Proxy](proxy/README.md) 
