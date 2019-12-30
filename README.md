@@ -1,6 +1,6 @@
 ![](logo.svg)
  
-[![Build Status](https://travis-ci.org/tio-serverless/tio.svg?branch=master)](https://travis-ci.org/tio-serverless/tio)
+[![Build Status](https://travis-ci.org/tio-serverless/tio.svg?branch=master)](https://travis-ci.org/tio-serverless/tio) [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=tio-serverless_tio&metric=alert_status)](https://sonarcloud.io/dashboard?id=tio-serverless_tio)
 
 Golang Serverless Framework
 
