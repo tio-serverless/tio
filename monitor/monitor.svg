@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xl="http://www.w3.org/1999/xlink" version="1.1" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns="http://www.w3.org/2000/svg" viewBox="-60.5 -102.41016 1324 530.91016" width="1324" height="530.91016">
+  <defs>
+    <font-face font-family="Helvetica Neue" font-size="16" panose-1="2 0 5 3 0 0 0 2 0 4" units-per-em="1000" underline-position="-100" underline-thickness="50" slope="0" x-height="517" cap-height="714" ascent="951.9958" descent="-212.99744" font-weight="400">
+      <font-face-src>
+        <font-face-name name="HelveticaNeue"/>
+      </font-face-src>
+    </font-face>
+    <marker orient="auto" overflow="visible" markerUnits="strokeWidth" id="FilledArrow_Marker" stroke-linejoin="miter" stroke-miterlimit="10" viewBox="-1 -4 10 8" markerWidth="10" markerHeight="8" color="black">
+      <g>
+        <path d="M 8 0 L 0 -3 L 0 3 Z" fill="currentColor" stroke="currentColor" stroke-width="1"/>
+      </g>
+    </marker>
+    <font-face font-family="PingFang SC" font-size="16" panose-1="2 11 4 0 0 0 0 0 0 0" units-per-em="1000" underline-position="-150" underline-thickness="58" slope="0" x-height="600" cap-height="860" ascent="1060.0021" descent="-340.0007" font-weight="400">
+      <font-face-src>
+        <font-face-name name="PingFangSC-Regular"/>
+      </font-face-src>
+    </font-face>
+  </defs>
+  <metadata> Produced by OmniGraffle 7.11.5 
+    <dc:date>2019-12-30 08:46:52 +0000</dc:date>
+  </metadata>
+  <g id="Canvas_1" fill="none" fill-opacity="1" stroke="none" stroke-opacity="1" stroke-dasharray="none">
+    <title>Canvas 1</title>
+    <g id="Canvas_1: Layer 1">
+      <title>Layer 1</title>
+      <g id="Graphic_2">
+        <rect x="324" y="-50" width="231" height="79" fill="white"/>
+        <rect x="324" y="-50" width="231" height="79" stroke="gray" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+        <text transform="translate(329 -19.724)" fill="black">
+          <tspan font-family="Helvetica Neue" font-size="16" font-weight="400" fill="black" x="67.396" y="15">Grpc Server</tspan>
+        </text>
+      </g>
+      <g id="Graphic_3">
+        <rect x="-60" y="349" width="231" height="79" fill="white"/>
+        <path d="M -60 349 L 171 349 L 171 428 L -60 428 Z" stroke="gray" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="8.0,4.0,1.0,4.0" stroke-width="1"/>
+        <text transform="translate(-55 379.276)" fill="black">
+          <tspan font-family="Helvetica Neue" font-size="16" font-weight="400" fill="black" x="63.244" y="15">Envoy Server</tspan>
+        </text>
+      </g>
+      <g id="Graphic_4">
+        <rect x="324" y="349" width="231" height="79" fill="white"/>
+        <rect x="324" y="349" width="231" height="79" stroke="gray" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+        <text transform="translate(329 379.276)" fill="black">
+          <tspan font-family="Helvetica Neue" font-size="16" font-weight="400" fill="black" x="62.5" y="15">Watch Server</tspan>
+        </text>
+      </g>
+      <g id="Line_5">
+        <line x1="171" y1="388.5" x2="314.1" y2="388.5" marker-end="url(#FilledArrow_Marker)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+      </g>
+      <g id="Graphic_6">
+        <rect x="198.26216" y="372.5" width="92.288" height="32" fill="white"/>
+        <text transform="translate(203.26216 377.5)" fill="black">
+          <tspan font-family="PingFang SC" font-size="16" font-weight="400" fill="black" x="24158453e-20" y="17">envoy:9001</tspan>
+        </text>
+      </g>
+      <g id="Graphic_7">
+        <rect x="625" y="128" width="231" height="79" fill="white"/>
+        <rect x="625" y="128" width="231" height="79" stroke="gray" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+        <text transform="translate(630 158.276)" fill="black">
+          <tspan font-family="Helvetica Neue" font-size="16" font-weight="400" fill="black" x="90.652" y="15">Scala</tspan>
+        </text>
+      </g>
+      <g id="Line_8">
+        <line x1="493.29864" y1="349" x2="678.7213" y2="212.8591" marker-end="url(#FilledArrow_Marker)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+      </g>
+      <g id="Graphic_9">
+        <rect x="524.44233" y="264.91167" width="123.184" height="32" fill="white"/>
+        <text transform="translate(529.4423 269.91167)" fill="black">
+          <tspan font-family="PingFang SC" font-size="16" font-weight="400" fill="black" x="55422333e-20" y="17">Active Connect</tspan>
+        </text>
+      </g>
+      <g id="Graphic_10">
+        <rect x="1032" y="128" width="231" height="79" fill="white"/>
+        <path d="M 1032 128 L 1263 128 L 1263 207 L 1032 207 Z" stroke="gray" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="8.0,4.0,1.0,4.0" stroke-width="1"/>
+        <text transform="translate(1037 158.276)" fill="black">
+          <tspan font-family="Helvetica Neue" font-size="16" font-weight="400" fill="black" x="56.724" y="15">Deploy Service</tspan>
+        </text>
+      </g>
+      <g id="Line_11">
+        <line x1="856" y1="167.5" x2="1022.1" y2="167.5" marker-end="url(#FilledArrow_Marker)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+      </g>
+      <g id="Graphic_12">
+        <rect x="918.4453" y="151.5" width="54.704" height="32" fill="white"/>
+        <text transform="translate(923.4453 156.5)" fill="black">
+          <tspan font-family="PingFang SC" font-size="16" font-weight="400" fill="black" x="7709389e-19" y="17">GRPC</tspan>
+        </text>
+      </g>
+      <g id="Graphic_13">
+        <rect x="324" y="128" width="231" height="79" fill="white"/>
+        <rect x="324" y="128" width="231" height="79" stroke="gray" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+        <text transform="translate(329 158.276)" fill="black">
+          <tspan font-family="Helvetica Neue" font-size="16" font-weight="400" fill="black" x="72.876" y="15">Scala Ploy</tspan>
+        </text>
+      </g>
+      <g id="Line_14">
+        <line x1="439.5" y1="207" x2="439.5" y2="339.1" marker-end="url(#FilledArrow_Marker)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+      </g>
+      <g id="Graphic_15">
+        <rect x="415.492" y="266.65215" width="48.016" height="32" fill="white"/>
+        <text transform="translate(420.492 271.65215)" fill="black">
+          <tspan font-family="PingFang SC" font-size="16" font-weight="400" fill="black" x="0" y="17">Read</tspan>
+        </text>
+      </g>
+      <g id="Line_16">
+        <line x1="439.5" y1="29" x2="439.5" y2="118.1" marker-end="url(#FilledArrow_Marker)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+      </g>
+      <g id="Graphic_17">
+        <rect x="407.66" y="64.01208" width="63.68" height="32" fill="white"/>
+        <text transform="translate(412.66 69.01208)" fill="black">
+          <tspan font-family="PingFang SC" font-size="16" font-weight="400" fill="black" x="14566126e-20" y="17">Update</tspan>
+        </text>
+      </g>
+      <g id="Line_18">
+        <line x1="506.29494" y1="29" x2="665.1836" y2="122.96072" marker-end="url(#FilledArrow_Marker)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+      </g>
+      <g id="Graphic_19">
+        <rect x="560.2317" y="61.79964" width="57.168" height="32" fill="white"/>
+        <text transform="translate(565.2317 66.79964)" fill="black">
+          <tspan font-family="PingFang SC" font-size="16" font-weight="400" fill="black" x="73896445e-20" y="17">Invoke</tspan>
+        </text>
+      </g>
+      <g id="Graphic_21">
+        <rect x="-60" y="-50" width="231" height="79" fill="white"/>
+        <path d="M -60 -50 L 171 -50 L 171 29 L -60 29 Z" stroke="gray" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="8.0,4.0,1.0,4.0" stroke-width="1"/>
+        <text transform="translate(-55 -19.724)" fill="black">
+          <tspan font-family="Helvetica Neue" font-size="16" font-weight="400" fill="black" x="33.476" y="15">Reserve Proxy Server</tspan>
+        </text>
+      </g>
+      <g id="Line_22">
+        <path d="M 439.5 -50 L 439.5 -86.41016 L 55.5 -86.41016 L 55.5 -59.9" marker-end="url(#FilledArrow_Marker)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+      </g>
+      <g id="Line_23">
+        <line x1="171" y1="-10.5" x2="314.1" y2="-10.5" marker-end="url(#FilledArrow_Marker)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+      </g>
+      <g id="Graphic_24">
+        <rect x="209.9841" y="-26.5" width="72.112" height="32" fill="white"/>
+        <text transform="translate(214.9841 -21.5)" fill="black">
+          <tspan font-family="PingFang SC" font-size="16" font-weight="400" fill="black" x="4938272e-19" y="17">Increase</tspan>
+        </text>
+      </g>
+      <g id="Graphic_25">
+        <rect x="192.5027" y="-102.41016" width="58.288" height="32" fill="white"/>
+        <text transform="translate(197.5027 -97.41016)" fill="black">
+          <tspan font-family="PingFang SC" font-size="16" font-weight="400" fill="black" x="2309264e-19" y="17">Notice</tspan>
+        </text>
+      </g>
+      <g id="Graphic_26">
+        <rect x="708" y="-50" width="231" height="79" fill="white"/>
+        <path d="M 708 -50 L 939 -50 L 939 29 L 708 29 Z" stroke="gray" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="8.0,4.0,1.0,4.0" stroke-width="1"/>
+        <text transform="translate(713 -19.724)" fill="black">
+          <tspan font-family="Helvetica Neue" font-size="16" font-weight="400" fill="black" x="58.948" y="15">Control Server</tspan>
+        </text>
+      </g>
+      <g id="Line_27">
+        <path d="M 823.5 -50 L 823.5 -86 L 555 -86 L 555 -53.9" marker-end="url(#FilledArrow_Marker)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+      </g>
+      <g id="Graphic_28">
+        <rect x="645.0886" y="-102" width="100.352" height="32" fill="white"/>
+        <text transform="translate(650.0886 -97)" fill="black">
+          <tspan font-family="PingFang SC" font-size="16" font-weight="400" fill="black" x="0" y="17">Update Ploy</tspan>
+        </text>
+      </g>
+      <g id="Line_29">
+        <line x1="555" y1="-10.5" x2="698.1" y2="-10.5" marker-end="url(#FilledArrow_Marker)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+      </g>
+      <g id="Graphic_30">
+        <rect x="588.62175" y="-26.5" width="69.184" height="32" fill="white"/>
+        <text transform="translate(593.62174 -21.5)" fill="black">
+          <tspan font-family="PingFang SC" font-size="16" font-weight="400" fill="black" x="5506706e-19" y="17">Ploy Init</tspan>
+        </text>
+      </g>
+    </g>
+  </g>
+</svg>
