@@ -66,3 +66,7 @@ func UpdateDeployment(k MyK8s, name string, env map[string]string) error {
 		Env:  env,
 	})
 }
+
+func GetPodEndpoint(k MyK8s, name string) (string, error) {
+	return k.GetDeploymentEndpointWithName(name)
+}

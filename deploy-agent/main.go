@@ -78,6 +78,22 @@ type grcpSrv struct {
 	cli k8s.MyK8s
 }
 
+func (g grcpSrv) DeployInfo(ctx context.Context, in *tio_control_v1.DeployRequest) (*tio_control_v1.TioReply, error) {
+
+	endpoint, err := k8s.GetPodEndpoint(g.cli, in.Name)
+	if err != nil {
+		return &tio_control_v1.TioReply{
+			Code: -1,
+			Msg:  err.Error(),
+		}, nil
+	}
+
+	return &tio_control_v1.TioReply{
+		Code: 0,
+		Msg:  endpoint,
+	}, nil
+}
+
 func (g grcpSrv) GetLogs(in *tio_control_v1.TioLogRequest, ls tio_control_v1.LogService_GetLogsServer) error {
 	logrus.Debugf("Fetch [%s] Running Log", in.Name)
 	logs := make(chan string, 1000)

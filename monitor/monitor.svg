@@ -19,7 +19,7 @@
     </font-face>
   </defs>
   <metadata> Produced by OmniGraffle 7.11.5 
-    <dc:date>2019-12-30 08:46:52 +0000</dc:date>
+    <dc:date>2019-12-31 05:34:28 +0000</dc:date>
   </metadata>
   <g id="Canvas_1" fill="none" fill-opacity="1" stroke="none" stroke-opacity="1" stroke-dasharray="none">
     <title>Canvas 1</title>
@@ -36,7 +36,7 @@
         <rect x="-60" y="349" width="231" height="79" fill="white"/>
         <path d="M -60 349 L 171 349 L 171 428 L -60 428 Z" stroke="gray" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="8.0,4.0,1.0,4.0" stroke-width="1"/>
         <text transform="translate(-55 379.276)" fill="black">
-          <tspan font-family="Helvetica Neue" font-size="16" font-weight="400" fill="black" x="63.244" y="15">Envoy Server</tspan>
+          <tspan font-family="Helvetica Neue" font-size="16" font-weight="400" fill="black" x="42.044" y="15">Prometheus Server</tspan>
         </text>
       </g>
       <g id="Graphic_4">
@@ -47,12 +47,12 @@
         </text>
       </g>
       <g id="Line_5">
-        <line x1="171" y1="388.5" x2="314.1" y2="388.5" marker-end="url(#FilledArrow_Marker)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+        <line x1="324" y1="388.5" x2="180.9" y2="388.5" marker-end="url(#FilledArrow_Marker)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
       </g>
       <g id="Graphic_6">
-        <rect x="198.26216" y="372.5" width="92.288" height="32" fill="white"/>
-        <text transform="translate(203.26216 377.5)" fill="black">
-          <tspan font-family="PingFang SC" font-size="16" font-weight="400" fill="black" x="24158453e-20" y="17">envoy:9001</tspan>
+        <rect x="201.40184" y="372.5" width="98.384" height="32" fill="white"/>
+        <text transform="translate(206.40184 377.5)" fill="black">
+          <tspan font-family="PingFang SC" font-size="16" font-weight="400" fill="black" x="0" y="17">query range</tspan>
         </text>
       </g>
       <g id="Graphic_7">

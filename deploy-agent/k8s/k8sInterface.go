@@ -12,6 +12,7 @@ type MyK8s interface {
 	Delete(id string) error
 	IsHasDeploy(id string) (bool, error)
 	ReplaceDeploy(d deploy) error
-	GetLog(d deploy, log chan string)error
+	GetLog(d deploy, log chan string) error
 	Update(d deploy) error
+	GetDeploymentEndpointWithName(string) (string, error)
 }

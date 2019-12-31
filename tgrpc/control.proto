@@ -34,6 +34,9 @@ message TioBuildQueryReply {
     repeated BuildStatus builds = 2;
 }
 
+message TioPloy {
+    map<string, int32> Ploy = 1;
+}
 service ControlService {
     rpc UpdateBuildStatus (BuildStatus) returns (BuildReply) {
     }
@@ -56,6 +59,10 @@ service ControlService {
 
     //    UpdateServerMetadata 更新服务运行参数
     rpc UpdateServerMetadata (SrvMeta) returns (TioReply) {
+
+    }
+
+    rpc GetPloy (TioPloy) returns (TioPloy) {
 
     }
 }
