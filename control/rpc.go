@@ -35,6 +35,10 @@ type server struct {
 	B *data.B
 }
 
+func (s server) GetPloy(context.Context, *tio_control_v1.TioPloy) (*tio_control_v1.TioPloy, error) {
+	panic("implement me")
+}
+
 func (s server) UpdateServerMetadata(ctx context.Context, in *tio_control_v1.SrvMeta) (*tio_control_v1.TioReply, error) {
 	logrus.Debugf("[%s] Wants Update Running Parameteres [%v]", in.Name, in.Env)
 

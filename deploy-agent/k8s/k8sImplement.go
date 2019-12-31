@@ -229,6 +229,21 @@ func (k *SimpleK8s) Delete(id string) error {
 	return nil
 }
 
+func (k *SimpleK8s) GetDeploymentEndpointWithName(name string) (string, error) {
+	p, err := k.client.CoreV1().Pods(k.B.K.Namespace).List(metav1.ListOptions{
+		LabelSelector: fmt.Sprintf("tio-app=%s", name),
+		Limit:         1,
+	})
+	if err != nil {
+		return "", nil
+	}
+
+	if len(p.Items) == 0 {
+		return "", errors.New("There are not running pod")
+	}
+
+	return fmt.Sprintf("%s:80", p.Items[0].Status.PodIP), nil
+}
 func (k *SimpleK8s) InitClient() error {
 	config, err := clientcmd.BuildConfigFromFlags("", k.B.K.Config)
 	if err != nil {
