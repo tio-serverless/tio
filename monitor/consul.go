@@ -27,8 +27,8 @@ func (m monImplement) DisableService(name string) error {
 	}
 
 	var mta meta
-	json.Unmarshal(val.Value, &m)
-	fmt.Println(m)
+	json.Unmarshal(val.Value, &mta)
+	logrus.Debugf("%s value: %v", name, mta)
 
 	mta.Remove = true
 
