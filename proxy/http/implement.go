@@ -62,14 +62,13 @@ func newSI() (*svcImplement, error) {
 	if err != nil {
 		return nil, err
 	}
+	si.srvChan = make(chan service, 100)
+	si.inject = make(map[string]string)
 
 	err = si.LoadInjectData()
 	if err != nil {
 		return nil, err
 	}
-
-	si.srvChan = make(chan service, 100)
-	si.inject = make(map[string]string)
 
 	return si, nil
 }
