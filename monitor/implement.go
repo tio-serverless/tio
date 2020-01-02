@@ -136,6 +136,8 @@ func (m monImplement) serviceSala() []envoyTraffic {
 	ploy := m.GetPloy()
 
 	for _, c := range clusters {
+		c = strings.TrimSuffix(c, "_cluster")
+
 		if ploy[c] > 0 {
 			//	如果存在策略，后续判断才有意义
 			connectCount, err := m.queryConnectInMinuteRange(c, 1)
@@ -273,7 +275,7 @@ func (m monImplement) InitPloy() error {
 	logrus.Debug("Load Policy")
 	for name, value := range reply.Ploy {
 		m.ploy[name] = int(value)
-		logrus.Debugf("name: %s rate: %d", name, value)
+		logrus.Debugf("    name: %s rate: %d", name, value)
 	}
 
 	return nil
