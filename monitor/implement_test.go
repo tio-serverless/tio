@@ -16,8 +16,8 @@ func Test_scala(t *testing.T) {
 
 	mig := NewMockmonitorInterface(mockCtl)
 
-	mig.EXPECT().Sacla("svc1", 2.0).Return(nil)
-	mig.EXPECT().WaitScala("svc1").Return("127.0.0.1:80",nil)
+	mig.EXPECT().Sacla("svc1", 2.0).Return(true, nil)
+	mig.EXPECT().WaitScala("svc1").Return("127.0.0.1:80", nil)
 
 	type args struct {
 		mi  monitorInterface
@@ -161,7 +161,7 @@ func Test_monImplement_serviceSala(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			m := monImplement{
-				proxyService: tt.fields.proxyService,
+				proxyService:   tt.fields.proxyService,
 				controlService: tt.fields.controlService,
 				deployService:  tt.fields.deployService,
 				ploy:           tt.fields.ploy,

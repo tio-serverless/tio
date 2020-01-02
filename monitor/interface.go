@@ -4,7 +4,7 @@ type monitorInterface interface {
 	// WatchProemetheus 监控Prometheus实时流量
 	WatchProemetheus() (chan []envoyTraffic, error)
 	// Sacla 扩缩容
-	Sacla(name string, num float64) error
+	Sacla(name string, num float64) (bool, error)
 	// WaitScala 等待服务扩缩容结束
 	WaitScala(name string) (string, error)
 	//// IsScalaSucc 扩缩容是否成功

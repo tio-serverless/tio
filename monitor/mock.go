@@ -7,6 +7,7 @@ package main
 import (
 	gomock "github.com/golang/mock/gomock"
 	reflect "reflect"
+
 )
 
 // MockmonitorInterface is a mock of monitorInterface interface
@@ -48,11 +49,12 @@ func (mr *MockmonitorInterfaceMockRecorder) WatchProemetheus() *gomock.Call {
 }
 
 // Sacla mocks base method
-func (m *MockmonitorInterface) Sacla(name string, num float64) error {
+func (m *MockmonitorInterface) Sacla(name string, num float64) (bool, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Sacla", name, num)
-	ret0, _ := ret[0].(error)
-	return ret0
+	ret0, _ := ret[0].(bool)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // Sacla indicates an expected call of Sacla

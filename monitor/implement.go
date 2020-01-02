@@ -77,7 +77,7 @@ func (m monImplement) Ploy(ctx context.Context, in *tio_control_v1.MonitorScalaR
 }
 
 func scala(mi monitorInterface, ctx context.Context, in *tio_control_v1.MonitorScalaRequest) (*tio_control_v1.TioReply, error) {
-	err := mi.Sacla(in.Name, float64(in.Num))
+	_, err := mi.Sacla(in.Name, float64(in.Num))
 	endpoint, err := mi.WaitScala(in.Name)
 
 	if err != nil {
@@ -255,7 +255,8 @@ func (m monImplement) WaitScala(name string) (string, error) {
 //}
 
 func (m monImplement) InvokeDeployService(name string, num float64) error {
-	return m.Sacla(name, num)
+	_, err := m.Sacla(name, num)
+	return err
 }
 
 func (m monImplement) InitPloy() error {
