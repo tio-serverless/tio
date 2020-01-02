@@ -7,14 +7,14 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func handlerInjectData(dl dataLoader) error {
-	err := dl.LoadInjectData()
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
+//func handlerInjectData(dl dataLoader) error {
+//	err := dl.LoadInjectData()
+//	if err != nil {
+//		return err
+//	}
+//
+//	return nil
+//}
 
 func Proxy(s dataLoader, w http.ResponseWriter, r *http.Request) {
 

@@ -36,7 +36,22 @@ type server struct {
 }
 
 func (s server) GetPloy(context.Context, *tio_control_v1.TioPloy) (*tio_control_v1.TioPloy, error) {
-	panic("implement me")
+	allSvc, err := db.QueryAllSrv(b)
+	if err != nil {
+		return &tio_control_v1.TioPloy{
+			Ploy: nil,
+		}, err
+	}
+
+	p := make(map[string]int32)
+
+	for _, s := range allSvc {
+		p[s.Name] = 10
+	}
+
+	return &tio_control_v1.TioPloy{
+		Ploy: p,
+	}, nil
 }
 
 func (s server) UpdateServerMetadata(ctx context.Context, in *tio_control_v1.SrvMeta) (*tio_control_v1.TioReply, error) {
