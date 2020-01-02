@@ -69,6 +69,7 @@ func newSI() (*svcImplement, error) {
 	}
 
 	si.srvChan = make(chan service, 100)
+	si.inject = make(map[string]string)
 
 	return si, nil
 }
@@ -94,13 +95,11 @@ func (s *svcImplement) redis() error {
 }
 
 func (s *svcImplement) LoadInjectData() error {
-	if s.ri == nil {
-		if err := s.redis(); err != nil {
-			logrus.Fatalf("Connect Redis Error. %s", err.Error())
-		}
-
-		s.inject = make(map[string]string)
-	}
+	//if s.ri == nil {
+	//	if err := s.redis(); err != nil {
+	//		logrus.Fatalf("Connect Redis Error. %s", err.Error())
+	//	}
+	//}
 
 	iter := s.ri.Scan(0, "", 0).Iterator()
 	for iter.Next() {
