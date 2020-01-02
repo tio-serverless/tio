@@ -136,11 +136,11 @@ func (m monImplement) serviceSala() []envoyTraffic {
 	ploy := m.GetPloy()
 
 	for _, c := range clusters {
+		prometheusName := c
 		c = strings.TrimSuffix(c, "_cluster")
-
 		if ploy[c] > 0 {
 			//	如果存在策略，后续判断才有意义
-			connectCount, err := m.queryConnectInMinuteRange(c, 1)
+			connectCount, err := m.queryConnectInMinuteRange(prometheusName, 2)
 			if err != nil {
 				logrus.Errorf("Query Cluster %s Connect Error %s", c, err.Error())
 				continue

@@ -119,12 +119,12 @@ func Test_monImplement_serviceSala(t *testing.T) {
 	pig := NewMockprometheusInterface(mockCtl)
 
 	pig.EXPECT().QueryAllCluster().Return([]string{
-		"svc1",
-		"svc2",
+		"svc1_cluster",
+		"svc3_cluster",
 	}, nil)
 
-	pig.EXPECT().QueryRange("svc1", StepMinute, 1).Return(100, nil)
-	pig.EXPECT().QueryRange("svc2", StepMinute, 1).Return(105, nil)
+	pig.EXPECT().QueryRange("svc1_cluster", StepMinute, 2).Return(100, nil)
+	//pig.EXPECT().QueryRange("svc3_cluster", StepMinute, 2).Return(105, nil)
 
 	type fields struct {
 		proxyService   []string
@@ -151,10 +151,10 @@ func Test_monImplement_serviceSala(t *testing.T) {
 					Name:         "svc1",
 					TrafficCount: 100,
 				},
-				{
-					Name:         "svc2",
-					TrafficCount: 105,
-				},
+				//{
+				//	Name:         "svc2",
+				//	TrafficCount: 105,
+				//},
 			},
 		},
 	}
