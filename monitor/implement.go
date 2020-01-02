@@ -45,7 +45,7 @@ func NewMonImplement() (*monImplement, error) {
 		return nil, fmt.Errorf("TIO_MONITOR_DEPLOY_ADDR Empty!")
 	}
 
-	mi.prometheusService = os.Getenv("TIO_MONITOR_ENVOY_ADDR")
+	mi.prometheusService = os.Getenv("TIO_MONITOR_PROMETHEUS_ADDR")
 	mi.proxyService = strings.Split(os.Getenv("TIO_MONITOR_PROXY_ADDR"), ";")
 	mi.controlService = os.Getenv("TIO_MONITOR_CONTROL_ADDR")
 	mi.deployService = os.Getenv("TIO_MONITOR_DEPLOY_ADDR")
