@@ -9,7 +9,9 @@ import (
 	"strings"
 	"time"
 
+	capi "github.com/hashicorp/consul/api"
 	"github.com/prometheus/client_golang/api"
+
 	v1 "github.com/prometheus/client_golang/api/prometheus/v1"
 	"github.com/prometheus/common/model"
 	"github.com/sirupsen/logrus"
@@ -25,6 +27,14 @@ type monImplement struct {
 	ploy              map[string]int
 	proImp            prometheusInterface
 	//wait           map[string]chan struct{}
+	consulCli *capi.Client
+}
+
+func consulInit() (*capi.Client, error) {
+	config := capi.DefaultConfig()
+	config.Address = strings.Split(os.Getenv("TIO_MONITOR_CONSUL_ADDRESS"), ";")[0]
+
+	return capi.NewClient(config)
 }
 
 func NewMonImplement() (*monImplement, error) {
@@ -55,10 +65,17 @@ func NewMonImplement() (*monImplement, error) {
 	client, err := api.NewClient(api.Config{
 		Address: mi.prometheusService,
 	})
-
 	if err != nil {
 		return nil, err
 	}
+
+	c, err := consulInit()
+	if err != nil {
+		return nil, err
+	}
+
+	mi.consulCli = c
+
 	mi.proImp = prometheusImplement{cli: client}
 	err = mi.InitPloy()
 	if err != nil {
@@ -336,12 +353,16 @@ func (m monImplement) invokeProxyService(add, name, endpoint string) error {
 // 如果TrafficCount >= ploy*(2+N), 则扩容N倍。
 // 如果ploy / 2 =<TrafficCount < ploy*2 , 则保持现状
 // 如果0< TrafficCount < ploy/2, 则缩容1倍
-// 如果 TrafficCount == 0,完成 缩容
+// 如果 TrafficCount == 0 缩容
 func (m monImplement) NeedScala(traffic envoyTraffic) (bool, float64) {
 	ploy, exist := m.ploy[traffic.Name]
 	if exist {
 
 		if traffic.TrafficCount == 0 {
+			err := m.DisableService(traffic.Name)
+			if err != nil {
+				logrus.Errorf("Disable %s error %s", traffic.Name, err.Error())
+			}
 			return true, 0
 		}
 

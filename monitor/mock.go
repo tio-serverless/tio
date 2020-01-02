@@ -7,7 +7,6 @@ package main
 import (
 	gomock "github.com/golang/mock/gomock"
 	reflect "reflect"
-
 )
 
 // MockmonitorInterface is a mock of monitorInterface interface
@@ -159,6 +158,20 @@ func (m *MockmonitorInterface) NeedScala(Traffic envoyTraffic) (bool, float64) {
 func (mr *MockmonitorInterfaceMockRecorder) NeedScala(Traffic interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NeedScala", reflect.TypeOf((*MockmonitorInterface)(nil).NeedScala), Traffic)
+}
+
+// DisableService mocks base method
+func (m *MockmonitorInterface) DisableService(arg0 string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DisableService", arg0)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DisableService indicates an expected call of DisableService
+func (mr *MockmonitorInterfaceMockRecorder) DisableService(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DisableService", reflect.TypeOf((*MockmonitorInterface)(nil).DisableService), arg0)
 }
 
 // MockprometheusInterface is a mock of prometheusInterface interface
