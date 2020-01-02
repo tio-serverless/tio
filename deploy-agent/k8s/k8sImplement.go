@@ -3,6 +3,7 @@ package k8s
 import (
 	"errors"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/sirupsen/logrus"
@@ -229,21 +230,55 @@ func (k *SimpleK8s) Delete(id string) error {
 	return nil
 }
 
-func (k *SimpleK8s) GetDeploymentEndpointWithName(name string) (string, error) {
+func (k *SimpleK8s) GetDeploymentInfo(name string) (v1.Deployment, error) {
+
+	d, err := k.client.AppsV1().Deployments(k.B.K.Namespace).Get(name, metav1.GetOptions{})
+	if err != nil {
+		return v1.Deployment{}, err
+	}
+
+	return *d, nil
+}
+
+func (k *SimpleK8s) GetPodInfo(name string) (apiv1.Pod, error) {
+
 	p, err := k.client.CoreV1().Pods(k.B.K.Namespace).List(metav1.ListOptions{
 		LabelSelector: fmt.Sprintf("tio-app=%s", name),
 		Limit:         1,
 	})
 	if err != nil {
-		return "", nil
+		return apiv1.Pod{}, err
 	}
 
 	if len(p.Items) == 0 {
-		return "", errors.New("There are not running pod")
+		return apiv1.Pod{}, errors.New("There are not running pod")
 	}
 
-	return fmt.Sprintf("%s:80", p.Items[0].Status.PodIP), nil
+	for _, pod := range p.Items {
+		if strings.HasSuffix(pod.Name, "-sidecar") {
+			return pod, nil
+		}
+
+	}
+	return apiv1.Pod{}, fmt.Errorf("There are not available pod in %s", name)
 }
+
+//func (k *SimpleK8s) GetDeploymentEndpointWithName(name string) (string, error) {
+//	p, err := k.client.CoreV1().Pods(k.B.K.Namespace).List(metav1.ListOptions{
+//		LabelSelector: fmt.Sprintf("tio-app=%s", name),
+//		Limit:         1,
+//	})
+//	if err != nil {
+//		return "", nil
+//	}
+//
+//	if len(p.Items) == 0 {
+//		return "", errors.New("There are not running pod")
+//	}
+//
+//	return fmt.Sprintf("%s:80", p.Items[0].Status.PodIP), nil
+//}
+
 func (k *SimpleK8s) InitClient() error {
 	config, err := clientcmd.BuildConfigFromFlags("", k.B.K.Config)
 	if err != nil {

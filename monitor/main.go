@@ -19,16 +19,19 @@ func main() {
 	}
 
 	go func() {
-		select {
-		case svc := <-allSvc:
-			for _, s := range svc {
-				err := mi.WatchForScala(s)
-				if err != nil {
-					logrus.Errorf("Watch Scala %v Error. %s", s, err.Error())
+		for {
+			select {
+			case svc := <-allSvc:
+				for _, s := range svc {
+					err := mi.WatchForScala(s)
+					if err != nil {
+						logrus.Errorf("Watch Scala %v Error. %s", s, err.Error())
+					}
 				}
-			}
 
+			}
 		}
+
 	}()
 
 	logrus.Infof("Monitor Service Start - - - ")

@@ -154,14 +154,14 @@ func (m monImplement) serviceSala() []envoyTraffic {
 		}
 	}
 
-	logrus.Debugf("There are [%d] service need scala. [%v]", len(etfs), etfs)
+	logrus.Debugf("There are [%d] service needs scala. [%v]", len(etfs), etfs)
 	return etfs
 }
 
 func (m monImplement) WatchForScala(traffic envoyTraffic) error {
 	isNeedScala, instances := m.NeedScala(traffic)
 
-	logrus.Debugf("name: %s needscala %t", traffic.Name, isNeedScala)
+	logrus.Debugf("name: %s need scala %t", traffic.Name, isNeedScala)
 
 	if isNeedScala {
 		err := m.Sacla(traffic.Name, instances)

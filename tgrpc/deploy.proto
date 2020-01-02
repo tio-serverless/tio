@@ -9,7 +9,8 @@ message DeployRequest {
     int32 sid = 3;
     string name = 4;
     int32 stype = 5;
-    int32 instanceNum = 6;
+    int32 instanceNum = 6; //实例数量
+    double instanceMultiple = 7; //实例倍数
 }
 
 service TioDeployService {

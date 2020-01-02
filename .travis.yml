@@ -16,9 +16,6 @@ env:
     - TIO_INJECT_AGENT=tioserverless/inject-agent
     - TIO_PROXY_AGENT=tioserverless/prxoy-agent
     - TIO_MONITOR_AGENT=tioserverless/monitor-agent
-addons:
-  sonarcloud:
-    organization: "tio-serverless"
 
 services:
   - docker

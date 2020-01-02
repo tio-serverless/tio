@@ -1,5 +1,10 @@
 package k8s
 
+import (
+	v1 "k8s.io/api/apps/v1"
+	apiv1 "k8s.io/api/core/v1"
+)
+
 type deploy struct {
 	Name  string
 	Image string
@@ -14,5 +19,6 @@ type MyK8s interface {
 	ReplaceDeploy(d deploy) error
 	GetLog(d deploy, log chan string) error
 	Update(d deploy) error
-	GetDeploymentEndpointWithName(string) (string, error)
+	GetDeploymentInfo(string) (v1.Deployment, error)
+	GetPodInfo(string) (apiv1.Pod, error)
 }
