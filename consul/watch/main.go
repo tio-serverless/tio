@@ -69,11 +69,27 @@ func watchConsul() {
 		logrus.Fatalf("Route Init Error. %s  Quit!", err.Error())
 	}
 
+	cli.clusterInit()
+
 	for name, detail := range cli.routes {
 		logrus.Debugf("service [%s] -> [%s]: ", name, detail[0].url)
 		for _, d := range detail {
 			logrus.Debugf("    %s", d.endpoint)
 		}
+	}
+
+	for route, cluster := range cli.defaultCluster {
+		t := ""
+		switch route {
+		case HTTPRoute:
+			t = "Http"
+		case GRPCRoute:
+			t = "Grpc"
+		default:
+			t = "Tcp"
+		}
+
+		logrus.Debugf("%s service route cluster: %s", t, cluster)
 	}
 
 	go func(cli *client) {

@@ -197,8 +197,8 @@ func (m monImplement) Sacla(name string, num float64) (bool, error) {
 	defer cancel()
 
 	reply, err := c.ScalaDeploy(ctx, &tio_control_v1.DeployRequest{
-		Name:        name,
-		InstanceNum: int32(num),
+		Name:             name,
+		InstanceMultiple: num,
 	})
 
 	if err != nil {
