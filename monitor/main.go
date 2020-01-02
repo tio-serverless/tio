@@ -1,6 +1,11 @@
 package main
 
-import "github.com/sirupsen/logrus"
+import (
+	"os"
+	"strings"
+
+	"github.com/sirupsen/logrus"
+)
 
 func main() {
 	mi, err := NewMonImplement()
@@ -28,4 +33,17 @@ func main() {
 
 	logrus.Infof("Monitor Service Start - - - ")
 	start(mi, 80)
+}
+
+func init() {
+	switch strings.ToLower(os.Getenv("TIO_MONITOR_LOG_LEVEL")) {
+	case "info":
+		logrus.SetLevel(logrus.InfoLevel)
+	case "warn":
+		logrus.SetLevel(logrus.WarnLevel)
+	case "error":
+		logrus.SetLevel(logrus.ErrorLevel)
+	default:
+		logrus.SetLevel(logrus.DebugLevel)
+	}
 }

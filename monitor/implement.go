@@ -131,6 +131,8 @@ func (m monImplement) serviceSala() []envoyTraffic {
 		return etfs
 	}
 
+	logrus.Debugf("Find [%d] clusters, %v", len(clusters), clusters)
+
 	ploy := m.GetPloy()
 
 	for _, c := range clusters {
@@ -150,11 +152,14 @@ func (m monImplement) serviceSala() []envoyTraffic {
 		}
 	}
 
+	logrus.Debugf("There are [%d] service need scala. [%v]", len(etfs), etfs)
 	return etfs
 }
 
 func (m monImplement) WatchForScala(traffic envoyTraffic) error {
 	isNeedScala, instances := m.NeedScala(traffic)
+
+	logrus.Debugf("name: %s needscala %t", traffic.Name, isNeedScala)
 
 	if isNeedScala {
 		err := m.Sacla(traffic.Name, instances)
@@ -201,7 +206,7 @@ func (m monImplement) Sacla(name string, num float64) error {
 	}
 
 	//m.wait[name] = make(chan struct{})
-
+	logrus.Debugf("name: %s scala sucess", name)
 	return nil
 }
 
@@ -265,8 +270,10 @@ func (m monImplement) InitPloy() error {
 		return err
 	}
 
+	logrus.Debug("Load Policy")
 	for name, value := range reply.Ploy {
 		m.ploy[name] = int(value)
+		logrus.Debugf("name: %s rate: %d", name, value)
 	}
 
 	return nil
