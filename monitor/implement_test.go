@@ -232,18 +232,6 @@ func Test_monImplement_NeedScala(t *testing.T) {
 			want1: 3,
 		},
 		{
-			name: "scala to 0",
-			fields: fields{
-				ploy: map[string]int{"svc1": 30},
-			},
-			args: args{traffic: envoyTraffic{
-				Name:         "svc1",
-				TrafficCount: 0,
-			}},
-			want:  true,
-			want1: 0,
-		},
-		{
 			name: "scala to 0.5",
 			fields: fields{
 				ploy: map[string]int{"svc1": 30},
