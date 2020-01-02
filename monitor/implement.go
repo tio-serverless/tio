@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"math"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 
@@ -164,29 +165,30 @@ func (m monImplement) WatchForScala(traffic envoyTraffic) error {
 	logrus.Debugf("name: %s need scala %t", traffic.Name, isNeedScala)
 
 	if isNeedScala {
-		err := m.Sacla(traffic.Name, instances)
+		isStart, err := m.Sacla(traffic.Name, instances)
 		if err != nil {
 			return fmt.Errorf(" Cluster %s Scala Error %s", traffic.Name, err.Error())
 		}
 
-		go func(name string) {
-			_, err := m.WaitScala(name)
-			if err != nil {
-				logrus.Errorf("Wait Cluster %s Scala Error %s", traffic.Name, err.Error())
-			}
+		if isStart {
+			go func(name string) {
+				_, err := m.WaitScala(name)
+				if err != nil {
+					logrus.Errorf("Wait Cluster %s Scala Error %s", traffic.Name, err.Error())
+				}
 
-		}(traffic.Name)
-
+			}(traffic.Name)
+		}
 	}
 
 	return nil
 }
 
-func (m monImplement) Sacla(name string, num float64) error {
+func (m monImplement) Sacla(name string, num float64) (bool, error) {
 	conn, err := grpc.Dial(m.deployService, grpc.WithInsecure())
 	defer conn.Close()
 	if err != nil {
-		return fmt.Errorf("Dial DeployAgent Error. %s", err.Error())
+		return false, fmt.Errorf("Dial DeployAgent Error. %s", err.Error())
 	}
 
 	c := tio_control_v1.NewTioDeployServiceClient(conn)
@@ -200,16 +202,17 @@ func (m monImplement) Sacla(name string, num float64) error {
 	})
 
 	if err != nil {
-		return err
+		return false, err
 	}
 
 	if reply.Code != tio_control_v1.CommonRespCode_RespSucc {
-		return fmt.Errorf("Scala %s %f Error. %s", name, num, err.Error())
+		return false, fmt.Errorf("Scala %s %f Error. %s", name, num, err.Error())
 	}
 
 	//m.wait[name] = make(chan struct{})
-	logrus.Debugf("name: %s scala sucess", name)
-	return nil
+	isScalaStart, _ := strconv.ParseBool(reply.Msg)
+	logrus.Debugf("name: %s scala start [%t]", name, isScalaStart)
+	return isScalaStart, nil
 }
 
 func (m monImplement) WaitScala(name string) (string, error) {

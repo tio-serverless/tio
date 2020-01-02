@@ -81,16 +81,18 @@ type grcpSrv struct {
 
 func (g grcpSrv) DeployInfo(ctx context.Context, in *tio_control_v1.DeployRequest) (*tio_control_v1.TioReply, error) {
 
+	logrus.Debugf("Query %s Endpoint", in.Name)
+
 	endpoint, err := k8s.GetPodEndpoint(g.cli, in.Name)
 	if err != nil {
 		return &tio_control_v1.TioReply{
-			Code: -1,
+			Code: tio_control_v1.CommonRespCode_RespFaild,
 			Msg:  err.Error(),
 		}, nil
 	}
 
 	return &tio_control_v1.TioReply{
-		Code: 0,
+		Code: tio_control_v1.CommonRespCode_RespSucc,
 		Msg:  endpoint,
 	}, nil
 }
@@ -175,7 +177,7 @@ func (g grcpSrv) ScalaDeploy(ctx context.Context, in *tio_control_v1.DeployReque
 
 	return &tio_control_v1.TioReply{
 		Code: tio_control_v1.CommonRespCode_RespSucc,
-		Msg:  "OK",
+		Msg:  fmt.Sprintf("%t", needScala),
 	}, nil
 }
 
