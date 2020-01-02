@@ -96,15 +96,12 @@ func (p *TDB_Postgres) SaveTioServer(s *model.Server) error {
 	return err
 }
 
-func (p *TDB_Postgres) QueryTioServer() ([]model.Server, error) {
+func (p *TDB_Postgres) queryTioServerWithQuery(query string) ([]model.Server, error) {
+	logrus.Debugf("Query Server:[%s]", query)
+
 	var ss []model.Server
 
-	var sql string
-
-	sql = fmt.Sprintf("SELECT * FROM server ORDER BY version desc, id asc")
-
-	logrus.Debugf("Query Server:[%s]", sql)
-	rows, err := p.db.Query(sql)
+	rows, err := p.db.Query(query)
 	if err != nil {
 		return ss, err
 	}
@@ -122,8 +119,11 @@ func (p *TDB_Postgres) QueryTioServer() ([]model.Server, error) {
 	return ss, nil
 }
 
+func (p *TDB_Postgres) QueryTioServer() ([]model.Server, error) {
+	return p.queryTioServerWithQuery("SELECT * FROM server ORDER BY version desc, id asc")
+}
+
 func (p *TDB_Postgres) QueryTioServerByUser(uid, limit int, name string) ([]model.Server, error) {
-	var ss []model.Server
 
 	var sql string
 	if limit > 0 {
@@ -132,23 +132,7 @@ func (p *TDB_Postgres) QueryTioServerByUser(uid, limit int, name string) ([]mode
 		sql = fmt.Sprintf("SELECT * FROM server WHERE uid=$1 AND name=$2 ORDER BY version desc, id asc")
 	}
 
-	logrus.Debugf("Query Server:[%s]", sql)
-	rows, err := p.db.Query(sql, uid, name)
-	if err != nil {
-		return ss, err
-	}
-
-	for rows.Next() {
-		s := model.Server{}
-		err = rows.Scan(&s.Id, &s.Name, &s.Version, &s.Uid, &s.Stype, &s.Domain, &s.Path, &s.TVersion, &s.Timestamp, &s.Status, &s.Image, &s.Raw)
-		if err != nil {
-			logrus.Errorf("Scan Server Error. %s", err)
-			continue
-		}
-		ss = append(ss, s)
-	}
-
-	return ss, nil
+	return p.queryTioServerWithQuery(sql)
 }
 
 func (p *TDB_Postgres) QueryTioServerById(sid int) (*model.Server, error) {
