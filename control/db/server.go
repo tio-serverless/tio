@@ -94,6 +94,10 @@ func QuerySrvById(b *data.B, sid int) (*model.Server, error) {
 	return b.DBCli.QueryTioServerById(sid)
 }
 
+func QueryAllSrv(b *data.B) ([]model.Server, error) {
+	return b.DBCli.QueryTioServer()
+}
+
 func RemoveSrvByID(b *data.B, sid int) error {
 	ns, err := b.DBCli.QueryTioServerById(sid)
 	if err != nil {
