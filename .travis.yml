@@ -11,7 +11,7 @@ env:
     - TIO_BUILD_AGENT_HOST_NAME=tioserverless/build-agent-host
     # - TIO_CONSUL_AGENT=tioserverless/consul-agent
     # - TIO_CONSUL_WATCH=tioserverless/consul-watch
-    - TIO_DEPLOY_AGENT=tioserverless/deploy-agent
+    # - TIO_DEPLOY_AGENT=tioserverless/deploy-agent
     - TIO_BUILD_AGENT_K8S_NAME=tioserverless/build-agent-k8s
     - TIO_INJECT_AGENT=tioserverless/inject-agent
     # - TIO_PROXY_AGENT=tioserverless/prxoy-agent
@@ -34,7 +34,7 @@ install:
   - go build -mod=vendor -ldflags "-X main._VERSION_=$TIO_VERSION -X main._BRANCH_=$TRAVIS_BRANCH" -o bin/tio-build-agent-host build-agent/host/*.go
   - go build -mod=vendor -ldflags "-X main._VERSION_=$TIO_VERSION -X main._BRANCH_=$TRAVIS_BRANCH" -o bin/tio-build-agent-k8s build-agent/k8s/*.go
   # - go build -mod=vendor -ldflags "-X main._VERSION_=$TIO_VERSION -X main._BRANCH_=$TRAVIS_BRANCH" -o bin/consul-agent consul/sidecar/*.go
-  - go build -mod=vendor -ldflags "-X main._VERSION_=$TIO_VERSION -X main._BRANCH_=$TRAVIS_BRANCH" -o bin/tio-deploy deploy-agent/*.go
+  # - go build -mod=vendor -ldflags "-X main._VERSION_=$TIO_VERSION -X main._BRANCH_=$TRAVIS_BRANCH" -o bin/tio-deploy deploy-agent/*.go
   # - go build -mod=vendor -ldflags "-X main._VERSION_=$TIO_VERSION -X main._BRANCH_=$TRAVIS_BRANCH" -o bin/tio-consul-watch consul/watch/*.go
   - go build -mod=vendor -ldflags "-X tio/client/cmd._VERSION_=$TIO_VERSION -X tio/client/cmd._BRANCH_=$TRAVIS_BRANCH" -o bin/tio-cli client/*.go
   - go build -mod=vendor -ldflags "-X main._VERSION_=$TIO_VERSION -X main._BRANCH_=$TRAVIS_BRANCH" -o bin/tio-inject-grpc inject/grpc/*.go
@@ -55,8 +55,8 @@ after_script:
   - docker push  ${TIO_BUILD_AGENT_K8S_NAME}:${TIO_VERSION}-${TRAVIS_BRANCH}
   # - docker build -t ${TIO_CONSUL_AGENT}:${TIO_VERSION}-${TRAVIS_BRANCH} -f Dockerfile/Dockerfile.consul-sidecar .
   # - docker push ${TIO_CONSUL_AGENT}:${TIO_VERSION}-${TRAVIS_BRANCH}
-  - docker build -t ${TIO_DEPLOY_AGENT}:${TIO_VERSION}-${TRAVIS_BRANCH} -f Dockerfile/Dockerfile.deploy-agent .
-  - docker push ${TIO_DEPLOY_AGENT}:${TIO_VERSION}-${TRAVIS_BRANCH}
+  # - docker build -t ${TIO_DEPLOY_AGENT}:${TIO_VERSION}-${TRAVIS_BRANCH} -f Dockerfile/Dockerfile.deploy-agent .
+  # - docker push ${TIO_DEPLOY_AGENT}:${TIO_VERSION}-${TRAVIS_BRANCH}
   # - docker build -t ${TIO_CONSUL_WATCH}:${TIO_VERSION}-${TRAVIS_BRANCH} -f Dockerfile/Dockerfile.consul-watch .
   # - docker push ${TIO_CONSUL_WATCH}:${TIO_VERSION}-${TRAVIS_BRANCH}
   - docker build -t ${TIO_INJECT_AGENT}:grpc-${TIO_VERSION}-${TRAVIS_BRANCH} -f Dockerfile/Dockerfile.inject-grpc .
