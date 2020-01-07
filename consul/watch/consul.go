@@ -51,6 +51,7 @@ type service struct {
 	url       string
 	routetype RouteType
 	action    ActionType
+	remove    bool
 }
 
 type consulCli interface {
@@ -75,29 +76,58 @@ func (c client) routeConvert2RouterDiscoveryResponse(consulRoute map[string][]se
 
 		url := srv[0].url
 		srvType := srv[0].routetype
+		isRemove := srv[0].remove
 
 		var r *route.Route
+
+		defaultHttpAction := &route.Route_Route{
+			Route: &route.RouteAction{
+				ClusterSpecifier: &route.RouteAction_Cluster{Cluster: fmt.Sprintf("%s_cluster", c.defaultCluster[HTTPRoute])},
+				PrefixRewrite:    "/",
+			}}
+
+		defaultGrpcction := &route.Route_Route{
+			Route: &route.RouteAction{
+				ClusterSpecifier: &route.RouteAction_Cluster{Cluster: fmt.Sprintf("%s_cluster", c.defaultCluster[GRPCRoute])},
+				PrefixRewrite:    "/",
+			}}
+
+		//defaultTcpAction := &route.Route_Route{
+		//	Route: &route.RouteAction{
+		//		ClusterSpecifier: &route.RouteAction_Cluster{Cluster: fmt.Sprintf("%s_cluster", c.defaultCluster[TCPRoute])},
+		//		PrefixRewrite:    "/",
+		//	}}
 
 		if srvType == HTTPRoute {
 			r = &route.Route{
 				Match: &route.RouteMatch{
 					PathSpecifier: &route.RouteMatch_Prefix{Prefix: url},
 				},
-				Action: &route.Route_Route{
+			}
+
+			if !isRemove {
+				r.Action = &route.Route_Route{
 					Route: &route.RouteAction{
 						ClusterSpecifier: &route.RouteAction_Cluster{Cluster: fmt.Sprintf("%s_cluster", name)},
 						PrefixRewrite:    "/",
-					}},
+					}}
+			} else {
+				r.Action = defaultHttpAction
 			}
+
 		} else {
 			r = &route.Route{
 				Match: &route.RouteMatch{
 					PathSpecifier: &route.RouteMatch_Prefix{Prefix: url},
 				},
-				Action: &route.Route_Route{
+			}
+			if !isRemove {
+				r.Action = &route.Route_Route{
 					Route: &route.RouteAction{
 						ClusterSpecifier: &route.RouteAction_Cluster{Cluster: fmt.Sprintf("%s_cluster", name)},
-					}},
+					}}
+			} else {
+				r.Action = defaultGrpcction
 			}
 		}
 
@@ -289,6 +319,7 @@ func (c client) routeInit() error {
 					url:       m.Url,
 					routetype: RouteType(m.RouteType),
 					action:    AddEndpoint,
+					remove:    m.Remove,
 				})
 			}
 
@@ -299,6 +330,20 @@ func (c client) routeInit() error {
 	}
 
 	return nil
+}
+
+func (c client) clusterInit() {
+	if os.Getenv("TIO_CONSUL_CLUSTER_HTTP") != "" {
+		c.defaultCluster[HTTPRoute] = os.Getenv("TIO_CONSUL_CLUSTER_HTTP")
+	}
+
+	if os.Getenv("TIO_CONSUL_CLUSTER_GRPC") != "" {
+		c.defaultCluster[GRPCRoute] = os.Getenv("TIO_CONSUL_CLUSTER_GRPC")
+	}
+
+	if os.Getenv("TIO_CONSUL_CLUSTER_TCP") != "" {
+		c.defaultCluster[TCPRoute] = os.Getenv("TIO_CONSUL_CLUSTER_TCP")
+	}
 }
 
 func watch(cli consulCli, cc chan consulData) {
@@ -345,6 +390,7 @@ func (c client) handlerCheckEvent(cd consulData) map[string][]service {
 				url:       m.Url,
 				routetype: RouteType(m.RouteType),
 				action:    AddEndpoint,
+				remove:    m.Remove,
 			})
 		}
 
@@ -363,11 +409,12 @@ func (c client) handlerKVEvent(cd consulData) {
 }
 
 type client struct {
-	route   map[string]meta
-	cli     *api.Client
-	cc      chan consulData
-	address string
-	routes  map[string][]service
+	route          map[string]meta
+	cli            *api.Client
+	cc             chan consulData
+	address        string
+	routes         map[string][]service
+	defaultCluster map[int]string
 }
 
 func (c client) watchKVEvents(cd chan consulData) {
@@ -466,11 +513,12 @@ func initClient() (*client, error) {
 	}
 
 	return &client{
-		cli:     cli,
-		route:   make(map[string]meta),
-		cc:      make(chan consulData, 100),
-		address: config.Address,
-		routes:  make(map[string][]service),
+		cli:            cli,
+		route:          make(map[string]meta),
+		cc:             make(chan consulData, 100),
+		address:        config.Address,
+		routes:         make(map[string][]service),
+		defaultCluster: make(map[int]string),
 	}, nil
 }
 

@@ -1,6 +1,7 @@
 package k8s
 
 import (
+	"fmt"
 	"strconv"
 
 	"github.com/BurntSushi/toml"
@@ -68,5 +69,19 @@ func UpdateDeployment(k MyK8s, name string, env map[string]string) error {
 }
 
 func GetPodEndpoint(k MyK8s, name string) (string, error) {
-	return k.GetDeploymentEndpointWithName(name)
+	pod, err := k.GetPodInfo(name)
+	if err != nil {
+		return "", err
+	}
+
+	return fmt.Sprintf("%s:80", pod.Status.PodIP), nil
+}
+
+func GetDeployInstanceNum(k MyK8s, name string) (int, error) {
+	d, err := k.GetDeploymentInfo(name)
+	if err != nil {
+		return 0, err
+	}
+
+	return int(d.Status.Replicas), nil
 }

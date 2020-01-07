@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg xmlns:xl="http://www.w3.org/1999/xlink" version="1.1" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns="http://www.w3.org/2000/svg" viewBox="-60.5 -102.41016 1324 530.91016" width="1324" height="530.91016">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xl="http://www.w3.org/1999/xlink" version="1.1" viewBox="-60.5 -102.41016 1324 530.91016" width="1324" height="530.91016">
   <defs>
     <font-face font-family="Helvetica Neue" font-size="16" panose-1="2 0 5 3 0 0 0 2 0 4" units-per-em="1000" underline-position="-100" underline-thickness="50" slope="0" x-height="517" cap-height="714" ascent="951.9958" descent="-212.99744" font-weight="400">
       <font-face-src>
@@ -17,11 +17,16 @@
         <font-face-name name="PingFangSC-Regular"/>
       </font-face-src>
     </font-face>
+    <marker orient="auto" overflow="visible" markerUnits="strokeWidth" id="FilledArrow_Marker_2" stroke-linejoin="miter" stroke-miterlimit="10" viewBox="-1 -4 10 8" markerWidth="10" markerHeight="8" color="black">
+      <g>
+        <path d="M 8 0 L 0 -3 L 0 3 Z" fill="currentColor" stroke="currentColor" stroke-width="1"/>
+      </g>
+    </marker>
   </defs>
   <metadata> Produced by OmniGraffle 7.11.5 
-    <dc:date>2019-12-31 05:34:28 +0000</dc:date>
+    <dc:date>2020-01-02 08:58:46 +0000</dc:date>
   </metadata>
-  <g id="Canvas_1" fill="none" fill-opacity="1" stroke="none" stroke-opacity="1" stroke-dasharray="none">
+  <g id="Canvas_1" stroke-opacity="1" stroke-dasharray="none" fill-opacity="1" fill="none" stroke="none">
     <title>Canvas 1</title>
     <g id="Canvas_1: Layer 1">
       <title>Layer 1</title>
@@ -169,6 +174,22 @@
         <rect x="588.62175" y="-26.5" width="69.184" height="32" fill="white"/>
         <text transform="translate(593.62174 -21.5)" fill="black">
           <tspan font-family="PingFang SC" font-size="16" font-weight="400" fill="black" x="5506706e-19" y="17">Ploy Init</tspan>
+        </text>
+      </g>
+      <g id="Graphic_31">
+        <rect x="683" y="349" width="231" height="79" fill="white"/>
+        <path d="M 683 349 L 914 349 L 914 428 L 683 428 Z" stroke="gray" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="8.0,4.0,1.0,4.0" stroke-width="1"/>
+        <text transform="translate(688 379.276)" fill="black">
+          <tspan font-family="Helvetica Neue" font-size="16" font-weight="400" fill="black" x="85.46" y="15">Consul</tspan>
+        </text>
+      </g>
+      <g id="Line_32">
+        <line x1="555" y1="388.5" x2="673.1" y2="388.5" marker-end="url(#FilledArrow_Marker_2)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+      </g>
+      <g id="Graphic_33">
+        <rect x="567.206" y="372.5" width="95.936" height="32" fill="white"/>
+        <text transform="translate(572.206 377.5)" fill="black">
+          <tspan font-family="PingFang SC" font-size="16" font-weight="400" fill="black" x="7602807e-19" y="17">Remove KV</tspan>
         </text>
       </g>
     </g>

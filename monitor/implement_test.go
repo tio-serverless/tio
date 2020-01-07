@@ -16,8 +16,8 @@ func Test_scala(t *testing.T) {
 
 	mig := NewMockmonitorInterface(mockCtl)
 
-	mig.EXPECT().Sacla("svc1", 2.0).Return(nil)
-	mig.EXPECT().WaitScala("svc1").Return("127.0.0.1:80",nil)
+	mig.EXPECT().Sacla("svc1", 2.0).Return(true, nil)
+	mig.EXPECT().WaitScala("svc1").Return("127.0.0.1:80", nil)
 
 	type args struct {
 		mi  monitorInterface
@@ -119,12 +119,12 @@ func Test_monImplement_serviceSala(t *testing.T) {
 	pig := NewMockprometheusInterface(mockCtl)
 
 	pig.EXPECT().QueryAllCluster().Return([]string{
-		"svc1",
-		"svc2",
+		"svc1_cluster",
+		"svc3_cluster",
 	}, nil)
 
-	pig.EXPECT().QueryRange("svc1", StepMinute, 1).Return(100, nil)
-	pig.EXPECT().QueryRange("svc2", StepMinute, 1).Return(105, nil)
+	pig.EXPECT().QueryRange("svc1_cluster", StepMinute, 2).Return(100, nil)
+	//pig.EXPECT().QueryRange("svc3_cluster", StepMinute, 2).Return(105, nil)
 
 	type fields struct {
 		proxyService   []string
@@ -151,17 +151,17 @@ func Test_monImplement_serviceSala(t *testing.T) {
 					Name:         "svc1",
 					TrafficCount: 100,
 				},
-				{
-					Name:         "svc2",
-					TrafficCount: 105,
-				},
+				//{
+				//	Name:         "svc2",
+				//	TrafficCount: 105,
+				//},
 			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			m := monImplement{
-				proxyService: tt.fields.proxyService,
+				proxyService:   tt.fields.proxyService,
 				controlService: tt.fields.controlService,
 				deployService:  tt.fields.deployService,
 				ploy:           tt.fields.ploy,
@@ -230,18 +230,6 @@ func Test_monImplement_NeedScala(t *testing.T) {
 			}},
 			want:  true,
 			want1: 3,
-		},
-		{
-			name: "scala to 0",
-			fields: fields{
-				ploy: map[string]int{"svc1": 30},
-			},
-			args: args{traffic: envoyTraffic{
-				Name:         "svc1",
-				TrafficCount: 0,
-			}},
-			want:  true,
-			want1: 0,
 		},
 		{
 			name: "scala to 0.5",

@@ -5,10 +5,13 @@ import (
 	"fmt"
 	"math"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 
+	capi "github.com/hashicorp/consul/api"
 	"github.com/prometheus/client_golang/api"
+
 	v1 "github.com/prometheus/client_golang/api/prometheus/v1"
 	"github.com/prometheus/common/model"
 	"github.com/sirupsen/logrus"
@@ -24,6 +27,14 @@ type monImplement struct {
 	ploy              map[string]int
 	proImp            prometheusInterface
 	//wait           map[string]chan struct{}
+	consulCli *capi.Client
+}
+
+func consulInit() (*capi.Client, error) {
+	config := capi.DefaultConfig()
+	config.Address = strings.Split(os.Getenv("TIO_MONITOR_CONSUL_ADDRESS"), ";")[0]
+
+	return capi.NewClient(config)
 }
 
 func NewMonImplement() (*monImplement, error) {
@@ -54,10 +65,17 @@ func NewMonImplement() (*monImplement, error) {
 	client, err := api.NewClient(api.Config{
 		Address: mi.prometheusService,
 	})
-
 	if err != nil {
 		return nil, err
 	}
+
+	c, err := consulInit()
+	if err != nil {
+		return nil, err
+	}
+
+	mi.consulCli = c
+
 	mi.proImp = prometheusImplement{cli: client}
 	err = mi.InitPloy()
 	if err != nil {
@@ -76,7 +94,7 @@ func (m monImplement) Ploy(ctx context.Context, in *tio_control_v1.MonitorScalaR
 }
 
 func scala(mi monitorInterface, ctx context.Context, in *tio_control_v1.MonitorScalaRequest) (*tio_control_v1.TioReply, error) {
-	err := mi.Sacla(in.Name, float64(in.Num))
+	_, err := mi.Sacla(in.Name, float64(in.Num))
 	endpoint, err := mi.WaitScala(in.Name)
 
 	if err != nil {
@@ -136,11 +154,11 @@ func (m monImplement) serviceSala() []envoyTraffic {
 	ploy := m.GetPloy()
 
 	for _, c := range clusters {
+		prometheusName := c
 		c = strings.TrimSuffix(c, "_cluster")
-
 		if ploy[c] > 0 {
 			//	如果存在策略，后续判断才有意义
-			connectCount, err := m.queryConnectInMinuteRange(c, 1)
+			connectCount, err := m.queryConnectInMinuteRange(prometheusName, 2)
 			if err != nil {
 				logrus.Errorf("Query Cluster %s Connect Error %s", c, err.Error())
 				continue
@@ -154,39 +172,40 @@ func (m monImplement) serviceSala() []envoyTraffic {
 		}
 	}
 
-	logrus.Debugf("There are [%d] service need scala. [%v]", len(etfs), etfs)
+	logrus.Debugf("There are [%d] service needs scala. [%v]", len(etfs), etfs)
 	return etfs
 }
 
 func (m monImplement) WatchForScala(traffic envoyTraffic) error {
 	isNeedScala, instances := m.NeedScala(traffic)
 
-	logrus.Debugf("name: %s needscala %t", traffic.Name, isNeedScala)
+	logrus.Debugf("name: %s need scala %t", traffic.Name, isNeedScala)
 
 	if isNeedScala {
-		err := m.Sacla(traffic.Name, instances)
+		isStart, err := m.Sacla(traffic.Name, instances)
 		if err != nil {
 			return fmt.Errorf(" Cluster %s Scala Error %s", traffic.Name, err.Error())
 		}
 
-		go func(name string) {
-			_, err := m.WaitScala(name)
-			if err != nil {
-				logrus.Errorf("Wait Cluster %s Scala Error %s", traffic.Name, err.Error())
-			}
+		if isStart {
+			go func(name string) {
+				_, err := m.WaitScala(name)
+				if err != nil {
+					logrus.Errorf("Wait Cluster %s Scala Error %s", traffic.Name, err.Error())
+				}
 
-		}(traffic.Name)
-
+			}(traffic.Name)
+		}
 	}
 
 	return nil
 }
 
-func (m monImplement) Sacla(name string, num float64) error {
+func (m monImplement) Sacla(name string, num float64) (bool, error) {
 	conn, err := grpc.Dial(m.deployService, grpc.WithInsecure())
 	defer conn.Close()
 	if err != nil {
-		return fmt.Errorf("Dial DeployAgent Error. %s", err.Error())
+		return false, fmt.Errorf("Dial DeployAgent Error. %s", err.Error())
 	}
 
 	c := tio_control_v1.NewTioDeployServiceClient(conn)
@@ -195,21 +214,22 @@ func (m monImplement) Sacla(name string, num float64) error {
 	defer cancel()
 
 	reply, err := c.ScalaDeploy(ctx, &tio_control_v1.DeployRequest{
-		Name:        name,
-		InstanceNum: int32(num),
+		Name:             name,
+		InstanceMultiple: num,
 	})
 
 	if err != nil {
-		return err
+		return false, err
 	}
 
 	if reply.Code != tio_control_v1.CommonRespCode_RespSucc {
-		return fmt.Errorf("Scala %s %f Error. %s", name, num, err.Error())
+		return false, fmt.Errorf("Scala %s %f Error. %s", name, num, err.Error())
 	}
 
 	//m.wait[name] = make(chan struct{})
-	logrus.Debugf("name: %s scala sucess", name)
-	return nil
+	isScalaStart, _ := strconv.ParseBool(reply.Msg)
+	logrus.Debugf("name: %s scala start [%t]", name, isScalaStart)
+	return isScalaStart, nil
 }
 
 func (m monImplement) WaitScala(name string) (string, error) {
@@ -252,7 +272,8 @@ func (m monImplement) WaitScala(name string) (string, error) {
 //}
 
 func (m monImplement) InvokeDeployService(name string, num float64) error {
-	return m.Sacla(name, num)
+	_, err := m.Sacla(name, num)
+	return err
 }
 
 func (m monImplement) InitPloy() error {
@@ -332,12 +353,16 @@ func (m monImplement) invokeProxyService(add, name, endpoint string) error {
 // 如果TrafficCount >= ploy*(2+N), 则扩容N倍。
 // 如果ploy / 2 =<TrafficCount < ploy*2 , 则保持现状
 // 如果0< TrafficCount < ploy/2, 则缩容1倍
-// 如果 TrafficCount == 0,完成 缩容
+// 如果 TrafficCount == 0 缩容
 func (m monImplement) NeedScala(traffic envoyTraffic) (bool, float64) {
 	ploy, exist := m.ploy[traffic.Name]
 	if exist {
 
 		if traffic.TrafficCount == 0 {
+			err := m.DisableService(traffic.Name)
+			if err != nil {
+				logrus.Errorf("Disable %s error %s", traffic.Name, err.Error())
+			}
 			return true, 0
 		}
 

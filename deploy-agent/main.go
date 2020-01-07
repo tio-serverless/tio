@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"math"
 	"net"
 	"os"
 	"strings"
@@ -80,16 +81,18 @@ type grcpSrv struct {
 
 func (g grcpSrv) DeployInfo(ctx context.Context, in *tio_control_v1.DeployRequest) (*tio_control_v1.TioReply, error) {
 
+	logrus.Debugf("Query %s Endpoint", in.Name)
+
 	endpoint, err := k8s.GetPodEndpoint(g.cli, in.Name)
 	if err != nil {
 		return &tio_control_v1.TioReply{
-			Code: -1,
+			Code: tio_control_v1.CommonRespCode_RespFaild,
 			Msg:  err.Error(),
 		}, nil
 	}
 
 	return &tio_control_v1.TioReply{
-		Code: 0,
+		Code: tio_control_v1.CommonRespCode_RespSucc,
 		Msg:  endpoint,
 	}, nil
 }
@@ -150,17 +153,31 @@ func (g grcpSrv) UpdateSrvMeta(ctx context.Context, in *tio_control_v1.SrvMeta) 
 }
 
 func (g grcpSrv) ScalaDeploy(ctx context.Context, in *tio_control_v1.DeployRequest) (*tio_control_v1.TioReply, error) {
-	err := k8s.ScalaInstances(g.cli, in.Name, int(in.InstanceNum))
+	logrus.Debugf("Scala Deploy %s Multiple %f", in.Name, in.InstanceMultiple)
+
+	currInstances, err := k8s.GetDeployInstanceNum(g.cli, in.Name)
 	if err != nil {
 		return &tio_control_v1.TioReply{
-			Code: -1,
+			Code: tio_control_v1.CommonRespCode_RespFaild,
 			Msg:  err.Error(),
 		}, nil
 	}
 
+	needScala, newInstances := g.needScala(currInstances, in.InstanceMultiple)
+	logrus.Debugf("%s from %d to %d need scala [%t],", in.Name, currInstances, newInstances, needScala)
+	if needScala {
+		err = k8s.ScalaInstances(g.cli, in.Name, newInstances)
+		if err != nil {
+			return &tio_control_v1.TioReply{
+				Code: tio_control_v1.CommonRespCode_RespFaild,
+				Msg:  err.Error(),
+			}, nil
+		}
+	}
+
 	return &tio_control_v1.TioReply{
-		Code: 0,
-		Msg:  "OK",
+		Code: tio_control_v1.CommonRespCode_RespSucc,
+		Msg:  fmt.Sprintf("%t", needScala),
 	}, nil
 }
 
@@ -185,4 +202,28 @@ func (g grcpSrv) NewDeploy(ctx context.Context, in *tio_control_v1.DeployRequest
 		Code: 0,
 		Msg:  id,
 	}, nil
+}
+
+func (g grcpSrv) compute(ins int, inm float64) int {
+	if ins == 0 {
+		return 1
+	}
+
+	return int(math.Ceil(float64(ins) * inm))
+}
+
+// needScala 计算是否需要扩容
+// 1. 如果ins==0，同时扩容倍数==0， 则不变化
+// 2. 如果扩容倍数==1, 不变化
+// 3. 其它情况则需要调整实例数
+func (g grcpSrv) needScala(ins int, inm float64) (bool, int) {
+	if ins == 0 && inm == 0 {
+		return false, 0
+	}
+
+	if ins > 0 && inm == 1 {
+		return false, 0
+	}
+
+	return true, g.compute(ins, inm)
 }
