@@ -2,7 +2,7 @@
  
 [![Build Status](https://travis-ci.com/tio-serverless/tio.svg?branch=master)](https://travis-ci.com/tio-serverless/tio) [![Go Report Card](https://goreportcard.com/badge/github.com/tio-serverless/tio)](https://goreportcard.com/report/github.com/tio-serverless/tio) [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=tio-serverless_tio&metric=alert_status)](https://sonarcloud.io/dashboard?id=tio-serverless_tio)
 
-Golang Serverless Framework
+Golang Serverless Framework Powered By Goland
 
 ## Tio是什么？
 
